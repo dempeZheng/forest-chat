@@ -12,6 +12,8 @@
         <module>ocean-client</module>
         <module>ocean-core</module>
         <module>ocean-common</module>
+        <module>ocean-bus</module>
+        <module>ocean-node</module>
     </modules>
 
 

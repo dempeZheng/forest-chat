@@ -17,7 +17,6 @@ package com.dempe.ocean.common.protocol.mqtt;
 
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

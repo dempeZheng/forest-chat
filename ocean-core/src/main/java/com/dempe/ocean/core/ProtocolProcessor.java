@@ -259,8 +259,6 @@ public class ProtocolProcessor {
         String clientID = NettyUtils.clientID(session);
         final String topic = msg.getTopicName();
         //check if the topic can be wrote
-        String user = NettyUtils.userName(session);
-
         final AbstractMessage.QOSType qos = msg.getQos();
         final Integer messageID = msg.getMessageID();
         LOG.info("PUBLISH from clientID <{}> on topic <{}> with QoS {}", clientID, topic, qos);
@@ -598,8 +596,6 @@ public class ProtocolProcessor {
         //ack the client
         SubAckMessage ackMessage = new SubAckMessage();
         ackMessage.setMessageID(msg.getMessageID());
-
-        String user = NettyUtils.userName(channel);
         List<Subscription> newSubscriptions = Lists.newArrayList();
         for (SubscribeMessage.Couple req : msg.subscriptions()) {
 

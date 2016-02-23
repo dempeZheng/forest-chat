@@ -18,6 +18,12 @@ public class Request {
 
     private String name;
 
+    private short msgType;
+
+    private String uid;
+
+    private String topic;
+
     private String uri;
 
     private String param;
@@ -54,12 +60,39 @@ public class Request {
         return JSONObject.parseObject(param);
     }
 
+    public short getMsgType() {
+        return msgType;
+    }
+
+    public void setMsgType(short msgType) {
+        this.msgType = msgType;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
     public void putParaJSON(JSONObject paramJSON) {
         this.param = paramJSON.toJSONString();
     }
 
     public Pack marshal(Pack pack) {
         pack.putVarstr(name);
+        pack.putShort(msgType);
+        pack.putVarstr(uid);
+        pack.putVarstr(topic);
         pack.putVarstr(uri);
         pack.putVarstr(param);
         return pack;
@@ -67,6 +100,9 @@ public class Request {
 
     public Request unmarshal(Unpack unpack) throws IOException {
         name = unpack.popVarstr();
+        msgType = unpack.popShort();
+        uid = unpack.popVarstr();
+        topic = unpack.popVarstr();
         uri = unpack.popVarstr();
         param = unpack.popVarstr();
         return this;

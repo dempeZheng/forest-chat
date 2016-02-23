@@ -51,6 +51,7 @@ public class MQTTDecoder extends ByteToMessageDecoder {
         m_decoderMap.put(AbstractMessage.PUBCOMP, new PubCompDecoder());
         m_decoderMap.put(AbstractMessage.PUBREC, new PubRecDecoder());
         m_decoderMap.put(AbstractMessage.PUBREL, new PubRelDecoder());
+        m_decoderMap.put(AbstractMessage.UNICAST, new PubRelDecoder());
     }
 
     @Override

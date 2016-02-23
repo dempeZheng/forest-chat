@@ -37,6 +37,9 @@ public abstract class AbstractMessage {
     public static final byte PINGRESP = 13; //PING Response
     public static final byte DISCONNECT = 14; //Client is Disconnecting
 
+    // 单播消息
+    public static final byte UNICAST = 15;
+
     public static enum QOSType {
         MOST_ONE, LEAST_ONE, EXACTLY_ONCE, RESERVED, FAILURE, QOSType;
 

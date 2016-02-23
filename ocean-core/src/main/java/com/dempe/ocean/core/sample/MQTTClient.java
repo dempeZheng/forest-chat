@@ -32,6 +32,7 @@ public class MQTTClient {
         Topic[] topics = {new Topic("foo", QoS.AT_LEAST_ONCE)};
         byte[] qoses = connection.subscribe(topics);
 
+
         System.out.println("qoese>>>" + new String(qoses));
         while (true) {
             Message message = connection.receive();

@@ -21,28 +21,28 @@ public class MQTTClient {
         connection.connect();
 
 
-        Request request = new Request();
-        request.setName("leaf");
-        request.setUri("/test");
-        Pack pack = new Pack();
-        request.marshal(pack);
-        byte[] array = pack.getBuffer().array();
-        connection.publish("foo", array, QoS.AT_LEAST_ONCE, false);
-
-        Topic[] topics = {new Topic("foo", QoS.AT_LEAST_ONCE)};
-        byte[] qoses = connection.subscribe(topics);
-
-        System.out.println("qoese>>>" + new String(qoses));
-        while (true) {
-            Message message = connection.receive();
-            System.out.println(message.getTopic());
-            byte[] payload = message.getPayload();
-
-            System.out.println("payload>>>" + new String(payload));
-            // process the message then:
-            message.ack();
-            Thread.sleep(1000);
-        }
+//        Request request = new Request();
+//        request.setName("leaf");
+//        request.setUri("/test");
+//        Pack pack = new Pack();
+//        request.marshal(pack);
+//        byte[] array = pack.getBuffer().array();
+//        connection.publish("foo", array, QoS.AT_LEAST_ONCE, false);
+//
+//        Topic[] topics = {new Topic("foo", QoS.AT_LEAST_ONCE)};
+//        byte[] qoses = connection.subscribe(topics);
+//
+//        System.out.println("qoese>>>" + new String(qoses));
+//        while (true) {
+//            Message message = connection.receive();
+//            System.out.println(message.getTopic());
+//            byte[] payload = message.getPayload();
+//
+//            System.out.println("payload>>>" + new String(payload));
+//            // process the message then:
+//            message.ack();
+//            Thread.sleep(1000);
+//        }
 
 
     }

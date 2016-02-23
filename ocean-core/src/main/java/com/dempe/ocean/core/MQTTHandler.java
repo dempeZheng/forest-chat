@@ -56,12 +56,14 @@ public class MQTTHandler extends ChannelHandlerAdapter {
                     m_processor.processUnsubscribe(ctx.channel(), (UnsubscribeMessage) msg);
                     break;
                 case AbstractMessage.PUBLISH:
-                    m_processor.processPublish(ctx.channel(), (PublishMessage) msg);
-                    // 将消息传递个下一个handler
                     LOG.info("---------publish--------------");
-
-                    ByteBuffer payload = ((PublishMessage) msg).getPayload();
+                    PublishMessage publishMessage = (PublishMessage) msg;
+                    ByteBuffer payload = publishMessage.getPayload();
+                    m_processor.processPublish(ctx.channel(), publishMessage);
+                    // 将消息传递个下一个handler
                     ctx.fireChannelRead(payload);
+
+
 
                     break;
                 case AbstractMessage.PUBREC:

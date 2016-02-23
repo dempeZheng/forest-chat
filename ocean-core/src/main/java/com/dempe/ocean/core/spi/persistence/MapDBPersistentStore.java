@@ -16,8 +16,8 @@
 
 package com.dempe.ocean.core.spi.persistence;
 
+import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.protocol.mqtt.MQTTException;
-import com.dempe.ocean.core.config.IConfig;
 import com.dempe.ocean.core.spi.IMessagesStore;
 import com.dempe.ocean.core.spi.ISessionsStore;
 import org.mapdb.DB;
@@ -31,9 +31,6 @@ import java.io.Serializable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import static com.dempe.ocean.core.BrokerConstants.AUTOSAVE_INTERVAL_PROPERTY_NAME;
-import static com.dempe.ocean.core.BrokerConstants.PERSISTENT_STORE_PROPERTY_NAME;
 
 /**
  * MapDB main persistence implementation
@@ -60,9 +57,10 @@ public class MapDBPersistentStore {
 
     protected final ScheduledExecutorService m_scheduler = Executors.newScheduledThreadPool(1);
 
-    public MapDBPersistentStore(IConfig props) {
-        this.m_storePath = props.getProperty(PERSISTENT_STORE_PROPERTY_NAME, "");
-        this.m_autosaveInterval = Integer.parseInt(props.getProperty(AUTOSAVE_INTERVAL_PROPERTY_NAME, "30"));
+
+    public MapDBPersistentStore(OceanConfig config) {
+        this.m_storePath = config.persistentStore();
+        this.m_autosaveInterval = config.autoSaveInterval();
     }
 
     /**

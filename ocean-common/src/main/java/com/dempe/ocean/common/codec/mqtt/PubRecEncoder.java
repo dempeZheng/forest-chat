@@ -13,28 +13,23 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.dempe.ocean.common.codec;
+package com.dempe.ocean.common.codec.mqtt;
 
-import com.dempe.ocean.common.protocol.mqtt.PingReqMessage;
+
+import com.dempe.ocean.common.protocol.mqtt.AbstractMessage;
+import com.dempe.ocean.common.protocol.mqtt.PubRecMessage;
 import io.netty.buffer.ByteBuf;
-import io.netty.util.AttributeMap;
-
-import java.util.List;
+import io.netty.channel.ChannelHandlerContext;
 
 /**
  * @author andrea
  */
-class PingReqDecoder extends DemuxDecoder {
+class PubRecEncoder extends DemuxEncoder<PubRecMessage> {
 
     @Override
-    void decode(AttributeMap ctx, ByteBuf in, List<Object> out) throws Exception {
-        //Common decoding part
-        in.resetReaderIndex();
-        PingReqMessage message = new PingReqMessage();
-        if (!decodeCommonHeader(message, 0x00, in)) {
-            in.resetReaderIndex();
-            return;
-        }
-        out.add(message);
+    protected void encode(ChannelHandlerContext chc, PubRecMessage msg, ByteBuf out) {
+        out.writeByte(AbstractMessage.PUBREC << 4);
+        out.writeBytes(Utils.encodeRemainingLength(2));
+        out.writeShort(msg.getMessageID());
     }
 }

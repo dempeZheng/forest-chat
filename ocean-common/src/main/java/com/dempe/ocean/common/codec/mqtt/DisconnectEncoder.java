@@ -13,25 +13,22 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.dempe.ocean.common.codec;
+package com.dempe.ocean.common.codec.mqtt;
 
 
 import com.dempe.ocean.common.protocol.mqtt.AbstractMessage;
-import com.dempe.ocean.common.protocol.mqtt.ConnAckMessage;
+import com.dempe.ocean.common.protocol.mqtt.DisconnectMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
  * @author andrea
  */
-class ConnAckEncoder extends DemuxEncoder<ConnAckMessage> {
+public class DisconnectEncoder extends DemuxEncoder<DisconnectMessage> {
 
     @Override
-    protected void encode(ChannelHandlerContext chc, ConnAckMessage message, ByteBuf out) {
-        out.writeByte(AbstractMessage.CONNACK << 4);
-        out.writeBytes(Utils.encodeRemainingLength(2));
-        out.writeByte(message.isSessionPresent() ? 0x01 : 0x00);
-        out.writeByte(message.getReturnCode());
+    protected void encode(ChannelHandlerContext chc, DisconnectMessage msg, ByteBuf out) {
+        out.writeByte(AbstractMessage.DISCONNECT << 4).writeByte(0);
     }
 
 }

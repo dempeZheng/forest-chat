@@ -13,17 +13,21 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.dempe.ocean.core.config;
+package com.dempe.ocean.common.codec.mqtt;
+
+
+import com.dempe.ocean.common.protocol.mqtt.AbstractMessage;
+import com.dempe.ocean.common.protocol.mqtt.PingRespMessage;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 
 /**
- * Base interface for all configuration implementations (filesystem, memory or classpath)
- *
  * @author andrea
  */
-public interface IConfig {
-    void setProperty(String name, String value);
+class PingRespEncoder extends DemuxEncoder<PingRespMessage> {
 
-    String getProperty(String name);
-
-    String getProperty(String name, String defaultValue);
+    @Override
+    protected void encode(ChannelHandlerContext chc, PingRespMessage msg, ByteBuf out) {
+        out.writeByte(AbstractMessage.PINGRESP << 4).writeByte(0);
+    }
 }

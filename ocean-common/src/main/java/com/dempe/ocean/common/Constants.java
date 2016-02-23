@@ -8,4 +8,7 @@ package com.dempe.ocean.common;
  * To change this template use File | Settings | File Templates.
  */
 public class Constants {
+
+    public static final String FOREST_BUS_NAME = "forest_bus";
+    public static final String FOREST_LEAF_NAME = "forest_leaf";
 }

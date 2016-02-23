@@ -13,7 +13,7 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.dempe.ocean.common.codec;
+package com.dempe.ocean.common.codec.mqtt;
 
 
 import com.dempe.ocean.common.protocol.mqtt.AbstractMessage;

@@ -13,28 +13,27 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.dempe.ocean.common.codec;
+package com.dempe.ocean.common.codec.mqtt;
 
 
 import com.dempe.ocean.common.protocol.mqtt.AbstractMessage;
-import com.dempe.ocean.common.protocol.mqtt.SubscribeMessage;
+import com.dempe.ocean.common.protocol.mqtt.UnsubscribeMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.CorruptedFrameException;
 import io.netty.util.AttributeMap;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
  * @author andrea
  */
-class SubscribeDecoder extends DemuxDecoder {
+class UnsubscribeDecoder extends DemuxDecoder {
 
     @Override
     void decode(AttributeMap ctx, ByteBuf in, List<Object> out) throws Exception {
         //Common decoding part
-        SubscribeMessage message = new SubscribeMessage();
         in.resetReaderIndex();
+        UnsubscribeMessage message = new UnsubscribeMessage();
         if (!decodeCommonHeader(message, 0x02, in)) {
             in.resetReaderIndex();
             return;
@@ -42,7 +41,7 @@ class SubscribeDecoder extends DemuxDecoder {
 
         //check qos level
         if (message.getQos() != AbstractMessage.QOSType.LEAST_ONE) {
-            throw new CorruptedFrameException("Received SUBSCRIBE message with QoS other than LEAST_ONE, was: " + message.getQos());
+            throw new CorruptedFrameException("Found an Unsubscribe message with qos other than LEAST_ONE, was: " + message.getQos());
         }
 
         int start = in.readerIndex();
@@ -50,33 +49,18 @@ class SubscribeDecoder extends DemuxDecoder {
         message.setMessageID(in.readUnsignedShort());
         int read = in.readerIndex() - start;
         while (read < message.getRemainingLength()) {
-            decodeSubscription(in, message);
+            String topicFilter = Utils.decodeString(in);
+            //check topic is at least one char [MQTT-4.7.3-1]
+            if (topicFilter.length() == 0) {
+                throw new CorruptedFrameException("Received an UNSUBSCRIBE with empty topic filter");
+            }
+            message.addTopicFilter(topicFilter);
             read = in.readerIndex() - start;
         }
-
-        if (message.subscriptions().isEmpty()) {
-            throw new CorruptedFrameException("subscribe MUST have got at least 1 couple topic/QoS");
+        if (message.topicFilters().isEmpty()) {
+            throw new CorruptedFrameException("unsubscribe MUST have got at least 1 topic");
         }
-
         out.add(message);
-    }
-
-    /**
-     * Populate the message with couple of Qos, topic
-     */
-    private void decodeSubscription(ByteBuf in, SubscribeMessage message) throws UnsupportedEncodingException {
-        String topic = Utils.decodeString(in);
-        //check topic is at least one char [MQTT-4.7.3-1]
-        if (topic.length() == 0) {
-            throw new CorruptedFrameException("Received a SUBSCRIBE with empty topic filter");
-        }
-        byte qosByte = in.readByte();
-        if ((qosByte & 0xFC) > 0) { //the first 6 bits is reserved => has to be 0
-            throw new CorruptedFrameException("subscribe MUST have QoS byte with reserved buts to 0, found " + Integer.toHexString(qosByte));
-        }
-        byte qos = (byte) (qosByte & 0x03);
-        //TODO check qos id 000000xx
-        message.addSubscription(new SubscribeMessage.Couple(qos, topic));
     }
 
 }

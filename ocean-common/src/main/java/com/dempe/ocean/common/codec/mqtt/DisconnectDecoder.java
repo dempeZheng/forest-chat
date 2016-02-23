@@ -13,21 +13,29 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.dempe.ocean.common.codec;
+package com.dempe.ocean.common.codec.mqtt;
 
-
-import com.dempe.ocean.common.protocol.mqtt.AbstractMessage;
-import com.dempe.ocean.common.protocol.mqtt.PingRespMessage;
+import com.dempe.ocean.common.protocol.mqtt.DisconnectMessage;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.AttributeMap;
+
+import java.util.List;
 
 /**
  * @author andrea
  */
-class PingRespEncoder extends DemuxEncoder<PingRespMessage> {
+class DisconnectDecoder extends DemuxDecoder {
 
     @Override
-    protected void encode(ChannelHandlerContext chc, PingRespMessage msg, ByteBuf out) {
-        out.writeByte(AbstractMessage.PINGRESP << 4).writeByte(0);
+    void decode(AttributeMap ctx, ByteBuf in, List<Object> out) throws Exception {
+        //Common decoding part
+        in.resetReaderIndex();
+        DisconnectMessage message = new DisconnectMessage();
+        if (!decodeCommonHeader(message, 0x00, in)) {
+            in.resetReaderIndex();
+            return;
+        }
+        out.add(message);
     }
+
 }

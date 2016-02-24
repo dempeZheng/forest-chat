@@ -39,7 +39,7 @@ public class ClientHandler extends ChannelHandlerAdapter {
 
         LOGGER.info("resp:{}", resp);
         Channel session = getSessionByUid(uid);
-        if(session==null){
+        if (session == null) {
             return;
         }
         PublishMessage message = new PublishMessage();

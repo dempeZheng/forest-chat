@@ -1,7 +1,6 @@
 package com.dempe.ocean.core.frame;
 
 
-
 import java.lang.reflect.InvocationTargetException;
 
 /**

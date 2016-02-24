@@ -4,7 +4,10 @@ import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.hawtdispatch.DispatchQueue;
 import org.fusesource.hawtdispatch.Task;
-import org.fusesource.mqtt.client.*;
+import org.fusesource.mqtt.client.Future;
+import org.fusesource.mqtt.client.Listener;
+import org.fusesource.mqtt.client.Message;
+import org.fusesource.mqtt.client.Promise;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

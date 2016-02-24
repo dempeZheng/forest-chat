@@ -1,7 +1,6 @@
 package com.dempe.ocean.node.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dempe.ocean.common.anno.Param;
 import com.dempe.ocean.common.anno.Path;
 import com.dempe.ocean.node.service.SampleService;
 import org.springframework.stereotype.Controller;

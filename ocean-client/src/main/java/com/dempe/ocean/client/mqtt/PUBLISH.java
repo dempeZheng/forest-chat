@@ -4,7 +4,7 @@ import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.DataByteArrayInputStream;
 import org.fusesource.hawtbuf.DataByteArrayOutputStream;
 import org.fusesource.hawtbuf.UTF8Buffer;
-import org.fusesource.mqtt.codec.*;
+import org.fusesource.mqtt.codec.MQTTFrame;
 
 import java.io.IOException;
 import java.net.ProtocolException;
@@ -33,18 +33,18 @@ public class PUBLISH extends MessageSupport.HeaderBase implements MessageSupport
     }
 
     public PUBLISH decode(MQTTFrame frame) throws ProtocolException {
-        assert(frame.buffers.length == 1);
+        assert (frame.buffers.length == 1);
         header(frame.header());
 
         DataByteArrayInputStream is = new DataByteArrayInputStream(frame.buffers[0]);
         topicName = MessageSupport.readUTF(is);
 
         QoS qos = qos();
-        if(qos != QoS.AT_MOST_ONCE) {
+        if (qos != QoS.AT_MOST_ONCE) {
             messageId = is.readShort();
         }
         payload = is.readBuffer(is.available());
-        if( payload == null ) {
+        if (payload == null) {
             payload = new Buffer(0);
         }
         return this;
@@ -55,13 +55,13 @@ public class PUBLISH extends MessageSupport.HeaderBase implements MessageSupport
             DataByteArrayOutputStream os = new DataByteArrayOutputStream();
             MessageSupport.writeUTF(os, topicName);
             QoS qos = qos();
-            if(qos != QoS.AT_MOST_ONCE) {
+            if (qos != QoS.AT_MOST_ONCE) {
                 os.writeShort(messageId);
             }
             MQTTFrame frame = new MQTTFrame();
             frame.header(header());
             frame.commandType(TYPE);
-            if(payload!=null && payload.length!=0) {
+            if (payload != null && payload.length != 0) {
                 os.write(payload);
             }
             frame.buffer(os.toBuffer());

@@ -24,8 +24,6 @@ import io.netty.handler.codec.CorruptedFrameException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.ByteBuffer;
-
 
 /**
  * @author andrea
@@ -59,11 +57,11 @@ public class MQTTHandler extends ChannelHandlerAdapter {
                     PublishMessage publishMessage = (PublishMessage) msg;
                     // 扩展publish消息 qosType==0x80保留位作为单播消息
                     // 仅仅单播消息需要交由业务服务器处理
-                    if(publishMessage.getQos()==AbstractMessage.QOSType.UNICAST){
+                    if (publishMessage.getQos() == AbstractMessage.QOSType.UNICAST) {
                         LOG.info("---------dispatcher publish message--------------");
                         // 将消息传递给下一个handler，做分发处理
                         ctx.fireChannelRead(publishMessage);
-                    }else {
+                    } else {
                         // 广播消息则不处理
                         m_processor.processPublish(ctx.channel(), publishMessage);
                     }

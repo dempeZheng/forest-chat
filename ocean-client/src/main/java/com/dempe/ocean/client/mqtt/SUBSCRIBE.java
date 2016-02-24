@@ -2,8 +2,7 @@ package com.dempe.ocean.client.mqtt;
 
 import org.fusesource.hawtbuf.DataByteArrayInputStream;
 import org.fusesource.hawtbuf.DataByteArrayOutputStream;
-import org.fusesource.mqtt.client.*;
-import org.fusesource.mqtt.codec.*;
+import org.fusesource.mqtt.codec.MQTTFrame;
 
 import java.io.IOException;
 import java.net.ProtocolException;
@@ -34,16 +33,16 @@ public class SUBSCRIBE extends MessageSupport.HeaderBase implements MessageSuppo
     }
 
     public SUBSCRIBE decode(MQTTFrame frame) throws ProtocolException {
-        assert(frame.buffers.length == 1);
+        assert (frame.buffers.length == 1);
         header(frame.header());
 
         DataByteArrayInputStream is = new DataByteArrayInputStream(frame.buffers[0]);
         QoS qos = qos();
-        if(qos != QoS.AT_MOST_ONCE) {
+        if (qos != QoS.AT_MOST_ONCE) {
             messageId = is.readShort();
         }
         ArrayList<Topic> list = new ArrayList<Topic>();
-        while(is.available() > 0) {
+        while (is.available() > 0) {
             Topic topic = new Topic(MessageSupport.readUTF(is), QoS.values()[is.readByte()]);
             list.add(topic);
         }
@@ -55,11 +54,11 @@ public class SUBSCRIBE extends MessageSupport.HeaderBase implements MessageSuppo
         try {
             DataByteArrayOutputStream os = new DataByteArrayOutputStream();
             QoS qos = qos();
-            if(qos != QoS.AT_MOST_ONCE) {
+            if (qos != QoS.AT_MOST_ONCE) {
                 os.writeShort(messageId);
             }
-            for(Topic topic: topics) {
-               MessageSupport.writeUTF(os, topic.name());
+            for (Topic topic : topics) {
+                MessageSupport.writeUTF(os, topic.name());
                 os.writeByte(topic.qos().ordinal());
             }
 

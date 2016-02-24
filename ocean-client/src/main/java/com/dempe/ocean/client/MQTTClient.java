@@ -40,7 +40,7 @@ public class MQTTClient {
 
     }
 
-    public void send(String topic,Request request) {
+    public void send(String topic, Request request) {
         Pack pack = new Pack();
         request.marshal(pack);
         byte[] array = pack.getBuffer().array();

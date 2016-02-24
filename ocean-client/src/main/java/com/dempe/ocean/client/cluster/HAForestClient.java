@@ -3,8 +3,6 @@ package com.dempe.ocean.client.cluster;
 
 import com.dempe.ocean.client.Client;
 import com.dempe.ocean.client.ForestClient;
-import com.dempe.ocean.client.LiveClient;
-import com.dempe.ocean.client.OceanClient;
 import com.dempe.ocean.common.NodeDetails;
 import com.dempe.ocean.common.cluster.HAProxy;
 import com.dempe.ocean.common.cluster.ProxyHandler;

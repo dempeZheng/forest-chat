@@ -4,7 +4,6 @@ import org.fusesource.hawtbuf.Buffer;
 import org.fusesource.hawtbuf.DataByteArrayInputStream;
 import org.fusesource.hawtbuf.DataByteArrayOutputStream;
 import org.fusesource.hawtbuf.UTF8Buffer;
-import org.fusesource.mqtt.client.*;
 import org.fusesource.mqtt.codec.MQTTFrame;
 
 import java.io.IOException;
@@ -24,7 +23,9 @@ public class MessageSupport {
      */
     static public interface Message {
         public byte messageType();
+
         public Message decode(MQTTFrame frame) throws ProtocolException;
+
         public MQTTFrame encode();
     }
 
@@ -34,9 +35,13 @@ public class MessageSupport {
      */
     static public interface Acked extends Message {
         public boolean dup();
+
         public Acked dup(boolean dup);
+
         public QoS qos();
+
         public short messageId();
+
         public Acked messageId(short messageId);
     }
 
@@ -61,7 +66,7 @@ public class MessageSupport {
         abstract byte messageType();
 
         protected AckBase decode(MQTTFrame frame) throws ProtocolException {
-            assert(frame.buffers.length == 1);
+            assert (frame.buffers.length == 1);
             DataByteArrayInputStream is = new DataByteArrayInputStream(frame.buffers[0]);
             messageId = is.readShort();
             return this;
@@ -91,18 +96,19 @@ public class MessageSupport {
 
         @Override
         public String toString() {
-            return getClass().getSimpleName()+"{" +
+            return getClass().getSimpleName() + "{" +
                     "messageId=" + messageId +
                     '}';
         }
     }
 
     static abstract public class EmptyBase {
-        abstract  byte messageType();
+        abstract byte messageType();
 
         protected EmptyBase decode(MQTTFrame frame) throws ProtocolException {
             return this;
         }
+
         public MQTTFrame encode() {
             return new MQTTFrame().commandType(messageType());
         }
@@ -122,6 +128,7 @@ public class MessageSupport {
         protected byte header() {
             return header;
         }
+
         protected HeaderBase header(byte header) {
             this.header = header;
             return this;
@@ -130,6 +137,7 @@ public class MessageSupport {
         protected byte messageType() {
             return (byte) ((header & 0xF0) >>> 4);
         }
+
         protected HeaderBase commandType(int type) {
             this.header &= 0x0F;
             this.header |= (type << 4) & 0xF0;
@@ -139,6 +147,7 @@ public class MessageSupport {
         protected QoS qos() {
             return QoS.values()[((header & 0x06) >>> 1)];
         }
+
         protected HeaderBase qos(QoS qos) {
             this.header &= 0xF9;
             this.header |= (qos.ordinal() << 1) & 0x06;
@@ -148,8 +157,9 @@ public class MessageSupport {
         protected boolean dup() {
             return (header & 0x08) > 0;
         }
+
         protected HeaderBase dup(boolean dup) {
-            if(dup) {
+            if (dup) {
                 this.header |= 0x08;
             } else {
                 this.header &= 0xF7;
@@ -160,8 +170,9 @@ public class MessageSupport {
         protected boolean retain() {
             return (header & 0x01) > 0;
         }
+
         protected HeaderBase retain(boolean retain) {
-            if(retain) {
+            if (retain) {
                 this.header |= 0x01;
             } else {
                 this.header &= 0xFE;

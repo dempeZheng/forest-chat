@@ -4,8 +4,6 @@ package com.dempe.ocean.client;
 import com.dempe.ocean.common.NodeDetails;
 import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.codec.DefaultEncoder;
-import com.dempe.ocean.common.codec.RequestDecoder;
-import com.dempe.ocean.common.codec.RequestEncoder;
 import com.dempe.ocean.common.codec.ResponseDecoder;
 import com.dempe.ocean.common.protocol.Request;
 import com.dempe.ocean.core.ProtocolProcessor;
@@ -55,7 +53,6 @@ public class ForestClient implements Client {
 
     // 消息id生成器，消息id用户标识消息，标识sendAndWait方法的返回
     private static AtomicInteger idMaker = new AtomicInteger(0);
-
 
 
     public ForestClient(NodeDetails nodeDetails) {
@@ -148,7 +145,7 @@ public class ForestClient implements Client {
     }
 
     public void send(Request request) throws Exception {
-        if(!isConnected()){
+        if (!isConnected()) {
             reconnect();
         }
         f.channel().writeAndFlush(request);
@@ -156,6 +153,7 @@ public class ForestClient implements Client {
 
     /**
      * 仅仅发现消息，不关心返回
+     *
      * @param request 请求消息
      */
     @Override
@@ -163,7 +161,7 @@ public class ForestClient implements Client {
         send(request);
     }
 
-    public void sendBuffer(ByteBuffer buffer){
+    public void sendBuffer(ByteBuffer buffer) {
         f.channel().writeAndFlush(buffer);
 
     }

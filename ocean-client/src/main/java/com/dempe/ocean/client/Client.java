@@ -2,7 +2,6 @@ package com.dempe.ocean.client;
 
 
 import com.dempe.ocean.common.protocol.Request;
-import io.netty.channel.ChannelHandlerContext;
 
 import java.nio.ByteBuffer;
 

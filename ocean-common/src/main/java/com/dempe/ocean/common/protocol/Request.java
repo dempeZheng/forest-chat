@@ -15,7 +15,7 @@ import java.io.IOException;
  * Time: 17:54
  * To change this template use File | Settings | File Templates.
  */
-public class Request implements Marshallable{
+public class Request implements Marshallable {
 
     private String name;
 

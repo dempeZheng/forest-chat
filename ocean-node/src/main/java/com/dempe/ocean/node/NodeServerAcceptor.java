@@ -5,11 +5,7 @@ import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.PipelineInitializer;
 import com.dempe.ocean.common.codec.DefaultEncoder;
 import com.dempe.ocean.common.codec.RequestDecoder;
-import com.dempe.ocean.common.codec.mqtt.MQTTDecoder;
-import com.dempe.ocean.common.codec.mqtt.MQTTEncoder;
-import com.dempe.ocean.common.protocol.mqtt.PublishMessage;
-import com.dempe.ocean.core.*;
-import com.dempe.ocean.core.spi.DefaultMessaging;
+import com.dempe.ocean.core.IdleTimeoutHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,12 +14,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.MessageToMessageEncoder;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +33,7 @@ public class NodeServerAcceptor extends AbstractAcceptor {
 
     private ChannelHandlerAdapter handlerAdapter;
 
-    public NodeServerAcceptor(ChannelHandlerAdapter handlerAdapter){
+    public NodeServerAcceptor(ChannelHandlerAdapter handlerAdapter) {
         this.handlerAdapter = handlerAdapter;
     }
 
@@ -80,7 +71,7 @@ public class NodeServerAcceptor extends AbstractAcceptor {
     public void initialize(OceanConfig config) throws IOException {
         m_bossGroup = new NioEventLoopGroup();
         m_workerGroup = new NioEventLoopGroup();
-        initializePlainTCPTransport( config);
+        initializePlainTCPTransport(config);
     }
 
 
@@ -100,7 +91,6 @@ public class NodeServerAcceptor extends AbstractAcceptor {
             }
         });
     }
-
 
 
 }

@@ -14,7 +14,7 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class Response implements Marshallable {
-    private String uid="";
+    private String uid = "";
 
     public String getUid() {
         return uid;

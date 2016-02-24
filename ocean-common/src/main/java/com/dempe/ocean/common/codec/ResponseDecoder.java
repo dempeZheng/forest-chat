@@ -1,7 +1,6 @@
 package com.dempe.ocean.common.codec;
 
 
-
 import com.dempe.ocean.common.pack.Marshallable;
 import com.dempe.ocean.common.pack.Unpack;
 import com.dempe.ocean.common.protocol.Response;

@@ -3,8 +3,7 @@ package com.dempe.ocean.client.mqtt;
 import org.fusesource.hawtbuf.DataByteArrayInputStream;
 import org.fusesource.hawtbuf.DataByteArrayOutputStream;
 import org.fusesource.hawtbuf.UTF8Buffer;
-import org.fusesource.mqtt.client.*;
-import org.fusesource.mqtt.codec.*;
+import org.fusesource.mqtt.codec.MQTTFrame;
 
 import java.io.IOException;
 import java.net.ProtocolException;
@@ -18,7 +17,7 @@ import java.util.Arrays;
  * Time: 11:07
  * To change this template use File | Settings | File Templates.
  */
-public class UNSUBSCRIBE extends MessageSupport.HeaderBase implements MessageSupport.Message,MessageSupport.Acked {
+public class UNSUBSCRIBE extends MessageSupport.HeaderBase implements MessageSupport.Message, MessageSupport.Acked {
 
     public static final byte TYPE = 10;
     public static final UTF8Buffer[] NO_TOPICS = new UTF8Buffer[0];
@@ -35,17 +34,17 @@ public class UNSUBSCRIBE extends MessageSupport.HeaderBase implements MessageSup
     }
 
     public UNSUBSCRIBE decode(MQTTFrame frame) throws ProtocolException {
-        assert(frame.buffers.length == 1);
+        assert (frame.buffers.length == 1);
         header(frame.header());
 
         DataByteArrayInputStream is = new DataByteArrayInputStream(frame.buffers[0]);
 
         QoS qos = qos();
-        if(qos != QoS.AT_MOST_ONCE) {
+        if (qos != QoS.AT_MOST_ONCE) {
             messageId = is.readShort();
         }
         ArrayList<UTF8Buffer> list = new ArrayList<UTF8Buffer>();
-        while(is.available() > 0) {
+        while (is.available() > 0) {
             list.add(MessageSupport.readUTF(is));
         }
         topics = list.toArray(new UTF8Buffer[list.size()]);
@@ -56,10 +55,10 @@ public class UNSUBSCRIBE extends MessageSupport.HeaderBase implements MessageSup
         try {
             DataByteArrayOutputStream os = new DataByteArrayOutputStream();
             QoS qos = qos();
-            if(qos != QoS.AT_MOST_ONCE) {
+            if (qos != QoS.AT_MOST_ONCE) {
                 os.writeShort(messageId);
             }
-            for(UTF8Buffer topic: topics) {
+            for (UTF8Buffer topic : topics) {
                 MessageSupport.writeUTF(os, topic);
             }
 

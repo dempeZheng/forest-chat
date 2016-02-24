@@ -35,7 +35,6 @@ public interface OceanConfig extends Config {
     public int autoSaveInterval();
 
 
-
     @DefaultValue("true")
     boolean tcpNoDelay();
 

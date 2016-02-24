@@ -2,8 +2,6 @@ package com.dempe.ocean.client.cluster;
 
 
 import com.dempe.ocean.client.Client;
-import com.dempe.ocean.client.ForestClient;
-import com.dempe.ocean.client.LiveClient;
 import com.dempe.ocean.common.protocol.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,13 +42,13 @@ public class HAClientService {
 
     }
 
-    public void sendBuffer(ByteBuffer buffer){
+    public void sendBuffer(ByteBuffer buffer) {
         Client client = haForestClient.getClient();
         if (client == null) {
             LOGGER.warn("no available node for request:{}", buffer);
             return;
         }
-        LOGGER.info("sendBuffer:{}",buffer);
+        LOGGER.info("sendBuffer:{}", buffer);
         client.sendBuffer(buffer);
     }
 

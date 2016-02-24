@@ -42,9 +42,9 @@ public class BusBusinessHandler extends ChannelHandlerAdapter {
 
             Unpack unpack = new Unpack(payload.array());
             Short aShort = unpack.popShort();
-            Request request =new Request();
+            Request request = new Request();
             request.unmarshal(unpack);
-            LOGGER.info("length:{}",aShort);
+            LOGGER.info("length:{}", aShort);
             String name = request.getName();
 
             LOGGER.info("dispatcher msg to {}", name);

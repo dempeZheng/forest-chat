@@ -4,8 +4,6 @@ package com.dempe.ocean.bus.sample;
 import com.dempe.ocean.bus.BusServer;
 import com.dempe.ocean.common.register.ForestNameService;
 
-import java.io.IOException;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Dempe
@@ -17,7 +15,7 @@ public class SampleServer {
 
     public static void main(String[] args) throws Exception {
 
-        BusServer server =new BusServer();
+        BusServer server = new BusServer();
         ForestNameService forestNameService = new ForestNameService();
         forestNameService.start();
         forestNameService.register();

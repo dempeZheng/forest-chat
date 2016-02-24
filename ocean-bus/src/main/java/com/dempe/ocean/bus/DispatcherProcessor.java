@@ -22,9 +22,6 @@ public class DispatcherProcessor {
     private final static Map<String, HAClientService> nameClientMap = Maps.newConcurrentMap();
 
 
-
-
-
     public void dispatcher(Channel channel, String name, ByteBuffer byteBuf) throws Exception {
         if (StringUtils.isBlank(name)) {
             return;

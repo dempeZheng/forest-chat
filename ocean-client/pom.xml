@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>com.dempe.ocean</groupId>
-            <artifactId>ocean-common</artifactId>
+            <artifactId>ocean-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

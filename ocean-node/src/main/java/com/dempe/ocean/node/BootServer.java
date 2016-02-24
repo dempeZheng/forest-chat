@@ -25,8 +25,6 @@ public class BootServer {
 
     ApplicationContext context;
 
-    private ServerBootstrap b;
-
     private OceanConfig config;
     private ServerContext servercontext;
     private ForestNameService forestNameService;

@@ -25,7 +25,7 @@ public class ForestNameService implements NameService {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ForestNameService.class);
 
-    private static final String PATH = "/forest/discovery";
+    private static final String PATH = "/ocean/discovery";
 
     private ServiceDiscovery<NodeDetails> serviceDiscovery;
 
@@ -120,6 +120,7 @@ public class ForestNameService implements NameService {
         nodeDetails.setName(cfg.name());
         nodeDetails.setIp("localhost");
         nodeDetails.setPort(cfg.port());
+        LOGGER.info(">>>>>>>>>>>>>>>>>>>nodeDetails:{}", nodeDetails);
         return nodeDetails;
     }
 }

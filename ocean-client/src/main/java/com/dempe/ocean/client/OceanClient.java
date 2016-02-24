@@ -13,7 +13,7 @@ import java.util.List;
  * Time: 11:38
  * To change this template use File | Settings | File Templates.
  */
-public class OceanClient implements Client {
+public class OceanClient implements LiveClient {
     private MQTTClient client;
 
     public OceanClient(NodeDetails nodeDetails) throws Exception {

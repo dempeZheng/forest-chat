@@ -130,8 +130,9 @@ public class NodeDetails<T> {
 
     @Override
     public String toString() {
-        return "ServerInstance{" +
-                "weight=" + weight +
+        return "NodeDetails{" +
+                "name='" + name + '\'' +
+                ", weight=" + weight +
                 ", ip='" + ip + '\'' +
                 ", port=" + port +
                 ", hits=" + hits +

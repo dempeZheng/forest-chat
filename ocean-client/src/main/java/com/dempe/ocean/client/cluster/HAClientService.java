@@ -2,10 +2,13 @@ package com.dempe.ocean.client.cluster;
 
 
 import com.dempe.ocean.client.Client;
+import com.dempe.ocean.client.ForestClient;
+import com.dempe.ocean.client.LiveClient;
 import com.dempe.ocean.common.protocol.Request;
-import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.ByteBuffer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,13 +34,24 @@ public class HAClientService {
     }
 
 
-    public void sendAndWrite(Channel channel, Request request) throws Exception {
+    public void sendOnly(Request request) throws Exception {
         Client client = haForestClient.getClient();
         if (client == null) {
             LOGGER.warn("no available node for request:{}", request);
             return;
         }
-//        client.sendForward(ctx, request);
+        client.sendOnly(request);
+
+    }
+
+    public void sendBuffer(ByteBuffer buffer){
+        Client client = haForestClient.getClient();
+        if (client == null) {
+            LOGGER.warn("no available node for request:{}", buffer);
+            return;
+        }
+        LOGGER.info("sendBuffer:{}",buffer);
+        client.sendBuffer(buffer);
     }
 
 

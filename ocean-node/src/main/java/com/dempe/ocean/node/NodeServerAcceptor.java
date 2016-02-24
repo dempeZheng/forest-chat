@@ -3,6 +3,7 @@ package com.dempe.ocean.node;
 import com.dempe.ocean.common.AbstractAcceptor;
 import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.PipelineInitializer;
+import com.dempe.ocean.common.codec.DefaultEncoder;
 import com.dempe.ocean.common.codec.RequestDecoder;
 import com.dempe.ocean.common.codec.mqtt.MQTTDecoder;
 import com.dempe.ocean.common.codec.mqtt.MQTTEncoder;
@@ -38,8 +39,6 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class NodeServerAcceptor extends AbstractAcceptor {
-
-    ProtocolProcessor m_processor;
 
     private ChannelHandlerAdapter handlerAdapter;
 
@@ -79,71 +78,29 @@ public class NodeServerAcceptor extends AbstractAcceptor {
 
     @Override
     public void initialize(OceanConfig config) throws IOException {
-        final ProtocolProcessor processor = DefaultMessaging.getInstance().init(config);
-        m_processor = processor;
         m_bossGroup = new NioEventLoopGroup();
         m_workerGroup = new NioEventLoopGroup();
-        final MQTTHandler handler = new MQTTHandler(processor);
-
-        initializePlainTCPTransport(handler, config);
-        initializeWebSocketTransport(handler, config);
+        initializePlainTCPTransport( config);
     }
 
 
-    private void initializePlainTCPTransport(final MQTTHandler handler, OceanConfig config) throws IOException {
+    private void initializePlainTCPTransport(OceanConfig config) throws IOException {
         final IdleTimeoutHandler timeoutHandler = new IdleTimeoutHandler();
         String host = config.host();
         int port = config.port();
         initFactory(host, port, new PipelineInitializer() {
             @Override
             public void init(ChannelPipeline pipeline) {
-                pipeline.addFirst("idleStateHandler", new IdleStateHandler(0, 0, Constants.DEFAULT_CONNECT_TIMEOUT));
-                pipeline.addAfter("idleStateHandler", "idleEventHandler", timeoutHandler);
+//                pipeline.addFirst("idleStateHandler", new IdleStateHandler(0, 0, Constants.DEFAULT_CONNECT_TIMEOUT));
+//                pipeline.addAfter("idleStateHandler", "idleEventHandler", timeoutHandler);
                 //pipeline.addLast("logger", new LoggingHandler("Netty", LogLevel.ERROR));
-                pipeline.addLast("MQTTDecoder", new MQTTDecoder());
-                pipeline.addLast("MQTTEncoder", new MQTTEncoder());
-                pipeline.addLast("handler", handler);
                 pipeline.addLast("requestDecoder", new RequestDecoder());
+                pipeline.addLast("encode", new DefaultEncoder());
                 pipeline.addLast("ProcessorHandler", handlerAdapter);
             }
         });
     }
 
-    private void initializeWebSocketTransport(final MQTTHandler handler, OceanConfig config) throws IOException {
-
-        int port = config.webSocketPort();
-        final IdleTimeoutHandler timeoutHandler = new IdleTimeoutHandler();
-        String host = config.webSocketHost();
-        initFactory(host, port, new PipelineInitializer() {
-            @Override
-            public void init(ChannelPipeline pipeline) {
-                pipeline.addLast("httpEncoder", new HttpResponseEncoder());
-                pipeline.addLast("httpDecoder", new HttpRequestDecoder());
-                pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-                pipeline.addLast("webSocketHandler", new WebSocketServerProtocolHandler("/mqtt", "mqtt, mqttv3.1, mqttv3.1.1"));
-                pipeline.addLast("ws2bytebufDecoder", new WebSocketFrameToByteBufDecoder());
-                pipeline.addLast("bytebuf2wsEncoder", new ByteBufToWebSocketFrameEncoder());
-                pipeline.addFirst("idleStateHandler", new IdleStateHandler(0, 0, Constants.DEFAULT_CONNECT_TIMEOUT));
-                pipeline.addAfter("idleStateHandler", "idleEventHandler", timeoutHandler);
-                pipeline.addLast("decoder", new MQTTDecoder());
-                pipeline.addLast("encoder", new MQTTEncoder());
-                pipeline.addLast("handler", handler);
-                pipeline.addLast("requestDecoder", new RequestDecoder());
-                pipeline.addLast("businessHandler", new BusinessHandler());
-            }
-        });
-    }
-
-    /**
-     * Use the broker to publish a message. It's intended for embedding applications.
-     * It can be used only after the server is correctly started with startServer.
-     *
-     * @param msg the message to forward.
-     * @throws IllegalStateException if the server is not yet started
-     */
-    public void internalPublish(PublishMessage msg) {
-        m_processor.internalPublish(msg);
-    }
 
 
 }

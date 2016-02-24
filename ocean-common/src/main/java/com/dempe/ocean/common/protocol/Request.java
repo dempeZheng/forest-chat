@@ -1,6 +1,7 @@
 package com.dempe.ocean.common.protocol;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dempe.ocean.common.pack.Marshallable;
 import com.dempe.ocean.common.pack.Pack;
 import com.dempe.ocean.common.pack.Unpack;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +15,7 @@ import java.io.IOException;
  * Time: 17:54
  * To change this template use File | Settings | File Templates.
  */
-public class Request {
+public class Request implements Marshallable{
 
     private String name;
 

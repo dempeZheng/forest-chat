@@ -25,11 +25,12 @@ public class SampleController {
      * 默认匹配path getUri=/sample/hello
      * 默认注入request name属性的参数值
      *
-     * @param name
      * @return
      */
     @Path
-    public JSONObject hello(@Param String name) {
+    public JSONObject hello() {
+        String name = "hello";
+        System.out.println("----------------------------------");
         return lampService.hello(name);
     }
 }

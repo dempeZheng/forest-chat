@@ -2,6 +2,8 @@ package com.dempe.ocean.client.cluster;
 
 
 import com.dempe.ocean.client.Client;
+import com.dempe.ocean.client.ForestClient;
+import com.dempe.ocean.client.LiveClient;
 import com.dempe.ocean.client.OceanClient;
 import com.dempe.ocean.common.NodeDetails;
 import com.dempe.ocean.common.cluster.HAProxy;
@@ -71,7 +73,7 @@ public class HAForestClient extends HAProxy<Client> {
          *1s accessPolicy=5次发送失败则会自动切换client
          */
         AccessPolicy policy = new AccessPolicy(10, 1 * 1000, 5 * 1000 * 60, true);
-        OceanClient forestClient = new OceanClient(serverInstance);
+        ForestClient forestClient = new ForestClient(serverInstance);
         Client client = (Client) ProxyHandler.getProxyInstance(forestClient, this, policy);
         return client;
     }

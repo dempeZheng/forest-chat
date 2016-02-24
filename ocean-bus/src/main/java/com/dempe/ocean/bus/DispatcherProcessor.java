@@ -2,9 +2,12 @@ package com.dempe.ocean.bus;
 
 import com.dempe.ocean.client.cluster.HAClientService;
 import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.core.spi.persistence.UidSessionStore;
 import com.google.common.collect.Maps;
 import io.netty.channel.Channel;
+import org.apache.commons.lang3.StringUtils;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
@@ -19,9 +22,28 @@ public class DispatcherProcessor {
     private final static Map<String, HAClientService> nameClientMap = Maps.newConcurrentMap();
 
 
-    public void dispatcher(Channel channel, Request request) throws Exception {
-        HAClientService clientService = getClientServiceByName(request.getName());
-        clientService.sendAndWrite(channel, request);
+
+
+
+    public void dispatcher(Channel channel, String name, ByteBuffer byteBuf) throws Exception {
+        if (StringUtils.isBlank(name)) {
+            return;
+        }
+        HAClientService clientService = getClientServiceByName(name);
+        UidSessionStore.put("555", channel);
+        clientService.sendBuffer(byteBuf);
+
+
+    }
+
+    public void dispatcher(Channel channel, String name, Request request) throws Exception {
+        if (StringUtils.isBlank(name)) {
+            return;
+        }
+        HAClientService clientService = getClientServiceByName(name);
+        UidSessionStore.put("555", channel);
+        clientService.sendOnly(request);
+
     }
 
     /**
@@ -40,4 +62,6 @@ public class DispatcherProcessor {
         }
         return clientService;
     }
+
+
 }

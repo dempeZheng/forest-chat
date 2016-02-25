@@ -45,4 +45,35 @@ public interface OceanConfig extends Config {
     @DefaultValue("com.dempe.ocean.node")
     String getPackageName();
 
+    String getInterceptHandler();
+
+
+    //  authenticator_class
+    @DefaultValue("")
+    String authenticatorClass();
+
+
+    //password_file
+    @DefaultValue("")
+    String pwdFile();
+
+    @DefaultValue("true")
+    boolean allowAnonymous();
+
+    String aclFile();
+
+    @DefaultValue("0")
+    int sslPort();
+
+    @DefaultValue("0")
+    int secureWebsocketPort();
+
+
+    //**************************************
+    // security==========================
+
+    String jksPath();
+    String keyStorePassword();
+
+    String keyManagerPassword();
 }

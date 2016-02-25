@@ -1,6 +1,6 @@
 package com.dempe.ocean.bus;
 
-import com.dempe.ocean.client.cluster.HAClientService;
+import com.dempe.ocean.client.node.cluster.HANodeCliService;
 import com.dempe.ocean.common.protocol.Request;
 import com.dempe.ocean.core.spi.persistence.UidSessionStore;
 import com.google.common.collect.Maps;
@@ -19,26 +19,25 @@ import java.util.Map;
  */
 public class DispatcherProcessor {
 
-    private final static Map<String, HAClientService> nameClientMap = Maps.newConcurrentMap();
+    private final static Map<String, HANodeCliService> nameClientMap = Maps.newConcurrentMap();
 
 
     public void dispatcher(Channel channel, String name, ByteBuffer byteBuf) throws Exception {
         if (StringUtils.isBlank(name)) {
             return;
         }
-        HAClientService clientService = getClientServiceByName(name);
+        HANodeCliService clientService = getClientServiceByName(name);
         UidSessionStore.put("555", channel);
         clientService.sendBuffer(byteBuf);
 
 
     }
 
-    public void dispatcher(Channel channel, String name, Request request) throws Exception {
+    public void dispatcher(String name, Request request) throws Exception {
         if (StringUtils.isBlank(name)) {
             return;
         }
-        HAClientService clientService = getClientServiceByName(name);
-        UidSessionStore.put("555", channel);
+        HANodeCliService clientService = getClientServiceByName(name);
         clientService.sendOnly(request);
 
     }
@@ -51,10 +50,10 @@ public class DispatcherProcessor {
      * @return
      * @throws Exception
      */
-    private HAClientService getClientServiceByName(String name) throws Exception {
-        HAClientService clientService = nameClientMap.get(name);
+    private HANodeCliService getClientServiceByName(String name) throws Exception {
+        HANodeCliService clientService = nameClientMap.get(name);
         if (clientService == null) {
-            clientService = new HAClientService(name);
+            clientService = new HANodeCliService(name);
             nameClientMap.put(name, clientService);
         }
         return clientService;

@@ -109,6 +109,10 @@ public class Request implements Marshallable {
         return this;
     }
 
+    public byte[] toByteArray() {
+        return this.marshal(new Pack()).getBuffer().array();
+    }
+
     @Override
     public String toString() {
         return "Request{" +

@@ -1,7 +1,7 @@
 package com.dempe.ocean.node.simulator;
 
 import com.dempe.ocean.common.NodeDetails;
-import com.dempe.ocean.common.register.ForestNameService;
+import com.dempe.ocean.common.register.NameDiscoveryService;
 import org.apache.curator.x.discovery.ServiceInstance;
 
 import java.util.Collection;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class NameServiceSimulator {
     public static void main(String[] args) throws Exception {
-        ForestNameService nameService = new ForestNameService();
+        NameDiscoveryService nameService = new NameDiscoveryService();
         nameService.start();
         List<Collection<ServiceInstance<NodeDetails>>> list = nameService.list();
         for (Collection<ServiceInstance<NodeDetails>> serviceInstances : list) {

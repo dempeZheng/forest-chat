@@ -3,7 +3,6 @@ package com.dempe.ocean.bus;
 import com.dempe.ocean.common.pack.Unpack;
 import com.dempe.ocean.common.protocol.Request;
 import com.dempe.ocean.common.protocol.mqtt.PublishMessage;
-import com.dempe.ocean.core.NettyUtils;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
@@ -33,23 +32,16 @@ public class BusBusinessHandler extends ChannelHandlerAdapter {
         LOGGER.info("msg:{}", msg.toString());
         if (msg instanceof PublishMessage) {
             PublishMessage message = (PublishMessage) msg;
-            LOGGER.info("message>>>>>>>>>>>>>>>>>>>>>{}", message);
             ByteBuffer payload = message.getPayload();
             payload.flip();
-            Integer messageID = message.getMessageID();
-            String clientID = NettyUtils.clientID(ctx.channel());
-            LOGGER.info("messageID:{}, ClientID:{}", messageID, clientID);
 
             Unpack unpack = new Unpack(payload.array());
-            Short aShort = unpack.popShort();
+            unpack.popShort();
             Request request = new Request();
             request.unmarshal(unpack);
-            LOGGER.info("length:{}", aShort);
             String name = request.getName();
-
             LOGGER.info("dispatcher msg to {}", name);
-
-            processor.dispatcher(ctx.channel(), name, request);
+            processor.dispatcher(name, request);
 //
 
         }

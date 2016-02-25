@@ -2,7 +2,7 @@ package com.dempe.ocean.bus.sample;
 
 
 import com.dempe.ocean.bus.BusServer;
-import com.dempe.ocean.common.register.ForestNameService;
+import com.dempe.ocean.common.register.NameDiscoveryService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +16,7 @@ public class SampleServer {
     public static void main(String[] args) throws Exception {
 
         BusServer server = new BusServer();
-        ForestNameService forestNameService = new ForestNameService();
+        NameDiscoveryService forestNameService = new NameDiscoveryService();
         forestNameService.start();
         forestNameService.register();
         server.startServer();

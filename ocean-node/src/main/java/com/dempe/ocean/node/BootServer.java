@@ -2,7 +2,8 @@ package com.dempe.ocean.node;
 
 
 import com.dempe.ocean.common.OceanConfig;
-import com.dempe.ocean.common.register.ForestNameService;
+import com.dempe.ocean.common.register.NameDiscoveryService;
+import com.dempe.ocean.core.frame.ProcessorHandler;
 import com.dempe.ocean.core.frame.ServerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class BootServer {
 
     private OceanConfig config;
     private ServerContext servercontext;
-    private ForestNameService forestNameService;
+    private NameDiscoveryService forestNameService;
     private NodeServerAcceptor acceptor;
 
 
@@ -44,7 +45,7 @@ public class BootServer {
     }
 
     public BootServer registerNameService() throws Exception {
-        forestNameService = new ForestNameService();
+        forestNameService = new NameDiscoveryService();
         forestNameService.start();
         forestNameService.register();
         return this;

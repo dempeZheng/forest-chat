@@ -1,9 +1,10 @@
 package com.dempe.ocean.bus.sample;
 
-import com.dempe.ocean.client.mqtt.FutureConnection;
-import com.dempe.ocean.client.mqtt.MQTTClient;
-import com.dempe.ocean.client.mqtt.QoS;
-import com.dempe.ocean.client.mqtt.Topic;
+
+import com.dempe.ocean.client.bus.mqtt.FutureConnection;
+import com.dempe.ocean.client.bus.mqtt.MQTTCli;
+import com.dempe.ocean.client.bus.mqtt.QoS;
+import com.dempe.ocean.client.bus.mqtt.Topic;
 import com.dempe.ocean.common.pack.Pack;
 import com.dempe.ocean.common.protocol.Request;
 import org.fusesource.mqtt.client.Future;
@@ -21,8 +22,10 @@ import java.nio.ByteBuffer;
 public class MQTTClientExample {
 
     public static void main(String[] args) throws Exception {
-        MQTTClient mqtt = new MQTTClient();
+        MQTTCli mqtt = new MQTTCli();
         mqtt.setHost("localhost", 1883);
+        mqtt.setUserName("12345");
+        mqtt.setPassword("123");
 
         FutureConnection connection = mqtt.futureConnection();
         connection.connect();

@@ -29,7 +29,7 @@ public class Server {
 
     private volatile boolean m_initialized;
 
-    private ProtocolProcessorNew m_processor;
+    private ProtocolProcessor m_processor;
 
     public static void main(String[] args) throws IOException {
         final Server server = new Server();
@@ -78,7 +78,7 @@ public class Server {
         }
 
 
-        final ProtocolProcessorNew processor = SimpleMessaging.getInstance().init(config, handlers, authenticator, authorizator);
+        final ProtocolProcessor processor = SimpleMessaging.getInstance().init(config, handlers, authenticator, authorizator);
 
         if (sslCtxCreator == null) {
             sslCtxCreator = new DefaultMoquetteSslContextCreator(config);

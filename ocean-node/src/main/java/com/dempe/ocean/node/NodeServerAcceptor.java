@@ -5,6 +5,7 @@ import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.PipelineInitializer;
 import com.dempe.ocean.common.codec.DefaultEncoder;
 import com.dempe.ocean.common.codec.RequestDecoder;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
@@ -22,6 +23,7 @@ import java.io.IOException;
  * Time: 11:54
  * To change this template use File | Settings | File Templates.
  */
+@ChannelHandler.Sharable
 public class NodeServerAcceptor extends AbstractAcceptor {
 
     private ChannelHandlerAdapter handlerAdapter;

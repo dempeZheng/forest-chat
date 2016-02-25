@@ -34,9 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * Singleton class that orchestrate the execution of the protocol.
- *
+ * <p/>
  * It's main responsibility is instantiate the ProtocolProcessor.
  *
  * @author andrea
@@ -52,8 +51,8 @@ public class SimpleMessaging {
     private BrokerInterceptor m_interceptor;
 
     private static SimpleMessaging INSTANCE;
-    
-    private final ProtocolProcessorNew m_processor = new ProtocolProcessorNew();
+
+    private final static ProtocolProcessor m_processor = new ProtocolProcessor();
 
     private SimpleMessaging() {
     }
@@ -65,18 +64,24 @@ public class SimpleMessaging {
         return INSTANCE;
     }
 
+
+    public static ProtocolProcessor getProtocolProcessor() {
+        return m_processor;
+    }
+
     /**
      * Initialize the processing part of the broker.
-     * @param props the properties carrier where some props like port end host could be loaded.
-     *              For the full list check of configurable properties check moquette.conf file.
+     *
+     * @param props             the properties carrier where some props like port end host could be loaded.
+     *                          For the full list check of configurable properties check moquette.conf file.
      * @param embeddedObservers a list of callbacks to be notified of certain events inside the broker.
      *                          Could be empty list of null.
-     * @param authenticator an implementation of the authenticator to be used, if null load that specified in config
-     *                      and fallback on the default one (permit all).
-     * @param authorizator an implementation of the authorizator to be used, if null load that specified in config
-     *                      and fallback on the default one (permit all).
-     * */
-    public ProtocolProcessorNew init(OceanConfig config, List<? extends InterceptHandler> embeddedObservers,
+     * @param authenticator     an implementation of the authenticator to be used, if null load that specified in config
+     *                          and fallback on the default one (permit all).
+     * @param authorizator      an implementation of the authorizator to be used, if null load that specified in config
+     *                          and fallback on the default one (permit all).
+     */
+    public ProtocolProcessor init(OceanConfig config, List<? extends InterceptHandler> embeddedObservers,
                                   IAuthenticator authenticator, IAuthorizator authorizator) {
         subscriptions = new SubscriptionsStore();
 
@@ -103,7 +108,7 @@ public class SimpleMessaging {
         String authenticatorClassName = config.authenticatorClass();
 
         if (!authenticatorClassName.isEmpty()) {
-            authenticator = (IAuthenticator)loadClass(authenticatorClassName, IAuthenticator.class);
+            authenticator = (IAuthenticator) loadClass(authenticatorClassName, IAuthenticator.class);
             LOG.info("Loaded custom authenticator {}", authenticatorClassName);
         }
 
@@ -118,7 +123,7 @@ public class SimpleMessaging {
 
         String authorizatorClassName = config.authenticatorClass();
         if (!authorizatorClassName.isEmpty()) {
-            authorizator = (IAuthorizator)loadClass(authorizatorClassName, IAuthorizator.class);
+            authorizator = (IAuthorizator) loadClass(authorizatorClassName, IAuthorizator.class);
             LOG.info("Loaded custom authorizator {}", authorizatorClassName);
         }
 
@@ -144,22 +149,21 @@ public class SimpleMessaging {
         m_processor.init(subscriptions, messagesStore, sessionsStore, authenticator, allowAnonymous, authorizator, m_interceptor);
         return m_processor;
     }
-    
+
     private Object loadClass(String className, Class<?> cls) {
         Object instance = null;
         try {
             Class<?> clazz = Class.forName(className);
 
             // check if method getInstance exists
-            Method method = clazz.getMethod("getInstance", new Class[] {});
+            Method method = clazz.getMethod("getInstance", new Class[]{});
             try {
-                instance = method.invoke(null, new Object[] {});
+                instance = method.invoke(null, new Object[]{});
             } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException ex) {
                 LOG.error(null, ex);
-                throw new RuntimeException("Cannot call method "+ className +".getInstance", ex);
+                throw new RuntimeException("Cannot call method " + className + ".getInstance", ex);
             }
-        }
-        catch (NoSuchMethodException nsmex) {
+        } catch (NoSuchMethodException nsmex) {
             try {
                 instance = this.getClass().getClassLoader()
                         .loadClass(className)
@@ -174,7 +178,7 @@ public class SimpleMessaging {
             throw new RuntimeException("Class " + className + " not found", ex);
         } catch (SecurityException ex) {
             LOG.error(null, ex);
-            throw new RuntimeException("Cannot call method "+ className +".getInstance", ex);
+            throw new RuntimeException("Cannot call method " + className + ".getInstance", ex);
         }
 
         return instance;

@@ -21,7 +21,7 @@ import com.dempe.ocean.common.codec.mqtt.MQTTEncoder;
 import com.dempe.ocean.core.Constants;
 import com.dempe.ocean.core.MoquetteIdleTimeoutHandler;
 import com.dempe.ocean.core.NettyMQTTHandler;
-import com.dempe.ocean.core.ProtocolProcessorNew;
+import com.dempe.ocean.core.ProtocolProcessor;
 import com.dempe.ocean.core.spi.metrics.*;
 import com.dempe.ocean.core.spi.security.ISslContextCreator;
 import io.netty.bootstrap.ServerBootstrap;
@@ -90,7 +90,7 @@ public class BusNettyAcceptor {
     BytesMetricsCollector m_bytesMetricsCollector = new BytesMetricsCollector();
     MessageMetricsCollector m_metricsCollector = new MessageMetricsCollector();
 
-    public void initialize(ProtocolProcessorNew processor, OceanConfig config, ISslContextCreator sslCtxCreator) throws IOException {
+    public void initialize(ProtocolProcessor processor, OceanConfig config, ISslContextCreator sslCtxCreator) throws IOException {
         m_bossGroup = new NioEventLoopGroup();
         m_workerGroup = new NioEventLoopGroup();
         final NettyMQTTHandler handler = new NettyMQTTHandler(processor);

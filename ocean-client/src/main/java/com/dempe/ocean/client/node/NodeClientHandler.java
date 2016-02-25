@@ -5,7 +5,6 @@ import com.dempe.ocean.common.protocol.Response;
 import com.dempe.ocean.common.protocol.mqtt.AbstractMessage;
 import com.dempe.ocean.common.protocol.mqtt.PublishMessage;
 import com.dempe.ocean.core.ProtocolProcessor;
-import com.dempe.ocean.core.ProtocolProcessorNew;
 import com.dempe.ocean.core.spi.persistence.UidSessionStore;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerAdapter;
@@ -26,9 +25,9 @@ public class NodeClientHandler extends ChannelHandlerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeClientHandler.class);
 
-    private ProtocolProcessorNew protocolProcessor;
+    private ProtocolProcessor protocolProcessor;
 
-    public NodeClientHandler(ProtocolProcessorNew protocolProcessor) {
+    public NodeClientHandler(ProtocolProcessor protocolProcessor) {
         this.protocolProcessor = protocolProcessor;
     }
 
@@ -54,6 +53,7 @@ public class NodeClientHandler extends ChannelHandlerAdapter {
         message.setMessageID(1);
 
 
+        LOGGER.info("================>>>>>>>>>>>>>>protocolProcessor:{}", protocolProcessor);
         protocolProcessor.processPublish(session, message);
 
     }

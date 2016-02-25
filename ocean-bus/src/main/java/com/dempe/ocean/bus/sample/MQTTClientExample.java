@@ -24,8 +24,10 @@ public class MQTTClientExample {
     public static void main(String[] args) throws Exception {
         MQTTCli mqtt = new MQTTCli();
         mqtt.setHost("localhost", 1883);
-        mqtt.setUserName("12345");
+        String uid = "12345";
+        mqtt.setUserName(uid);
         mqtt.setPassword("123");
+        mqtt.setClientId(uid);
 
         FutureConnection connection = mqtt.futureConnection();
         connection.connect();

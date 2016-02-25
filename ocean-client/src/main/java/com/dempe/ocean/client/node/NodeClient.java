@@ -7,10 +7,8 @@ import com.dempe.ocean.common.codec.DefaultEncoder;
 import com.dempe.ocean.common.codec.ResponseDecoder;
 import com.dempe.ocean.common.protocol.Request;
 import com.dempe.ocean.core.ProtocolProcessor;
-import com.dempe.ocean.core.ProtocolProcessorNew;
 import com.dempe.ocean.core.SimpleMessaging;
 import com.dempe.ocean.core.interception.InterceptHandler;
-import com.dempe.ocean.core.spi.DefaultMessaging;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -101,9 +99,7 @@ public class NodeClient implements Client {
     }
 
     public void initClientChannel(SocketChannel ch) {
-        OceanConfig config = ConfigFactory.create(OceanConfig.class);
-        List<? extends InterceptHandler> list = Collections.emptyList();
-        final ProtocolProcessorNew processor = SimpleMessaging.getInstance().init(config, list, null, null);
+        final ProtocolProcessor processor = SimpleMessaging.getProtocolProcessor();
         ChannelPipeline pipeline = ch.pipeline();
         pipeline.addLast("RequestEncoder", new DefaultEncoder())
                 .addLast("ResponseDecoder", new ResponseDecoder())

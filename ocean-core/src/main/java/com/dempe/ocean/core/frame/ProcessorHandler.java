@@ -1,6 +1,7 @@
 package com.dempe.ocean.core.frame;
 
 import com.dempe.ocean.common.protocol.Request;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -17,6 +18,7 @@ import java.util.concurrent.Executors;
  * Time: 17:36
  * To change this template use File | Settings | File Templates.
  */
+@ChannelHandler.Sharable
 public class ProcessorHandler extends ChannelHandlerAdapter {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(ProcessorHandler.class);

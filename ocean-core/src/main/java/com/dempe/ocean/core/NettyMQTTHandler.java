@@ -33,9 +33,9 @@ import static com.dempe.ocean.common.protocol.mqtt.AbstractMessage.*;
 public class NettyMQTTHandler extends ChannelHandlerAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(NettyMQTTHandler.class);
-    private final ProtocolProcessorNew m_processor;
+    private final ProtocolProcessor m_processor;
 
-    public NettyMQTTHandler(ProtocolProcessorNew processor) {
+    public NettyMQTTHandler(ProtocolProcessor processor) {
         m_processor = processor;
     }
 

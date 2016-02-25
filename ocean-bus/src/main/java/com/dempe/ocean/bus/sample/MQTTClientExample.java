@@ -1,10 +1,7 @@
 package com.dempe.ocean.bus.sample;
 
 
-import com.dempe.ocean.client.bus.mqtt.FutureConnection;
-import com.dempe.ocean.client.bus.mqtt.MQTTCli;
-import com.dempe.ocean.client.bus.mqtt.QoS;
-import com.dempe.ocean.client.bus.mqtt.Topic;
+import com.dempe.ocean.client.bus.mqtt.*;
 import com.dempe.ocean.common.pack.Pack;
 import com.dempe.ocean.common.protocol.Request;
 import org.fusesource.mqtt.client.Future;
@@ -32,6 +29,8 @@ public class MQTTClientExample {
         FutureConnection connection = mqtt.futureConnection();
         connection.connect();
 
+        BlockingConnection blockingConnection = mqtt.blockingConnection();
+        blockingConnection.receive();
 
         Request request = new Request();
         request.setName("forest_leaf");

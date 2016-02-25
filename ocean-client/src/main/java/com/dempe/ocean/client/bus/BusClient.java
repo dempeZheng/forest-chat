@@ -4,6 +4,8 @@ import com.dempe.ocean.common.NodeDetails;
 import com.dempe.ocean.common.protocol.Request;
 import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.mqtt.client.Callback;
+import org.fusesource.mqtt.client.Future;
+import org.fusesource.mqtt.client.Message;
 
 import java.util.List;
 
@@ -23,70 +25,40 @@ public class BusClient implements LiveClient {
     }
 
 
-    @Override
-    public void subscribe(Long uid, String topic) {
-
-        client.subscribe(uid, topic, new Callback<byte[]>() {
-            @Override
-            public void onSuccess(byte[] value) {
-
-            }
-
-            @Override
-            public void onFailure(Throwable value) {
-
-            }
-        });
+    public void connect(String uid, String pwd) throws Exception {
+        client.connect(uid, pwd);
     }
 
     @Override
-    public void unSubscribe(Long uid, String topic) {
+    public void subscribe(String topic) {
 
-        client.unSubscribe(uid, topic, new Callback<Void>() {
-            @Override
-            public void onSuccess(Void value) {
+        client.subscribe(topic);
+    }
 
-            }
 
-            @Override
-            public void onFailure(Throwable value) {
+    @Override
+    public void unSubscribe(String topic) {
 
-            }
-        });
+        client.unSubscribe(topic);
     }
 
     @Override
-    public Response publish(Long uid, String topic, Request request) {
-        return client.publish(uid, topic, request, new Callback<Void>() {
-            @Override
-            public void onSuccess(Void value) {
-
-            }
-
-            @Override
-            public void onFailure(Throwable value) {
-
-            }
-        });
+    public Response publish(String topic, Request request) {
+        return client.publish(topic, request);
     }
 
     @Override
     public Response publishBC(String topic, Request request) {
-        return client.publishBC(topic, request, new Callback<Void>() {
-            @Override
-            public void onSuccess(Void value) {
-
-            }
-
-            @Override
-            public void onFailure(Throwable value) {
-
-            }
-        });
+        return client.publishBC(topic, request);
     }
 
     @Override
     public Response publishMultiBC(List<Long> uidList, String topic, Request request) {
         return null;
+    }
+
+    @Override
+    public Future<Message> receive() {
+        return client.receive();
     }
 }

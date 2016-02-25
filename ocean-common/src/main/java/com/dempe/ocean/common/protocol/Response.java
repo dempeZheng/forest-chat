@@ -14,7 +14,17 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class Response implements Marshallable {
-    private String uid = "12345";
+    private String uid;
+    private String topic;
+
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
 
     public String getUid() {
         return uid;
@@ -38,6 +48,7 @@ public class Response implements Marshallable {
     @Override
     public Pack marshal(Pack pack) {
         pack.putVarstr(uid);
+        pack.putVarstr(topic);
         pack.putVarstr(result);
         return pack;
     }
@@ -45,6 +56,7 @@ public class Response implements Marshallable {
     @Override
     public Response unmarshal(Unpack unpack) throws IOException {
         uid = unpack.popVarstr();
+        topic = unpack.popVarstr();
         result = unpack.popVarstr();
         return this;
     }
@@ -53,4 +65,13 @@ public class Response implements Marshallable {
         return this.marshal(new Pack()).getBuffer().array();
     }
 
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "uid='" + uid + '\'' +
+                ", topic='" + topic + '\'' +
+                ", result='" + result + '\'' +
+                '}';
+    }
 }

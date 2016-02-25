@@ -63,7 +63,8 @@ public class ActionTake implements Take<Request, Response> {
             return null;
         }
 
-        return buildResp(result);
+
+        return buildResp(result, request);
 
 
     }
@@ -74,10 +75,13 @@ public class ActionTake implements Take<Request, Response> {
      * @param result
      * @return
      */
-    public Response buildResp(Object result) throws IllegalAccessException, InstantiationException,
+    public Response buildResp(Object result, Request request) throws IllegalAccessException, InstantiationException,
             ClassNotFoundException {
         Response resp = new Response();
         // set请求消息id标识，用于client将Response&Request对应
+        resp.setResult(result.toString());
+        resp.setUid(request.getUid());
+        resp.setTopic(request.getTopic());
         return resp;
     }
 

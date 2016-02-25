@@ -35,8 +35,6 @@ public class NodeClientHandler extends ChannelHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         Response resp = (Response) msg;
         String uid = resp.getUid();
-        uid = "12345";
-
         LOGGER.info("resp:{}", resp);
 
         Channel session = getSessionByUid(uid);
@@ -44,7 +42,9 @@ public class NodeClientHandler extends ChannelHandlerAdapter {
             return;
         }
         PublishMessage message = new PublishMessage();
-        message.setTopicName("foo");
+        String topic = resp.getTopic();
+        LOGGER.info(">>>>>>>>>>>>>>>>>>>{}",topic);
+        message.setTopicName(topic);
         message.setQos(AbstractMessage.QOSType.UNICAST);
 
         byte[] bytes = resp.toByteArray();

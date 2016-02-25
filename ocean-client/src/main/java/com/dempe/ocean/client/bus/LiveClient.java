@@ -2,6 +2,9 @@ package com.dempe.ocean.client.bus;
 
 import com.dempe.ocean.common.protocol.Request;
 import com.dempe.ocean.common.protocol.Response;
+import org.fusesource.mqtt.client.Callback;
+import org.fusesource.mqtt.client.Future;
+import org.fusesource.mqtt.client.Message;
 
 import java.util.List;
 
@@ -14,31 +17,32 @@ import java.util.List;
  */
 public interface LiveClient {
 
+    public void connect(String uid, String pwd) throws Exception;
+
     /**
-     * 用户进入直播间
+     * 用户订阅主题
      *
-     * @param uid
      * @param topic
      */
-    public void subscribe(Long uid, String topic);
+    public void subscribe(String topic);
+
+
 
     /**
      * 用户退出直播间
      *
-     * @param uid
      * @param topic
      */
-    public void unSubscribe(Long uid, String topic);
+    public void unSubscribe(String topic);
 
     /**
      * 直播间业务消息单播
      *
-     * @param uid
      * @param topic
      * @param request
      * @return
      */
-    public Response publish(Long uid, String topic, Request request);
+    public Response publish(String topic, Request request);
 
 
     /**
@@ -60,6 +64,9 @@ public interface LiveClient {
      * @return
      */
     public Response publishMultiBC(List<Long> uidList, String topic, Request request);
+
+
+    public Future<Message> receive();
 
 
 }

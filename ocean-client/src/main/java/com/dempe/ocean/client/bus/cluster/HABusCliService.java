@@ -3,6 +3,9 @@ package com.dempe.ocean.client.bus.cluster;
 import com.dempe.ocean.client.bus.LiveClient;
 import com.dempe.ocean.common.protocol.Request;
 import com.dempe.ocean.common.protocol.Response;
+import org.fusesource.mqtt.client.Callback;
+import org.fusesource.mqtt.client.Future;
+import org.fusesource.mqtt.client.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,40 +23,53 @@ public class HABusCliService implements LiveClient {
 
     private static HABusClient haBusClient;
 
+    private LiveClient client;
+
     public HABusCliService(String name) throws Exception {
         if (haBusClient == null) {
             synchronized (HABusCliService.class) {
                 if (haBusClient == null) {
                     haBusClient = new HABusClient(name);
+                    client = haBusClient.getClient();
+
                 }
             }
         }
     }
 
-
     @Override
-    public void subscribe(Long uid, String topic) {
-        haBusClient.getClient().subscribe(uid, topic);
+    public void connect(String uid, String pwd) throws Exception {
+        client.connect(uid, pwd);
     }
 
     @Override
-    public void unSubscribe(Long uid, String topic) {
+    public void subscribe(String topic) {
+        client.subscribe(topic);
+    }
 
-        haBusClient.getClient().unSubscribe(uid, topic);
+
+    @Override
+    public void unSubscribe(String topic) {
+        client.unSubscribe(topic);
     }
 
     @Override
-    public Response publish(Long uid, String topic, Request request) {
-        return haBusClient.getClient().publish(uid, topic, request);
+    public Response publish(String topic, Request request) {
+        return client.publish(topic, request);
     }
 
     @Override
     public Response publishBC(String topic, Request request) {
-        return haBusClient.getClient().publishBC(topic, request);
+        return client.publishBC(topic, request);
     }
 
     @Override
     public Response publishMultiBC(List<Long> uidList, String topic, Request request) {
-        return haBusClient.getClient().publishMultiBC(uidList, topic, request);
+        return client.publishMultiBC(uidList, topic, request);
+    }
+
+    @Override
+    public Future<Message> receive() {
+        return client.receive();
     }
 }

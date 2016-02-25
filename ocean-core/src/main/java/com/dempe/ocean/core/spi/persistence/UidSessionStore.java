@@ -21,7 +21,7 @@ public class UidSessionStore {
     private final static Map<String, Channel> uidSessionMap = Maps.newConcurrentMap();
 
     public static Channel getSessionByUid(String uid) {
-        return uidSessionMap.remove(uid);
+        return uidSessionMap.get(uid);
 
     }
 

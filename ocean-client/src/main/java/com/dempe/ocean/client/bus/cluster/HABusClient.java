@@ -71,6 +71,7 @@ public class HABusClient extends HAProxy<LiveClient> {
          */
         AccessPolicy policy = new AccessPolicy(10, 1 * 1000, 5 * 1000 * 60, true);
         BusClient busClient = new BusClient(serverInstance);
+        LOGGER.info(">>>>>>>>>>>>>>>nodeDetails:{}",serverInstance);
         LiveClient client = (LiveClient) ProxyHandler.getProxyInstance(busClient, this, policy);
         return client;
     }

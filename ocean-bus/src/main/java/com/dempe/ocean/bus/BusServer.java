@@ -2,6 +2,7 @@ package com.dempe.ocean.bus;
 
 import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.protocol.mqtt.PublishMessage;
+import com.dempe.ocean.common.register.NameDiscoveryService;
 import com.dempe.ocean.core.DefaultMoquetteSslContextCreator;
 import com.dempe.ocean.core.ProtocolProcessor;
 import com.dempe.ocean.core.SimpleMessaging;
@@ -35,8 +36,12 @@ public class BusServer {
 
     private ProtocolProcessor m_processor;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         final BusServer server = new BusServer();
+
+        NameDiscoveryService forestNameService = new NameDiscoveryService();
+        forestNameService.start();
+        forestNameService.register();
         server.startServer();
         System.out.println("Server started, version 0.9-SNAPSHOT");
         //Bind  a shutdown hook

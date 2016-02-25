@@ -41,7 +41,6 @@ public class BusBusinessHandler extends ChannelHandlerAdapter {
             request.unmarshal(unpack);
             String name = request.getName();
             LOGGER.info("dispatcher msg to {}", name);
-            LOGGER.info(">>>>>>>>>>>>>>protocolProcessor:{}", processor);
             processor.dispatcher(name, request);
 //
 

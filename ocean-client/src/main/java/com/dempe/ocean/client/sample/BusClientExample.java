@@ -44,7 +44,6 @@ public class BusClientExample {
             haBusCliService.publish(topic, getRequest());
         }
 
-
     }
 
     public static BusMessage getRequest() throws IOException {

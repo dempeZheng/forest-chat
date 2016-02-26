@@ -65,6 +65,8 @@ public class BusMessage implements Marshallable {
     }
 
 
+
+
     public byte[] toByteArray() {
         return this.marshal(new Pack()).getBuffer().array();
     }

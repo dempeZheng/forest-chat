@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -407,7 +408,16 @@ public class ProtocolProcessor {
     void route2Subscribers(IMessagesStore.StoredMessage pubMsg) {
         final String topic = pubMsg.getTopic();
         final AbstractMessage.QOSType publishingQos = pubMsg.getQos();
-        final ByteBuffer origMessage = pubMsg.getMessage();
+        ByteBuffer origMessage = pubMsg.getMessage();
+        ByteBuffer payload = origMessage.slice();
+        payload = payload.order(ByteOrder.LITTLE_ENDIAN);
+        short msgType = payload.getShort();
+        byte[] bytes = new byte[payload.getShort()];
+        payload.get(bytes);
+        String daemonName = new String(bytes);
+        byte[] array = new byte[payload.remaining()];
+        payload.get(array);
+        origMessage = ByteBuffer.wrap(array);
         LOG.debug("route2Subscribers republishing to existing subscribers that matches the topic {}", topic);
         if (LOG.isTraceEnabled()) {
             LOG.trace("content <{}>", DebugUtils.payload2Str(origMessage));

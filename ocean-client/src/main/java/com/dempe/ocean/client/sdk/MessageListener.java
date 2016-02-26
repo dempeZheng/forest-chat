@@ -10,5 +10,7 @@ import com.dempe.ocean.common.protocol.Request;
  * To change this template use File | Settings | File Templates.
  */
 public interface MessageListener {
+
     public void onPublish(Request request);
+
 }

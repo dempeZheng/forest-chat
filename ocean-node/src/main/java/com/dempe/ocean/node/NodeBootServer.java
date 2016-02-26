@@ -21,7 +21,6 @@ public class NodeBootServer {
         // 初始化spring 容器
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"application.xml"});
 
-        SampleController bean = context.getBean(SampleController.class);
         // 初始化并启动服务
         OceanConfig config = ConfigFactory.create(OceanConfig.class);
         BootServer server = new BootServer(config, context);

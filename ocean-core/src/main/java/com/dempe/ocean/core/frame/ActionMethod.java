@@ -18,7 +18,6 @@ public class ActionMethod {
 
     private Method method;
 
-
     /**
      * @param target
      * @param method

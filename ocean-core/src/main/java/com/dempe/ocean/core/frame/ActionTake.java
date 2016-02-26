@@ -28,7 +28,6 @@ public class ActionTake implements Take<Request, Response> {
         this.context = context;
     }
 
-
     /**
      * 一个request获取一个response
      *
@@ -63,8 +62,6 @@ public class ActionTake implements Take<Request, Response> {
             return null;
         }
         return buildResp(result, request);
-
-
     }
 
     /**

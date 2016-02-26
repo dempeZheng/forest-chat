@@ -2,6 +2,7 @@ package com.dempe.ocean.client.sdk;
 
 import com.dempe.ocean.client.bus.cluster.HABusCliService;
 import com.dempe.ocean.common.MsgType;
+import com.dempe.ocean.common.R;
 import com.dempe.ocean.common.pack.Unpack;
 import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.Request;
@@ -25,8 +26,7 @@ public class LiveSDK {
 
     private String uid;
     private String pwd;
-    private final static String BUS_DAEMON_NAME = "forest_bus";
-    private final static String LEAF_DAEMON_NAME = "forest_leaf";
+
 
     private HABusCliService haBusCliService;
 
@@ -42,7 +42,7 @@ public class LiveSDK {
     public LiveSDK(String uid, String pwd) throws Exception {
         this.uid = uid;
         this.pwd = pwd;
-        haBusCliService = new HABusCliService(BUS_DAEMON_NAME);
+        haBusCliService = new HABusCliService(R.FOREST_BUS_NAME);
     }
 
     private void init() {
@@ -68,7 +68,6 @@ public class LiveSDK {
                     } catch (Exception e) {
                         LOGGER.error(e.getMessage(), e);
                     }
-
 
                 }
             }
@@ -131,6 +130,15 @@ public class LiveSDK {
         haBusCliService.publish(getTopic(topSid, subSid), message);
     }
 
+    public void publishSubBC(Long topSid, Long subSid, Request request) {
+        BusMessage message = new BusMessage();
+        message.setDaemonName(R.FOREST_LEAF_NAME);
+        message.setMsgType(MsgType.BCSUBCH.getValue());
+        message.setJsonByteReq(request.toByteArray());
+        haBusCliService.publish(getTopic(topSid, subSid), message);
+    }
+
+
     public Future<Message> receive() {
         return haBusCliService.receive();
     }
@@ -164,9 +172,9 @@ public class LiveSDK {
         request.setUri("/sample/hello");
 
         // 发送全频道广播
-        liveSDK.publishSubBC(topSid, subSid, LEAF_DAEMON_NAME, request);
+        liveSDK.publishSubBC(topSid, subSid, request);
 
         // 发送单播消息到LEAF_DAEMON_NAME服务器
-        liveSDK.publish(topSid, subSid, LEAF_DAEMON_NAME, request);
+        liveSDK.publish(topSid, subSid, R.FOREST_LEAF_NAME, request);
     }
 }

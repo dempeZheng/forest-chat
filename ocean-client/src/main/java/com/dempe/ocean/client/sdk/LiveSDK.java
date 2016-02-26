@@ -30,10 +30,56 @@ public class LiveSDK {
 
     private HABusCliService haBusCliService;
 
+    Thread d_thread;
+
+    private MessageListener listener;
+
+    public LiveSDK(String uid, String pwd, MessageListener listener) throws Exception {
+        this(uid, pwd);
+        this.listener = listener;
+    }
+
     public LiveSDK(String uid, String pwd) throws Exception {
         this.uid = uid;
         this.pwd = pwd;
         haBusCliService = new HABusCliService(BUS_DAEMON_NAME);
+    }
+
+    private void init() {
+        d_thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    // 收频道内消息
+                    Future<Message> receive = haBusCliService.receive();
+                    Message message = null;
+                    try {
+                        message = receive.await();
+                        String topic = message.getTopic();
+                        LOGGER.debug("receive message topic:{}", topic);
+                        byte[] payload = message.getPayload();
+                        Request req = new Request().unmarshal(new Unpack(payload));
+                        if (listener == null) {
+                            return;
+                        }
+                        listener.onPublish(req);
+
+
+                    } catch (Exception e) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
+
+
+                }
+            }
+        });
+        d_thread.setDaemon(true);
+        d_thread.start();
+    }
+
+
+    public void setMessageListener(MessageListener listener) {
+        this.listener = listener;
     }
 
     /**
@@ -49,6 +95,8 @@ public class LiveSDK {
 
         // 订阅频道
         haBusCliService.subscribe(topSid + "|" + subSid);
+
+        init();
     }
 
     /**
@@ -87,6 +135,7 @@ public class LiveSDK {
         return haBusCliService.receive();
     }
 
+
     private String getTopic(Long topSid, Long subSid) {
         return topSid + "|" + subSid;
     }
@@ -98,7 +147,15 @@ public class LiveSDK {
         Long subSid = 123L;
 
         final LiveSDK liveSDK = new LiveSDK(uid, pwd);
-        // 进频道
+
+        // set listener 监听频道内消息
+        liveSDK.setMessageListener(new MessageListener() {
+            @Override
+            public void onPublish(Request request) {
+                LOGGER.info("request>>>>>>>>>>>>>>{}", request);
+            }
+        });
+        // 进频道(建立连接，并订阅频道topic)
         liveSDK.inChannel(topSid, subSid);
 
         Request request = new Request();
@@ -109,33 +166,7 @@ public class LiveSDK {
         // 发送全频道广播
         liveSDK.publishSubBC(topSid, subSid, LEAF_DAEMON_NAME, request);
 
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    // 收频道内消息
-                    Future<Message> receive = liveSDK.receive();
-                    Message message = null;
-                    try {
-                        message = receive.await();
-                        String topic = message.getTopic();
-                        byte[] payload = message.getPayload();
-                        Request req = new Request().unmarshal(new Unpack(payload));
-                        LOGGER.info(">>>>>>>>>request:{}", req);
-                        // 根据request处理业务逻辑
-
-
-                    } catch (Exception e) {
-                        LOGGER.error(e.getMessage(), e);
-                    }
-
-
-                }
-            }
-        });
-        thread.setDaemon(true);
-        thread.start();
-        liveSDK.publishSubBC(topSid, subSid, LEAF_DAEMON_NAME, request);
-
+        // 发送单播消息到LEAF_DAEMON_NAME服务器
+        liveSDK.publish(topSid, subSid, LEAF_DAEMON_NAME, request);
     }
 }

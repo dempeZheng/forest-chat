@@ -15,6 +15,8 @@
  */
 package com.dempe.ocean.core;
 
+import com.dempe.ocean.common.MsgType;
+import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.mqtt.*;
 import com.dempe.ocean.core.spi.persistence.UidSessionStore;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -23,6 +25,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.CorruptedFrameException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import static com.dempe.ocean.common.protocol.mqtt.AbstractMessage.*;
 
@@ -56,10 +61,24 @@ public class NettyMQTTHandler extends ChannelHandlerAdapter {
                     break;
                 case PUBLISH:
                     PublishMessage publishMessage = (PublishMessage) msg;
-                    if (publishMessage.getQos() == QOSType.UNICAST) {
+                    Integer messageID = publishMessage.getMessageID();
+                    ByteBuffer payload = publishMessage.getPayload();
+                    payload = payload.order(ByteOrder.LITTLE_ENDIAN);
+                    short msgType = payload.getShort();
+                    if (msgType == MsgType.UNICAST.getValue()) {
                         // 如果为单播协议则将消息传递给下一个hanndler
-                        ctx.fireChannelRead(publishMessage);
-                    } else {
+                        byte[] bytes = new byte[payload.getShort()];
+                        payload.get(bytes);
+                        String daemonName = new String(bytes, "UTF-8");
+                        BusMessage req = new BusMessage();
+                        req.setDaemonName(daemonName);
+                        req.setMsgType(msgType);
+                        payload.putInt(payload.position(), messageID);
+                        byte[] array = new byte[payload.remaining()];
+                        payload.get(array);
+                        req.setJsonByteReq(array);
+                        ctx.fireChannelRead(req);
+                    } else if (msgType == MsgType.BCSUBCH.getValue()) {
                         m_processor.processPublish(ctx.channel(), publishMessage);
                     }
                     break;

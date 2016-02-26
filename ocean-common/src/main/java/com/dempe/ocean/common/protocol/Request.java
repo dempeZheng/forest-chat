@@ -17,9 +17,7 @@ import java.io.IOException;
  */
 public class Request implements Marshallable {
 
-    private String name;
-
-    private short msgType;
+    private Integer messageID=0;
 
     private String uid;
 
@@ -28,15 +26,6 @@ public class Request implements Marshallable {
     private String uri;
 
     private String param;
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getUri() {
         return uri;
@@ -61,12 +50,12 @@ public class Request implements Marshallable {
         return JSONObject.parseObject(param);
     }
 
-    public short getMsgType() {
-        return msgType;
+    public Integer getMessageID() {
+        return messageID;
     }
 
-    public void setMsgType(short msgType) {
-        this.msgType = msgType;
+    public void setMessageID(Integer messageID) {
+        this.messageID = messageID;
     }
 
     public String getUid() {
@@ -90,8 +79,7 @@ public class Request implements Marshallable {
     }
 
     public Pack marshal(Pack pack) {
-        pack.putVarstr(name);
-        pack.putShort(msgType);
+        pack.putInt(messageID);
         pack.putVarstr(uid);
         pack.putVarstr(topic);
         pack.putVarstr(uri);
@@ -100,8 +88,7 @@ public class Request implements Marshallable {
     }
 
     public Request unmarshal(Unpack unpack) throws IOException {
-        name = unpack.popVarstr();
-        msgType = unpack.popShort();
+        messageID = unpack.popInt();
         uid = unpack.popVarstr();
         topic = unpack.popVarstr();
         uri = unpack.popVarstr();
@@ -116,7 +103,8 @@ public class Request implements Marshallable {
     @Override
     public String toString() {
         return "Request{" +
-                ", name='" + name + '\'' +
+                "uid='" + uid + '\'' +
+                ", topic='" + topic + '\'' +
                 ", uri='" + uri + '\'' +
                 ", param='" + param + '\'' +
                 '}';

@@ -1,6 +1,7 @@
-package com.dempe.ocean.node;
+package com.dempe.ocean.node.simulator;
 
 import com.dempe.ocean.common.OceanConfig;
+import com.dempe.ocean.node.BootServer;
 import org.aeonbits.owner.ConfigFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

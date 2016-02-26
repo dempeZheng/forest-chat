@@ -2,6 +2,7 @@ package com.dempe.ocean.client.node;
 
 
 import com.dempe.ocean.common.protocol.Request;
+import io.netty.buffer.ByteBuf;
 
 import java.nio.ByteBuffer;
 
@@ -16,8 +17,9 @@ public interface Client {
 
     public void sendOnly(Request request) throws Exception;
 
-    public void sendBuffer(ByteBuffer buffer);
+    public void sendBuffer(ByteBuf buffer);
 
+    public void sendBytes(byte[] bytes);
 
 //
 }

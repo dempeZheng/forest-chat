@@ -1,16 +1,12 @@
 package com.dempe.ocean.client.bus;
 
 
-import com.dempe.ocean.client.bus.mqtt.FutureConnection;
-import com.dempe.ocean.client.bus.mqtt.MQTTCli;
-import com.dempe.ocean.client.bus.mqtt.QoS;
-import com.dempe.ocean.client.bus.mqtt.Topic;
+
 import com.dempe.ocean.common.NodeDetails;
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.hawtbuf.UTF8Buffer;
-import org.fusesource.mqtt.client.Future;
-import org.fusesource.mqtt.client.Message;
+import org.fusesource.mqtt.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +23,7 @@ public class MQTTClient {
 
     private FutureConnection connection;
 
-    private MQTTCli mqtt;
+    private MQTT mqtt;
 
     private final static Logger LOGGER = LoggerFactory.getLogger(MQTTClient.class);
 
@@ -45,7 +41,7 @@ public class MQTTClient {
     }
 
     public void init(String host, int port) throws Exception {
-        mqtt = new MQTTCli();
+        mqtt = new MQTT();
         mqtt.setHost(host, port);
     }
 
@@ -69,13 +65,13 @@ public class MQTTClient {
     }
 
 
-    public Response publish(String topic, Request request) {
-        connection.publish(topic, request.toByteArray(), QoS.UNICAST, false);
+    public Response publish(String topic, BusMessage request) {
+        connection.publish(topic, request.toByteArray(), QoS.AT_LEAST_ONCE, false);
         return null;
     }
 
 
-    public Response publishBC(String topic, Request request) {
+    public Response publishBC(String topic, BusMessage request) {
         connection.publish(topic, request.toByteArray(), QoS.AT_LEAST_ONCE, false);
         return null;
     }

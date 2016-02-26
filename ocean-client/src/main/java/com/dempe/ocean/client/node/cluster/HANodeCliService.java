@@ -1,8 +1,10 @@
 package com.dempe.ocean.client.node.cluster;
 
 
+import com.dempe.ocean.client.NoAvailableClientException;
 import com.dempe.ocean.client.node.Client;
 import com.dempe.ocean.common.protocol.Request;
+import io.netty.buffer.ByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,21 +37,27 @@ public class HANodeCliService {
     public void sendOnly(Request request) throws Exception {
         Client client = haForestClient.getClient();
         if (client == null) {
-            LOGGER.warn("no available node for request:{}", request);
-            return;
+            throw new NoAvailableClientException();
         }
         client.sendOnly(request);
 
     }
 
-    public void sendBuffer(ByteBuffer buffer) {
+    public void sendBuffer(ByteBuf buffer) {
         Client client = haForestClient.getClient();
         if (client == null) {
-            LOGGER.warn("no available node for request:{}", buffer);
-            return;
+            throw new NoAvailableClientException();
         }
         LOGGER.info("sendBuffer:{}", buffer);
         client.sendBuffer(buffer);
+    }
+
+    public void sendBytes(byte[] bytes) {
+        Client client = haForestClient.getClient();
+        if (client == null) {
+            throw new NoAvailableClientException();
+        }
+        client.sendBytes(bytes);
     }
 
 

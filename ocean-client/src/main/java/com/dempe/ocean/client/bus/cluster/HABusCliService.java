@@ -1,9 +1,8 @@
 package com.dempe.ocean.client.bus.cluster;
 
 import com.dempe.ocean.client.bus.LiveClient;
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.Response;
-import org.fusesource.mqtt.client.Callback;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
 import org.slf4j.Logger;
@@ -19,6 +18,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class HABusCliService implements LiveClient {
+
     private final static Logger LOGGER = LoggerFactory.getLogger(HABusCliService.class);
 
     private static HABusClient haBusClient;
@@ -54,17 +54,17 @@ public class HABusCliService implements LiveClient {
     }
 
     @Override
-    public Response publish(String topic, Request request) {
+    public Response publish(String topic, BusMessage request) {
         return client.publish(topic, request);
     }
 
     @Override
-    public Response publishBC(String topic, Request request) {
+    public Response publishBC(String topic, BusMessage request) {
         return client.publishBC(topic, request);
     }
 
     @Override
-    public Response publishMultiBC(List<Long> uidList, String topic, Request request) {
+    public Response publishMultiBC(List<Long> uidList, String topic, BusMessage request) {
         return client.publishMultiBC(uidList, topic, request);
     }
 

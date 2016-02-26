@@ -27,7 +27,7 @@ public abstract class AbstractDecoder extends ByteToMessageDecoder {
         // 设置小端模式
         buf = buf.order(ByteOrder.LITTLE_ENDIAN);
         int length = buf.readableBytes();
-        if (length < 4) {
+        if (length <= 4) {
             return;
         }
         //
@@ -50,6 +50,8 @@ public abstract class AbstractDecoder extends ByteToMessageDecoder {
             Marshallable proto = decode(unpack);
             list.add(proto);
         }
+
+
 
 
     }

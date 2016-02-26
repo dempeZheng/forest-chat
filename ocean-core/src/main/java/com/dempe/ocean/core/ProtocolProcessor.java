@@ -325,10 +325,6 @@ public class ProtocolProcessor {
             sendPubRec(clientID, messageID);
             //Next the client will send us a pub rel
             //NB publish to subscribers for QoS 2 happen upon PUBREL from publisher
-        }else if (qos == AbstractMessage.QOSType.UNICAST) {
-            ClientSession targetSession = m_sessionsStore.sessionForClient(clientID);
-            ByteBuffer message = toStoreMsg.getMessage().duplicate();
-            directSend(targetSession, topic, AbstractMessage.QOSType.QOSType.LEAST_ONE, message, false, messageID);
         }
 
         if (msg.isRetainFlag()) {

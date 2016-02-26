@@ -1,9 +1,8 @@
 package com.dempe.ocean.client.bus;
 
 import com.dempe.ocean.common.NodeDetails;
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.Response;
-import org.fusesource.mqtt.client.Callback;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
 
@@ -43,17 +42,17 @@ public class BusClient implements LiveClient {
     }
 
     @Override
-    public Response publish(String topic, Request request) {
+    public Response publish(String topic, BusMessage request) {
         return client.publish(topic, request);
     }
 
     @Override
-    public Response publishBC(String topic, Request request) {
+    public Response publishBC(String topic, BusMessage request) {
         return client.publishBC(topic, request);
     }
 
     @Override
-    public Response publishMultiBC(List<Long> uidList, String topic, Request request) {
+    public Response publishMultiBC(List<Long> uidList, String topic, BusMessage request) {
         return null;
     }
 

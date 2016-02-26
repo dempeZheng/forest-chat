@@ -1,14 +1,10 @@
 package com.dempe.ocean.bus;
 
-import com.dempe.ocean.common.pack.Unpack;
-import com.dempe.ocean.common.protocol.Request;
-import com.dempe.ocean.common.protocol.mqtt.PublishMessage;
+import com.dempe.ocean.common.protocol.BusMessage;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.ByteBuffer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,19 +26,11 @@ public class BusBusinessHandler extends ChannelHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         LOGGER.info("msg:{}", msg.toString());
-        if (msg instanceof PublishMessage) {
-            PublishMessage message = (PublishMessage) msg;
-            ByteBuffer payload = message.getPayload();
-            payload.flip();
+        if (msg instanceof BusMessage) {
+            BusMessage req = (BusMessage) msg;
 
-            Unpack unpack = new Unpack(payload.array());
-            unpack.popShort();
-            Request request = new Request();
-            request.unmarshal(unpack);
-            String name = request.getName();
-            LOGGER.info("dispatcher msg to {}", name);
-            processor.dispatcher(name, request);
-//
+            LOGGER.info("dispatcher msg to {}", req.getDaemonName());
+            processor.dispatcher(req.getDaemonName(), req.getJsonByteReq());
 
         }
 

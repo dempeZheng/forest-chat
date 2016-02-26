@@ -1,10 +1,11 @@
 package com.dempe.ocean.node;
 
 
+import com.dempe.ocean.common.OceanConfig;
+import com.dempe.ocean.node.controller.SampleController;
+import org.aeonbits.owner.ConfigFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import java.io.IOException;
 
 /**
  * 基于spring xml的SampleServer
@@ -14,11 +15,18 @@ import java.io.IOException;
  * Time: 10:36
  * To change this template use File | Settings | File Templates.
  */
-public class NodeServer4xml {
-    public static void main(String[] args) throws IOException {
+public class NodeBootServer {
+
+    public static void main(String[] args) throws Exception {
         // 初始化spring 容器
         ApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"application.xml"});
+
+        SampleController bean = context.getBean(SampleController.class);
         // 初始化并启动服务
+        OceanConfig config = ConfigFactory.create(OceanConfig.class);
+        BootServer server = new BootServer(config, context);
+        server.registerNameService()
+                .start();
 
     }
 }

@@ -2,28 +2,27 @@ package com.dempe.ocean.client.node;
 
 
 import com.dempe.ocean.common.NodeDetails;
-import com.dempe.ocean.common.OceanConfig;
+import com.dempe.ocean.common.codec.ByteArrayEncoder;
 import com.dempe.ocean.common.codec.DefaultEncoder;
 import com.dempe.ocean.common.codec.ResponseDecoder;
+import com.dempe.ocean.common.pack.ProtocolValue;
 import com.dempe.ocean.common.protocol.Request;
 import com.dempe.ocean.core.ProtocolProcessor;
 import com.dempe.ocean.core.SimpleMessaging;
-import com.dempe.ocean.core.interception.InterceptHandler;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.DefaultThreadFactory;
-import org.aeonbits.owner.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.List;
+import java.nio.ByteOrder;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -101,7 +100,7 @@ public class NodeClient implements Client {
     public void initClientChannel(SocketChannel ch) {
         final ProtocolProcessor processor = SimpleMessaging.getProtocolProcessor();
         ChannelPipeline pipeline = ch.pipeline();
-        pipeline.addLast("RequestEncoder", new DefaultEncoder())
+        pipeline.addLast("RequestEncoder", new ByteArrayEncoder())
                 .addLast("ResponseDecoder", new ResponseDecoder())
                 .addLast("ClientHandler", new NodeClientHandler(processor));
     }
@@ -164,9 +163,12 @@ public class NodeClient implements Client {
         send(request);
     }
 
-    public void sendBuffer(ByteBuffer buffer) {
+    public void sendBuffer(ByteBuf buffer) {
         f.channel().writeAndFlush(buffer);
+    }
 
+    public void sendBytes(byte[] bytes) {
+        f.channel().writeAndFlush(bytes);
     }
 
 

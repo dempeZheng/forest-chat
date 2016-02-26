@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+
+    <context:annotation-config/>
+    <!-- 主动搜索以下目录 -->
+    <context:component-scan base-package="com.dempe.ocean.node"/>
+
+    <!--和bus服务通讯的接口，提供广播单播和多播等服务-->
+    <bean id="haBusCliService" class="com.dempe.ocean.client.bus.cluster.HABusCliService">
+        <constructor-arg index="0">
+            <value>forest_bus</value>
+        </constructor-arg>
+    </bean>
+
+
+
+</beans>

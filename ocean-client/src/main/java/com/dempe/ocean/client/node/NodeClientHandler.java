@@ -43,16 +43,13 @@ public class NodeClientHandler extends ChannelHandlerAdapter {
         }
         PublishMessage message = new PublishMessage();
         String topic = resp.getTopic();
-        LOGGER.info(">>>>>>>>>>>>>>>>>>>{}",topic);
+        LOGGER.info(">>>>>>>>>>>>>>>>>>>{}", topic);
         message.setTopicName(topic);
-        message.setQos(AbstractMessage.QOSType.UNICAST);
-
+        message.setQos(AbstractMessage.QOSType.LEAST_ONE);
         byte[] bytes = resp.toByteArray();
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         message.setPayload(buffer);
-        message.setMessageID(1);
-
-
+        message.setMessageID(resp.getMessageID());
         LOGGER.info("================>>>>>>>>>>>>>>protocolProcessor:{}", protocolProcessor);
         protocolProcessor.processPublish(session, message);
 

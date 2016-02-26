@@ -1,8 +1,11 @@
 package com.dempe.ocean.node.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dempe.ocean.client.bus.cluster.HABusCliService;
 import com.dempe.ocean.common.anno.Path;
 import com.dempe.ocean.node.service.SampleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
@@ -17,8 +20,14 @@ import javax.annotation.Resource;
 @Controller("sample")
 public class SampleController {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(SampleController.class);
+
     @Resource
-    SampleService lampService;
+    private SampleService lampService;
+
+    @Resource
+    private HABusCliService busCliService;
+
 
     /**
      * 默认匹配path getUri=/sample/hello
@@ -28,8 +37,9 @@ public class SampleController {
      */
     @Path
     public JSONObject hello() {
+        LOGGER.info("hello method invoked>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        LOGGER.info("busCliService send bc for test>>>busCliService:{}", busCliService);
         String name = "hello";
-        System.out.println("----------------------------------");
         return lampService.hello(name);
     }
 }

@@ -82,6 +82,7 @@ public class ActionTake implements Take<Request, Response> {
         resp.setResult(result.toString());
         resp.setUid(request.getUid());
         resp.setTopic(request.getTopic());
+        resp.setMessageID(request.getMessageID());
         return resp;
     }
 

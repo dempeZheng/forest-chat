@@ -1,13 +1,10 @@
 package com.dempe.ocean.bus;
 
 import com.dempe.ocean.client.node.cluster.HANodeCliService;
-import com.dempe.ocean.common.protocol.Request;
-import com.dempe.ocean.core.spi.persistence.UidSessionStore;
 import com.google.common.collect.Maps;
-import io.netty.channel.Channel;
+import io.netty.buffer.ByteBuf;
 import org.apache.commons.lang3.StringUtils;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
@@ -21,12 +18,13 @@ public class DispatcherProcessor {
 
     private final static Map<String, HANodeCliService> nameClientMap = Maps.newConcurrentMap();
 
-    public void dispatcher(String name, Request request) throws Exception {
+    public void dispatcher(String name, byte[] bytes) throws Exception {
         if (StringUtils.isBlank(name)) {
             return;
         }
         HANodeCliService clientService = getClientServiceByName(name);
-        clientService.sendOnly(request);
+
+        clientService.sendBytes(bytes);
     }
 
     /**

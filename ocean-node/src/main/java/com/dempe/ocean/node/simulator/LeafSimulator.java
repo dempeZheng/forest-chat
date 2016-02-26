@@ -19,7 +19,6 @@ public class LeafSimulator {
     public static void main(String[] args) throws Exception {
         HANodeCliService clientService = new HANodeCliService(Constants.FOREST_LEAF_NAME);
         for (int i = 0; i < 10000; i++) {
-
             Request request = buildReq();
             clientService.sendOnly(request);
             if (i % 10 == 0) {
@@ -30,7 +29,6 @@ public class LeafSimulator {
 
     public static Request buildReq() {
         Request request = new Request();
-        request.setName(Constants.FOREST_LEAF_NAME);
         request.setUri("/sample/hello");
         JSONObject param = new JSONObject();
         param.put("name", "dempe");

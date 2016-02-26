@@ -14,9 +14,11 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class Response implements Marshallable {
+
+    private Integer messageID=0;
     private String uid;
     private String topic;
-
+    private String result;
 
     public String getTopic() {
         return topic;
@@ -34,8 +36,6 @@ public class Response implements Marshallable {
         this.uid = uid;
     }
 
-    private String result;
-
 
     public String getResult() {
         return result;
@@ -45,8 +45,18 @@ public class Response implements Marshallable {
         this.result = result;
     }
 
+
+    public Integer getMessageID() {
+        return messageID;
+    }
+
+    public void setMessageID(Integer messageID) {
+        this.messageID = messageID;
+    }
+
     @Override
     public Pack marshal(Pack pack) {
+        pack.putInt(messageID);
         pack.putVarstr(uid);
         pack.putVarstr(topic);
         pack.putVarstr(result);
@@ -55,13 +65,14 @@ public class Response implements Marshallable {
 
     @Override
     public Response unmarshal(Unpack unpack) throws IOException {
+        messageID = unpack.popInt();
         uid = unpack.popVarstr();
         topic = unpack.popVarstr();
         result = unpack.popVarstr();
         return this;
     }
 
-    public byte[] toByteArray(){
+    public byte[] toByteArray() {
         return this.marshal(new Pack()).getBuffer().array();
     }
 

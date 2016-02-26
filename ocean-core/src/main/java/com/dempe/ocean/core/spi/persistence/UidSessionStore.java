@@ -20,6 +20,8 @@ public class UidSessionStore {
 
     private final static Map<String, Channel> uidSessionMap = Maps.newConcurrentMap();
 
+    private final static Map<String, Integer> uidMsgIdMap = Maps.newConcurrentMap();
+
     public static Channel getSessionByUid(String uid) {
         return uidSessionMap.get(uid);
 
@@ -32,5 +34,9 @@ public class UidSessionStore {
     public static Channel remove(String uid) {
         LOGGER.info("--------------->>>>>>>>>>>>>>>>>>>>>>>>>> remove uid {} channel", uid);
         return uidSessionMap.remove(uid);
+    }
+
+    public static void putMessageID(String uid, Integer messageID) {
+        uidMsgIdMap.put(uid, messageID);
     }
 }

@@ -22,16 +22,16 @@ import com.dempe.ocean.core.spi.impl.subscriptions.Subscription;
 
 /**
  * This interface is to be used internally by the broker components.
- * <p>
+ * <p/>
  * An interface is used instead of a class to allow more flexibility in changing
  * an implementation.
- * <p>
+ * <p/>
  * Interceptor implementations forward notifications to a <code>InterceptHandler</code>,
  * that is normally a field. So, the implementations should act as a proxy to a custom
  * intercept handler.
  *
- * @see InterceptHandler
  * @author Wagner Macedo
+ * @see InterceptHandler
  */
 public interface Interceptor {
 

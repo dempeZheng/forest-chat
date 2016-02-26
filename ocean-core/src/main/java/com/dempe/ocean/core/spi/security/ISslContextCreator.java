@@ -19,7 +19,7 @@ import javax.net.ssl.SSLContext;
 
 /**
  * SSL certificate loader used to open SSL connections (websocket and MQTT-S).
- *
+ * <p/>
  * Created by andrea on 13/12/15.
  */
 public interface ISslContextCreator {

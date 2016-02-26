@@ -32,7 +32,7 @@ public class BusClientExample {
         HABusCliService haBusCliService = new HABusCliService("forest_bus");
         haBusCliService.connect(uid, pwd);
         haBusCliService.subscribe(topic);
-        haBusCliService.publish(topic,getRequest());
+        haBusCliService.publish(topic, getRequest());
 
         while (true) {
             Message message = haBusCliService.receive().await();

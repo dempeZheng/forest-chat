@@ -16,7 +16,6 @@
 package com.dempe.ocean.core;
 
 
-
 import com.dempe.ocean.common.protocol.mqtt.ConnectMessage;
 import com.dempe.ocean.common.protocol.mqtt.PublishMessage;
 import com.dempe.ocean.core.interception.InterceptHandler;

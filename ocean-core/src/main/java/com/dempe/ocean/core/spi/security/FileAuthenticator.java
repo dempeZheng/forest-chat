@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Load user credentials from a text file.
  * Each line of the file is formatted as "<username>:<sha256(password)>". The username mustn't contains : char.
- *
+ * <p/>
  * To encode your password from command line on Linux systems, you could use:
  * <pre>
  *     echo -n "yourpassword" | sha256sum
@@ -41,7 +41,7 @@ import java.util.Map;
 public class FileAuthenticator implements IAuthenticator {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileAuthenticator.class);
-    
+
     private Map<String, String> m_identities = new HashMap<>();
     private MessageDigest m_digest;
 
@@ -68,12 +68,12 @@ public class FileAuthenticator implements IAuthenticator {
             LOG.warn(String.format("Format error in parsing password file %s", file), pex);
         }
     }
-    
+
     private void parse(Reader reader) throws ParseException {
         if (reader == null) {
             return;
         }
-        
+
         BufferedReader br = new BufferedReader(reader);
         String line;
         try {
@@ -92,12 +92,12 @@ public class FileAuthenticator implements IAuthenticator {
                         //skip it's a black line
                         continue;
                     }
-                    
+
                     //split till the first space
                     int delimiterIdx = line.indexOf(':');
                     String username = line.substring(0, delimiterIdx).trim();
                     String password = line.substring(delimiterIdx + 1).trim();
-                    
+
                     m_identities.put(username, password);
                 }
             }
@@ -105,7 +105,7 @@ public class FileAuthenticator implements IAuthenticator {
             throw new ParseException("Failed to read", 1);
         }
     }
-    
+
     public boolean checkValid(String username, byte[] password) {
         if (username == null || password == null) {
             LOG.info("username or password was null");
@@ -120,5 +120,5 @@ public class FileAuthenticator implements IAuthenticator {
         String encodedPasswd = new String(Hex.encodeHex(digest));
         return foundPwq.equals(encodedPasswd);
     }
-    
+
 }

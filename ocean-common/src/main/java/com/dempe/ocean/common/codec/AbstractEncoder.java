@@ -26,9 +26,6 @@ public abstract class AbstractEncoder extends MessageToByteEncoder<Marshallable>
 
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractEncoder.class);
 
-    private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
-
-
     /**
      * @param channelHandlerContext
      * @param request
@@ -45,7 +42,7 @@ public abstract class AbstractEncoder extends MessageToByteEncoder<Marshallable>
             if (pack.getAttachment() != null) {
                 protoType = Byte.parseByte(pack.getAttachment().toString());
             }
-            byteBuf = byteBuf.order(byteOrder);// 字节序转成YY协议的低端字节
+            byteBuf = byteBuf.order(ByteOrder.LITTLE_ENDIAN);// 字节序转成YY协议的低端字节
             byteBuf.writeBytes(getOutBytes(data, protoType));
 
         } catch (Throwable e) {
@@ -57,13 +54,10 @@ public abstract class AbstractEncoder extends MessageToByteEncoder<Marshallable>
     protected byte[] getOutBytes(ByteBuffer data, byte protoType) {
         int len = data.limit() - data.position() + 4;
         ByteBuffer out = ByteBuffer.allocate(len);
-        // 设置小端模式
-        out.order(byteOrder);
         int nFirstValue = ProtocolValue.combine(len, protoType);
         // 长度包含包长度int 4个字节
         out.putInt(nFirstValue);
         out.put(data);
-        out.flip();
         return out.array();
     }
 

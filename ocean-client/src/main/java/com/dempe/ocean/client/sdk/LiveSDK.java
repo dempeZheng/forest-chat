@@ -5,13 +5,11 @@ import com.dempe.ocean.common.MsgType;
 import com.dempe.ocean.common.pack.Unpack;
 import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.Request;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -46,12 +44,21 @@ public class LiveSDK {
      */
     public void inChannel(Long topSid, Long subSid) throws Exception {
         // 建议连接
+        // TODO 未考虑异常情况
         haBusCliService.connect(uid, pwd);
 
         // 订阅频道
         haBusCliService.subscribe(topSid + "|" + subSid);
     }
 
+    /**
+     * 直播间单播协议
+     *
+     * @param topSid
+     * @param subSid
+     * @param daemonName
+     * @param request
+     */
     public void publish(Long topSid, Long subSid, String daemonName, Request request) {
         BusMessage message = new BusMessage();
         message.setDaemonName(daemonName);
@@ -59,6 +66,15 @@ public class LiveSDK {
         message.setJsonByteReq(request.toByteArray());
         haBusCliService.publish(getTopic(topSid, subSid), message);
     }
+
+    /**
+     * 直播间广播协议
+     *
+     * @param topSid
+     * @param subSid
+     * @param daemonName
+     * @param request
+     */
     public void publishSubBC(Long topSid, Long subSid, String daemonName, Request request) {
         BusMessage message = new BusMessage();
         message.setDaemonName(daemonName);
@@ -81,25 +97,45 @@ public class LiveSDK {
         Long topSid = 123L;
         Long subSid = 123L;
 
-        LiveSDK liveSDK = new LiveSDK(uid, pwd);
+        final LiveSDK liveSDK = new LiveSDK(uid, pwd);
+        // 进频道
         liveSDK.inChannel(topSid, subSid);
 
         Request request = new Request();
         request.setUid(uid);
         request.setTopic(topSid + "|" + subSid);
         request.setUri("/sample/hello");
+
+        // 发送全频道广播
         liveSDK.publishSubBC(topSid, subSid, LEAF_DAEMON_NAME, request);
-        while (true) {
-            Future<Message> receive = liveSDK.receive();
-            Message message = receive.await();
-            String topic = message.getTopic();
-            byte[] payload = message.getPayload();
-            Request req = new Request().unmarshal(new Unpack(payload));
 
-            LOGGER.info(">>>>>>>>>request:{}", req);
-            // 根据request处理业务逻辑
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    // 收频道内消息
+                    Future<Message> receive = liveSDK.receive();
+                    Message message = null;
+                    try {
+                        message = receive.await();
+                        String topic = message.getTopic();
+                        byte[] payload = message.getPayload();
+                        Request req = new Request().unmarshal(new Unpack(payload));
+                        LOGGER.info(">>>>>>>>>request:{}", req);
+                        // 根据request处理业务逻辑
 
 
-        }
+                    } catch (Exception e) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
+
+
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+        liveSDK.publishSubBC(topSid, subSid, LEAF_DAEMON_NAME, request);
+
     }
 }

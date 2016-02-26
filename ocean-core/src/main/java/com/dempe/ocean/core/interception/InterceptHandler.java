@@ -20,9 +20,9 @@ import com.dempe.ocean.core.interception.messages.*;
 
 /**
  * This interface is used to inject code for intercepting broker events.
- * <p>
+ * <p/>
  * The events can act only as observers.
- * <p>
+ * <p/>
  * <code>onDisconnect</code> that receives the client id string and
  * <code>onSubscribe</code> and <code>onUnsubscribe</code> that receive a
  *

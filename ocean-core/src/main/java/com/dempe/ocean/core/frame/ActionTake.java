@@ -62,8 +62,6 @@ public class ActionTake implements Take<Request, Response> {
             LOGGER.debug("actionMethod:{} return void.", actionMethod);
             return null;
         }
-
-
         return buildResp(result, request);
 
 

@@ -19,7 +19,6 @@ import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.codec.mqtt.MQTTDecoder;
 import com.dempe.ocean.common.codec.mqtt.MQTTEncoder;
 import com.dempe.ocean.core.spi.metrics.*;
-
 import com.dempe.ocean.core.spi.security.ISslContextCreator;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -46,11 +45,10 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- *
  * @author andrea
  */
-public class NettyAcceptor  {
-    
+public class NettyAcceptor {
+
     static class WebSocketFrameToByteBufDecoder extends MessageToMessageDecoder<BinaryWebSocketFrame> {
 
         @Override
@@ -62,7 +60,7 @@ public class NettyAcceptor  {
             out.add(bb);
         }
     }
-    
+
     static class ByteBufToWebSocketFrameEncoder extends MessageToMessageEncoder<ByteBuf> {
 
         @Override
@@ -81,7 +79,7 @@ public class NettyAcceptor  {
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(NettyAcceptor.class);
-    
+
     EventLoopGroup m_bossGroup;
     EventLoopGroup m_workerGroup;
     BytesMetricsCollector m_bytesMetricsCollector = new BytesMetricsCollector();
@@ -91,7 +89,7 @@ public class NettyAcceptor  {
         m_bossGroup = new NioEventLoopGroup();
         m_workerGroup = new NioEventLoopGroup();
         final NettyMQTTHandler handler = new NettyMQTTHandler(processor);
-        
+
         initializePlainTCPTransport(handler, config);
         initializeWebSocketTransport(handler, config);
 
@@ -134,7 +132,7 @@ public class NettyAcceptor  {
             LOG.error(null, ex);
         }
     }
-    
+
     private void initializePlainTCPTransport(final NettyMQTTHandler handler, OceanConfig config) throws IOException {
         final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
         String host = config.host();
@@ -153,10 +151,10 @@ public class NettyAcceptor  {
             }
         });
     }
-    
+
     private void initializeWebSocketTransport(final NettyMQTTHandler handler, OceanConfig config) throws IOException {
-        int port =  config.webSocketPort();
-        String host =config.webSocketHost();
+        int port = config.webSocketPort();
+        String host = config.webSocketHost();
         final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
         initFactory(host, port, new PipelineInitializer() {
             @Override
@@ -177,9 +175,9 @@ public class NettyAcceptor  {
             }
         });
     }
-    
+
     private void initializeSSLTCPTransport(final NettyMQTTHandler handler, OceanConfig config, final SSLContext sslContext) throws IOException {
-        int sslPort =config.sslPort();
+        int sslPort = config.sslPort();
         if (sslPort == 0) {
             //Do nothing no SSL configured
             LOG.info("SSL is disabled");
@@ -213,7 +211,7 @@ public class NettyAcceptor  {
         }
 
         final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
-        String host =config.host();
+        String host = config.host();
         initFactory(host, sslPort, new PipelineInitializer() {
             @Override
             void init(ChannelPipeline pipeline) throws Exception {

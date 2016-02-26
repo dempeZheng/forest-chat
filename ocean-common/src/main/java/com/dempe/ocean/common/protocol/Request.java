@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public class Request implements Marshallable {
 
-    private Integer messageID=0;
+    private Integer messageID = 0;
 
     private String uid;
 

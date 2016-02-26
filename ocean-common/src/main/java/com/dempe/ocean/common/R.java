@@ -7,7 +7,7 @@ package com.dempe.ocean.common;
  * Time: 17:53
  * To change this template use File | Settings | File Templates.
  */
-public class Constants {
+public class R {
 
     public static final String FOREST_BUS_NAME = "forest_bus";
     public static final String FOREST_LEAF_NAME = "forest_leaf";

@@ -2,7 +2,6 @@ package com.dempe.ocean.bus;
 
 import com.dempe.ocean.client.node.cluster.HANodeCliService;
 import com.google.common.collect.Maps;
-import io.netty.buffer.ByteBuf;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;

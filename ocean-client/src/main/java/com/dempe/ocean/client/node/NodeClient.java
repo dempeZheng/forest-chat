@@ -3,15 +3,12 @@ package com.dempe.ocean.client.node;
 
 import com.dempe.ocean.common.NodeDetails;
 import com.dempe.ocean.common.codec.ByteArrayEncoder;
-import com.dempe.ocean.common.codec.DefaultEncoder;
 import com.dempe.ocean.common.codec.ResponseDecoder;
-import com.dempe.ocean.common.pack.ProtocolValue;
 import com.dempe.ocean.common.protocol.Request;
 import com.dempe.ocean.core.ProtocolProcessor;
 import com.dempe.ocean.core.SimpleMessaging;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -22,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.ByteOrder;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 

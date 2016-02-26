@@ -16,6 +16,7 @@
 package com.dempe.ocean.core;
 
 import com.dempe.ocean.common.MsgType;
+import com.dempe.ocean.common.R;
 import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.mqtt.*;
 import com.dempe.ocean.core.spi.persistence.UidSessionStore;
@@ -65,21 +66,26 @@ public class NettyMQTTHandler extends ChannelHandlerAdapter {
                     ByteBuffer payload = publishMessage.getPayload();
                     payload = payload.order(ByteOrder.LITTLE_ENDIAN);
                     short msgType = payload.getShort();
-                    if (msgType == MsgType.UNICAST.getValue()) {
-                        // 如果为单播协议则将消息传递给下一个hanndler
-                        byte[] bytes = new byte[payload.getShort()];
-                        payload.get(bytes);
-                        String daemonName = new String(bytes, "UTF-8");
+                    byte[] bytes = new byte[payload.getShort()];
+                    payload.get(bytes);
+                    byte[] array = new byte[payload.remaining()];
+                    payload.get(array);
+                    String daemonName = new String(bytes, "UTF-8");
+                    // 如果消息类型为单播，且透传的进程非bus进程，将消息传递给下一个hanndler(分发消息到相应的业务进程)
+                    if (msgType == MsgType.UNICAST.getValue() && daemonName != R.FOREST_BUS_NAME) {
                         BusMessage req = new BusMessage();
                         req.setDaemonName(daemonName);
                         req.setMsgType(msgType);
                         payload.putInt(payload.position(), messageID);
-                        byte[] array = new byte[payload.remaining()];
-                        payload.get(array);
                         req.setJsonByteReq(array);
                         ctx.fireChannelRead(req);
                     } else if (msgType == MsgType.BCSUBCH.getValue()) {
+                        // 覆盖publishMessage 中的payload，去掉对客户端无价值的外层协议(daemonName&msgType)
+                        publishMessage.setPayload(ByteBuffer.wrap(array));
                         m_processor.processPublish(ctx.channel(), publishMessage);
+
+                    } else if (msgType == MsgType.AREA_MULTICAST.getValue()) {
+                        // 多播 逻辑待实现
                     }
                     break;
                 case PUBREC:

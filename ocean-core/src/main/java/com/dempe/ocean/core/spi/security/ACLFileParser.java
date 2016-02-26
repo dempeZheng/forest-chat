@@ -27,7 +27,7 @@ import java.text.ParseException;
  * Blank lines are skipped. The format is "topic [read|write|readwrite] <topic name>"
  *
  * @author andrea
- * */
+ */
 public class ACLFileParser {
     private static final Logger LOG = LoggerFactory.getLogger(ACLFileParser.class);
 

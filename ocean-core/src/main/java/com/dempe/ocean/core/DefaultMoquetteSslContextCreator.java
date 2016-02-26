@@ -30,7 +30,7 @@ import java.security.cert.CertificateException;
 /**
  * Moquette server implementation to load SSL certificate from local filesystem path
  * configured in config file.
- *
+ * <p/>
  * Created by andrea on 13/12/15.
  */
 public class DefaultMoquetteSslContextCreator implements ISslContextCreator {
@@ -55,8 +55,8 @@ public class DefaultMoquetteSslContextCreator implements ISslContextCreator {
 
         //if we have the port also the jks then keyStorePassword and keyManagerPassword
         //has to be defined
-        final String keyStorePassword =config.keyStorePassword();
-        final String keyManagerPassword =config.keyManagerPassword();
+        final String keyStorePassword = config.keyStorePassword();
+        final String keyManagerPassword = config.keyManagerPassword();
         if (keyStorePassword == null || keyStorePassword.isEmpty()) {
             //key_store_password or key_manager_password are empty
             LOG.warn("You have configured the SSL port but not the key_store_password, SSL not started");

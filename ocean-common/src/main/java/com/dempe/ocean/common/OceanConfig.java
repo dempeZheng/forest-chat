@@ -73,6 +73,7 @@ public interface OceanConfig extends Config {
     // security==========================
 
     String jksPath();
+
     String keyStorePassword();
 
     String keyManagerPassword();

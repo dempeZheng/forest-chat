@@ -26,7 +26,6 @@ public interface LiveClient {
     public void subscribe(String topic);
 
 
-
     /**
      * 用户退出直播间
      *

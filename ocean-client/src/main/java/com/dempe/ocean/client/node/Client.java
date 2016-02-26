@@ -4,8 +4,6 @@ package com.dempe.ocean.client.node;
 import com.dempe.ocean.common.protocol.Request;
 import io.netty.buffer.ByteBuf;
 
-import java.nio.ByteBuffer;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Dempe

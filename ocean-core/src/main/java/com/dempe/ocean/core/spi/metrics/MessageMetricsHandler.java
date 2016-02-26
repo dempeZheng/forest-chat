@@ -28,7 +28,7 @@ public class MessageMetricsHandler extends ChannelDuplexHandler {
     private MessageMetricsCollector m_collector;
 
     public MessageMetricsHandler(MessageMetricsCollector collector) {
-          m_collector = collector;
+        m_collector = collector;
     }
 
     @Override

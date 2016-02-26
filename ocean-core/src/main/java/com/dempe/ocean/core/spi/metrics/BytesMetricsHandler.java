@@ -29,7 +29,7 @@ public class BytesMetricsHandler extends ChannelDuplexHandler {
     private BytesMetricsCollector m_collector;
 
     public BytesMetricsHandler(BytesMetricsCollector collector) {
-          m_collector = collector;
+        m_collector = collector;
     }
 
     @Override
@@ -43,14 +43,14 @@ public class BytesMetricsHandler extends ChannelDuplexHandler {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         BytesMetrics metrics = ctx.attr(ATTR_KEY_METRICS).get();
-        metrics.incrementRead(((ByteBuf)msg).readableBytes());
+        metrics.incrementRead(((ByteBuf) msg).readableBytes());
         ctx.fireChannelRead(msg);
     }
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         BytesMetrics metrics = ctx.attr(ATTR_KEY_METRICS).get();
-        metrics.incrementWrote(((ByteBuf)msg).writableBytes());
+        metrics.incrementWrote(((ByteBuf) msg).writableBytes());
         ctx.write(msg, promise);
     }
 

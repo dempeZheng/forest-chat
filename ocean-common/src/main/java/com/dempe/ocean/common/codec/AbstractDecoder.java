@@ -51,9 +51,6 @@ public abstract class AbstractDecoder extends ByteToMessageDecoder {
             list.add(proto);
         }
 
-
-
-
     }
 
     public abstract Marshallable decode(Unpack unpack) throws IOException;

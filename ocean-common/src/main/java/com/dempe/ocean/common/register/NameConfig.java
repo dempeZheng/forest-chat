@@ -1,6 +1,6 @@
 package com.dempe.ocean.common.register;
 
-import com.dempe.ocean.common.Constants;
+import com.dempe.ocean.common.R;
 import org.aeonbits.owner.Config;
 
 /**
@@ -14,7 +14,7 @@ import org.aeonbits.owner.Config;
 public interface NameConfig extends Config {
 
     @Key("name")
-    @DefaultValue(Constants.FOREST_LEAF_NAME)
+    @DefaultValue(R.FOREST_LEAF_NAME)
     String name();
 
     @Key("port")

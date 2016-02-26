@@ -27,7 +27,7 @@ public class Authorization {
 
     /**
      * Access rights
-     * */
+     */
     enum Permission {
         READ, WRITE, READWRITE
     }

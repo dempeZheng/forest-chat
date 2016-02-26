@@ -2,7 +2,7 @@ package com.dempe.ocean.node.simulator;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dempe.ocean.client.node.cluster.HANodeCliService;
-import com.dempe.ocean.common.Constants;
+import com.dempe.ocean.common.R;
 import com.dempe.ocean.common.protocol.Request;
 
 import java.util.concurrent.TimeUnit;
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class LeafSimulator {
 
     public static void main(String[] args) throws Exception {
-        HANodeCliService clientService = new HANodeCliService(Constants.FOREST_LEAF_NAME);
+        HANodeCliService clientService = new HANodeCliService(R.FOREST_LEAF_NAME);
         for (int i = 0; i < 10000; i++) {
             Request request = buildReq();
             clientService.sendOnly(request);

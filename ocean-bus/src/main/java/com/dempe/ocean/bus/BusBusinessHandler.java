@@ -28,7 +28,6 @@ public class BusBusinessHandler extends ChannelHandlerAdapter {
         LOGGER.info("msg:{}", msg.toString());
         if (msg instanceof BusMessage) {
             BusMessage req = (BusMessage) msg;
-
             LOGGER.info("dispatcher msg to {}", req.getDaemonName());
             processor.dispatcher(req.getDaemonName(), req.getJsonByteReq());
 

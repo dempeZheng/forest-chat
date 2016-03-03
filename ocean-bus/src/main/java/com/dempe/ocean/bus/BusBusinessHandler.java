@@ -7,7 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created with IntelliJ IDEA.
+ * 业务分发handler
+ *
  * User: Dempe
  * Date: 2016/2/23
  * Time: 11:29

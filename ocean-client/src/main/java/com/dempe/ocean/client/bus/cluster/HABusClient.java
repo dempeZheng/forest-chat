@@ -1,7 +1,7 @@
 package com.dempe.ocean.client.bus.cluster;
 
 import com.dempe.ocean.client.bus.BusClient;
-import com.dempe.ocean.client.bus.LiveClient;
+import com.dempe.ocean.client.bus.Client;
 import com.dempe.ocean.common.NodeDetails;
 import com.dempe.ocean.common.cluster.HAProxy;
 import com.dempe.ocean.common.cluster.ProxyHandler;
@@ -25,7 +25,7 @@ import java.util.List;
  * Time: 10:39
  * To change this template use File | Settings | File Templates.
  */
-public class HABusClient extends HAProxy<LiveClient> {
+public class HABusClient extends HAProxy<Client> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(HABusClient.class);
 
@@ -65,13 +65,13 @@ public class HABusClient extends HAProxy<LiveClient> {
 
 
     @Override
-    public LiveClient createClient(NodeDetails serverInstance) throws Exception {
+    public Client createClient(NodeDetails serverInstance) throws Exception {
         /**
          *1s accessPolicy=5次发送失败则会自动切换client
          */
         AccessPolicy policy = new AccessPolicy(10, 1 * 1000, 5 * 1000 * 60, true);
         BusClient busClient = new BusClient(serverInstance);
-        LiveClient client = (LiveClient) ProxyHandler.getProxyInstance(busClient, this, policy);
+        Client client = (Client) ProxyHandler.getProxyInstance(busClient, this, policy);
         return client;
     }
 

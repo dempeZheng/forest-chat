@@ -74,8 +74,16 @@ public class NettyMQTTHandler extends ChannelHandlerAdapter {
                     byte[] array = new byte[payload.remaining()];
                     payload.get(array);
                     String daemonName = new String(bytes, "UTF-8");
-                    // 单播消息，如果topic非空，则定义为点对点的聊天，单播消息的topic为聊天对象的uid
-                    if (StringUtils.isNotBlank(topic) && msgType == MsgType.UNICAST.getValue()) {
+                    // 如果消息类型为单播，且透传的进程非bus进程，将消息传递给下一个hanndler(分发消息到相应的业务进程)
+                    if (msgType == MsgType.UNICAST.getValue() && daemonName != R.FOREST_BUS_NAME) {
+                        BusMessage req = new BusMessage();
+                        req.setDaemonName(daemonName);
+                        req.setMsgType(msgType);
+                        payload.putInt(payload.position(), messageID);
+                        req.setJsonByteReq(array);
+                        ctx.fireChannelRead(req);
+                        // 单播消息，如果topic非空，则定义为点对点的聊天，单播消息的topic为聊天对象的uid
+                    } else if (StringUtils.isNotBlank(topic) && msgType == MsgType.UNICAST.getValue()) {
                         // 获取channel，将消息直接发送到对应的client
                         // 单播消息 topic非空情况下，定义存储为uid
                         String uid = topic;
@@ -84,23 +92,14 @@ public class NettyMQTTHandler extends ChannelHandlerAdapter {
                             publishMessage.setPayload(ByteBuffer.wrap(array));
                             session.writeAndFlush(publishMessage);
                         }
-                    } else {
-                        // 如果消息类型为单播，且透传的进程非bus进程，将消息传递给下一个hanndler(分发消息到相应的业务进程)
-                        if (msgType == MsgType.UNICAST.getValue() && daemonName != R.FOREST_BUS_NAME) {
-                            BusMessage req = new BusMessage();
-                            req.setDaemonName(daemonName);
-                            req.setMsgType(msgType);
-                            payload.putInt(payload.position(), messageID);
-                            req.setJsonByteReq(array);
-                            ctx.fireChannelRead(req);
-                        } else if (msgType == MsgType.BCSUBCH.getValue()) {
-                            // 覆盖publishMessage 中的payload，去掉对客户端无价值的外层协议(daemonName&msgType)
-                            publishMessage.setPayload(ByteBuffer.wrap(array));
-                            m_processor.processPublish(ctx.channel(), publishMessage);
+                        // 如果为广播
+                    } else if (msgType == MsgType.BCSUBCH.getValue()) {
+                        // 覆盖publishMessage 中的payload，去掉对客户端无价值的外层协议(daemonName&msgType)
+                        publishMessage.setPayload(ByteBuffer.wrap(array));
+                        m_processor.processPublish(ctx.channel(), publishMessage);
 
-                        } else if (msgType == MsgType.AREA_MULTICAST.getValue()) {
-                            // 多播 逻辑待实现
-                        }
+                    } else if (msgType == MsgType.AREA_MULTICAST.getValue()) {
+                        // 多播 逻辑待实现
                     }
 
                     break;

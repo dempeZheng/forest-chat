@@ -14,6 +14,7 @@
         <module>ocean-common</module>
         <module>ocean-bus</module>
         <module>ocean-node</module>
+        <module>ocean-sdk</module>
     </modules>
 
 

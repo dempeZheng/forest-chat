@@ -5,7 +5,6 @@ import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
-import org.fusesource.mqtt.client.QoS;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ import java.util.List;
  * Time: 11:38
  * To change this template use File | Settings | File Templates.
  */
-public class BusClient implements LiveClient {
+public class BusClient implements Client {
 
     private MQTTClient client;
 
@@ -51,15 +50,6 @@ public class BusClient implements LiveClient {
         return client.publish(topic,bytes);
     }
 
-    @Override
-    public Response publishBC(String topic, BusMessage request) {
-        return client.publishBC(topic, request);
-    }
-
-    @Override
-    public Response publishMultiBC(List<Long> uidList, String topic, BusMessage request) {
-        return null;
-    }
 
     @Override
     public Future<Message> receive() {

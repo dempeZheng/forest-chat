@@ -5,8 +5,6 @@ import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
 
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Dempe
@@ -14,7 +12,7 @@ import java.util.List;
  * Time: 17:52
  * To change this template use File | Settings | File Templates.
  */
-public interface LiveClient {
+public interface Client {
 
     public void connect(String uid, String pwd) throws Exception;
 
@@ -34,7 +32,7 @@ public interface LiveClient {
     public void unSubscribe(String topic);
 
     /**
-     * 直播间业务消息单播
+     * 发布消息
      *
      * @param topic
      * @param request
@@ -43,30 +41,14 @@ public interface LiveClient {
     public Response publish(String topic, BusMessage request);
 
 
+    /**
+     * 发布消息
+     *
+     * @param topic
+     * @param bytes
+     * @return
+     */
     public Response publish(String topic, byte[] bytes);
-
-
-    /**
-     * 直播间业务消息广播
-     *
-     * @param topic
-     * @param request
-     * @return
-     */
-    public Response publishBC(String topic, BusMessage request);
-
-
-    public Response publishBC(String topic, byte[] bytes);
-
-    /**
-     * 直播间业务消息多播
-     *
-     * @param uidList
-     * @param topic
-     * @param request
-     * @return
-     */
-    public Response publishMultiBC(List<Long> uidList, String topic, BusMessage request);
 
 
     public Future<Message> receive();

@@ -1,4 +1,4 @@
-package com.dempe.ocean.client.sdk;
+package com.dempe.ocean.sdk;
 
 import com.dempe.ocean.common.MsgType;
 import com.dempe.ocean.common.protocol.BusMessage;
@@ -22,7 +22,7 @@ public class RequestBuilder {
         Request request = new Request();
         request.setUri(imUri.getUri());
         request.setUid(String.valueOf(uid));
-        request.setParam(param);
+        request.setData(param);
         BusMessage busMessage = new BusMessage();
         busMessage.setDaemonName(daemonName);
         busMessage.setMsgType(MsgType.UNICAST.getValue());

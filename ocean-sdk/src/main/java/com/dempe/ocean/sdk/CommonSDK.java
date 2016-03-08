@@ -1,4 +1,4 @@
-package com.dempe.ocean.client.sdk;
+package com.dempe.ocean.sdk;
 
 import com.dempe.ocean.client.bus.cluster.HABusCliService;
 import com.dempe.ocean.common.MsgType;
@@ -93,6 +93,20 @@ public class CommonSDK {
         message.setMsgType(MsgType.UNICAST.getValue());
         message.setJsonByteReq(request.toByteArray());
         haBusCliService.publish("", message);
+    }
+
+    /**
+     * 单播协议
+     *
+     * @param daemonName
+     * @param request
+     */
+    public void publish(String daemonName, String topic, Request request) {
+        BusMessage message = new BusMessage();
+        message.setDaemonName(daemonName);
+        message.setMsgType(MsgType.UNICAST.getValue());
+        message.setJsonByteReq(request.toByteArray());
+        haBusCliService.publish(topic, message);
     }
 
     /**

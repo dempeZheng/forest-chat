@@ -1,7 +1,6 @@
-package com.dempe.ocean.client.sdk;
+package com.dempe.ocean.sdk;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dempe.ocean.common.MsgType;
 import com.dempe.ocean.common.R;
 import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.Request;
@@ -80,16 +79,12 @@ public class IMSDK extends CommonSDK {
      * @param message
      */
     public void sendMessage(Long friendUid, String message) {
-        BusMessage busMessage = new BusMessage();
-        busMessage.setDaemonName(R.FOREST_LEAF_NAME);
-        busMessage.setMsgType(MsgType.UNICAST.getValue());
         Request request = new Request();
-        request.setParam(message);
+        request.setData(message);
         request.setTopic(String.valueOf(friendUid));
         request.setUid(String.valueOf(uid));
-        request.setUri("/groupMessage");
-        busMessage.setJsonByteReq(request.toByteArray());
-        haBusCliService.publish(String.valueOf(friendUid), busMessage);
+        request.setUri("/message");
+        publish(R.FOREST_BUS_NAME, String.valueOf(friendUid), request);
     }
 
     /**
@@ -99,16 +94,12 @@ public class IMSDK extends CommonSDK {
      * @param message
      */
     public void sendGroupMessage(Integer groupId, String message) {
-        BusMessage busMessage = new BusMessage();
-        busMessage.setDaemonName(R.FOREST_BUS_NAME);
-        busMessage.setMsgType(MsgType.UNICAST.getValue());
         Request request = new Request();
-        request.setParam(message);
+        request.setData(message);
         request.setTopic(String.valueOf(groupId));
         request.setUid(String.valueOf(uid));
         request.setUri("/groupMessage");
-        busMessage.setJsonByteReq(request.toByteArray());
-        haBusCliService.publishBC(String.valueOf(groupId), busMessage);
+        publishSubBC(String.valueOf(groupId), request);
     }
 
 
@@ -118,7 +109,13 @@ public class IMSDK extends CommonSDK {
 
         final IMSDK imsdk = new IMSDK(uid, pwd);
 
-        imsdk.connect(uid,pwd);
+        imsdk.connect(uid, pwd);
+
+        // 用户与服务器建立连接需要获取到用户的信息
+        // 用户的好友
+        // 用户的群组
+
+        // 订阅群组，接收群组内消息
 
 
         // set listener 监听频道内消息
@@ -130,7 +127,6 @@ public class IMSDK extends CommonSDK {
         });
 
         imsdk.init();
-
 
         imsdk.sendMessage(uid, "hello");
     }

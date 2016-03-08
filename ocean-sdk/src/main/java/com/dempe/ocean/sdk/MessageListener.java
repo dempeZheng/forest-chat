@@ -1,4 +1,4 @@
-package com.dempe.ocean.client.sdk;
+package com.dempe.ocean.sdk;
 
 import com.dempe.ocean.common.protocol.Request;
 

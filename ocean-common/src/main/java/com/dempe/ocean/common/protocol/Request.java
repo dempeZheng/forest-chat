@@ -25,7 +25,7 @@ public class Request implements Marshallable {
 
     private String uri;
 
-    private String param;
+    private String data;
 
     public String getUri() {
         return uri;
@@ -35,19 +35,19 @@ public class Request implements Marshallable {
         this.uri = uri;
     }
 
-    public String getParam() {
-        return param;
+    public String getData() {
+        return data;
     }
 
-    public void setParam(String param) {
-        this.param = param;
+    public void setData(String data) {
+        this.data = data;
     }
 
     public JSONObject paramJSON() {
-        if (StringUtils.isBlank(param)) {
+        if (StringUtils.isBlank(data)) {
             return new JSONObject();
         }
-        return JSONObject.parseObject(param);
+        return JSONObject.parseObject(data);
     }
 
     public Integer getMessageID() {
@@ -75,7 +75,7 @@ public class Request implements Marshallable {
     }
 
     public void putParaJSON(JSONObject paramJSON) {
-        this.param = paramJSON.toJSONString();
+        this.data = paramJSON.toJSONString();
     }
 
     public Pack marshal(Pack pack) {
@@ -83,7 +83,7 @@ public class Request implements Marshallable {
         pack.putVarstr(uid);
         pack.putVarstr(topic);
         pack.putVarstr(uri);
-        pack.putVarstr(param);
+        pack.putVarstr(data);
         return pack;
     }
 
@@ -92,7 +92,7 @@ public class Request implements Marshallable {
         uid = unpack.popVarstr();
         topic = unpack.popVarstr();
         uri = unpack.popVarstr();
-        param = unpack.popVarstr();
+        data = unpack.popVarstr();
         return this;
     }
 
@@ -100,13 +100,15 @@ public class Request implements Marshallable {
         return this.marshal(new Pack()).getBuffer().array();
     }
 
+
     @Override
     public String toString() {
         return "Request{" +
-                "uid='" + uid + '\'' +
+                "messageID=" + messageID +
+                ", uid='" + uid + '\'' +
                 ", topic='" + topic + '\'' +
                 ", uri='" + uri + '\'' +
-                ", param='" + param + '\'' +
+                ", data='" + data + '\'' +
                 '}';
     }
 }

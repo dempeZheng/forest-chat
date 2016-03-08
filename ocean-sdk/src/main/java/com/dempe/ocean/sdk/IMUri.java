@@ -1,4 +1,4 @@
-package com.dempe.ocean.client.sdk;
+package com.dempe.ocean.sdk;
 
 /**
  * Created with IntelliJ IDEA.

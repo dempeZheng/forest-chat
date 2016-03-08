@@ -37,11 +37,11 @@ public class NodeClientHandler extends ChannelHandlerAdapter {
         String uid = resp.getUid();
         LOGGER.info("resp:{}", resp);
 
-        Channel session = getSessionByUid(uid);
+        final Channel session = getSessionByUid(uid);
         if (session == null) {
             return;
         }
-        PublishMessage message = new PublishMessage();
+        final PublishMessage message = new PublishMessage();
         String topic = resp.getTopic();
         LOGGER.info(">>>>>>>>>>>>>>>>>>>{}", topic);
         message.setTopicName(topic);
@@ -51,8 +51,13 @@ public class NodeClientHandler extends ChannelHandlerAdapter {
         message.setPayload(buffer);
         message.setMessageID(resp.getMessageID());
         LOGGER.info("================>>>>>>>>>>>>>>protocolProcessor:{}", protocolProcessor);
-        session.writeAndFlush(message);
-//        protocolProcessor.processPublish(session, message);
+        session.eventLoop().execute(new Runnable() {
+            @Override
+            public void run() {
+                session.writeAndFlush(message);
+            }
+        });
+
 
     }
 

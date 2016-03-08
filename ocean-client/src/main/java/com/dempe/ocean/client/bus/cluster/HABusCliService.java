@@ -38,33 +38,39 @@ public class HABusCliService implements Client {
 
     @Override
     public void connect(String uid, String pwd) throws Exception {
+        assert client != null : "no available client!";
         client.connect(uid, pwd);
     }
 
     @Override
     public void subscribe(String topic) {
+        assert client != null : "no available client!";
         client.subscribe(topic);
     }
 
 
     @Override
     public void unSubscribe(String topic) {
+        assert client != null : "no available client!";
         client.unSubscribe(topic);
     }
 
     @Override
     public Response publish(String topic, BusMessage request) {
+        assert client != null : "no available client!";
         return client.publish(topic, request);
     }
 
     @Override
     public Response publish(String topic, byte[] bytes) {
+        assert client != null : "no available client!";
         return client.publish(topic, bytes);
     }
 
 
     @Override
     public Future<Message> receive() {
+        assert client != null : "no available client!";
         return client.receive();
     }
 }

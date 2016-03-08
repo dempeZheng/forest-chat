@@ -22,7 +22,6 @@ public class DispatcherProcessor {
             return;
         }
         HANodeCliService clientService = getClientServiceByName(name);
-
         clientService.sendBytes(bytes);
     }
 

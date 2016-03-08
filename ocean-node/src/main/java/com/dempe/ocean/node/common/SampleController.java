@@ -1,9 +1,9 @@
-package com.dempe.ocean.node.controller;
+package com.dempe.ocean.node.common;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dempe.ocean.client.bus.cluster.HABusCliService;
 import com.dempe.ocean.common.anno.Path;
-import com.dempe.ocean.node.service.SampleService;
+import com.dempe.ocean.node.common.service.SampleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;

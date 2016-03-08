@@ -59,8 +59,19 @@ public class HABusCliService implements LiveClient {
     }
 
     @Override
+    public Response publish(String topic, byte[] bytes) {
+        return client.publish(topic, bytes);
+    }
+
+
+    @Override
     public Response publishBC(String topic, BusMessage request) {
         return client.publishBC(topic, request);
+    }
+
+    @Override
+    public Response publishBC(String topic, byte[] bytes) {
+        return client.publishBC(topic, bytes);
     }
 
     @Override

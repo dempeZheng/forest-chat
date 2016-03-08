@@ -51,7 +51,8 @@ public class NodeClientHandler extends ChannelHandlerAdapter {
         message.setPayload(buffer);
         message.setMessageID(resp.getMessageID());
         LOGGER.info("================>>>>>>>>>>>>>>protocolProcessor:{}", protocolProcessor);
-        protocolProcessor.processPublish(session, message);
+        session.writeAndFlush(message);
+//        protocolProcessor.processPublish(session, message);
 
     }
 

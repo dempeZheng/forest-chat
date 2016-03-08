@@ -154,6 +154,7 @@ public class ProtocolProcessor {
                 failedCredentials(channel);
                 return;
             }
+            // 处理登录问题
             if (!m_authenticator.checkValid(msg.getUsername(), pwd)) {
                 failedCredentials(channel);
                 channel.close();
@@ -296,6 +297,56 @@ public class ProtocolProcessor {
         pub.setRetained(will.isRetained());
         return pub;
     }
+    public void unicast(Channel session, PublishMessage msg) {
+        LOG.trace("PUB --PUBLISH--> SRV executePublish invoked with {}", msg);
+        String clientID = NettyUtils.clientID(session);
+        final String topic = msg.getTopicName();
+        //check if the topic can be wrote
+        String user = NettyUtils.userName(session);
+        if (!m_authorizator.canWrite(topic, user, clientID)) {
+            LOG.debug("topic {} doesn't have write credentials", topic);
+            return;
+        }
+        final AbstractMessage.QOSType qos = msg.getQos();
+        final Integer messageID = msg.getMessageID();
+        LOG.info("PUBLISH from clientID <{}> on topic <{}> with QoS {}", clientID, topic, qos);
+
+        String guid = null;
+        IMessagesStore.StoredMessage toStoreMsg = asStoredMessage(msg);
+        toStoreMsg.setClientID(clientID);
+        if (qos == AbstractMessage.QOSType.MOST_ONE) { //QoS0
+            route2Subscribers(toStoreMsg);
+        } else if (qos == AbstractMessage.QOSType.LEAST_ONE) { //QoS1
+            route2Subscribers(toStoreMsg);
+            sendPubAck(clientID, messageID);
+            LOG.debug("replying with PubAck to MSG ID {}", messageID);
+        } else if (qos == AbstractMessage.QOSType.EXACTLY_ONCE) { //QoS2
+            guid = m_messagesStore.storePublishForFuture(toStoreMsg);
+            sendPubRec(clientID, messageID);
+            //Next the client will send us a pub rel
+            //NB publish to subscribers for QoS 2 happen upon PUBREL from publisher
+        }
+
+        if (msg.isRetainFlag()) {
+            if (qos == AbstractMessage.QOSType.MOST_ONE) {
+                //QoS == 0 && retain => clean old retained
+                m_messagesStore.cleanRetained(topic);
+            } else {
+                if (!msg.getPayload().hasRemaining()) {
+                    m_messagesStore.cleanRetained(topic);
+                } else {
+                    if (guid == null) {
+                        //before wasn't stored
+                        guid = m_messagesStore.storePublishForFuture(toStoreMsg);
+                    }
+                    m_messagesStore.storeRetained(topic, guid);
+                }
+            }
+        }
+        m_interceptor.notifyTopicPublished(msg, clientID);
+    }
+
+
 
     public void processPublish(Channel session, PublishMessage msg) {
         LOG.trace("PUB --PUBLISH--> SRV executePublish invoked with {}", msg);

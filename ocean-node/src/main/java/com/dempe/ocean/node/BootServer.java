@@ -90,6 +90,8 @@ public class BootServer {
     public void start() {
         try {
             ChannelFuture f = b.bind(config.port()).sync();
+
+
             LOGGER.info("server start:{}", config.port());
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {

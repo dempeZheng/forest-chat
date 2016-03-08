@@ -43,6 +43,9 @@ public interface LiveClient {
     public Response publish(String topic, BusMessage request);
 
 
+    public Response publish(String topic, byte[] bytes);
+
+
     /**
      * 直播间业务消息广播
      *
@@ -52,6 +55,8 @@ public interface LiveClient {
      */
     public Response publishBC(String topic, BusMessage request);
 
+
+    public Response publishBC(String topic, byte[] bytes);
 
     /**
      * 直播间业务消息多播

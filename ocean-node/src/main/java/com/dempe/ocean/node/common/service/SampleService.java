@@ -1,4 +1,4 @@
-package com.dempe.ocean.node.service;
+package com.dempe.ocean.node.common.service;
 
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;

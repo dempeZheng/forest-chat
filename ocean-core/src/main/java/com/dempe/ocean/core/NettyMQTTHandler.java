@@ -20,10 +20,12 @@ import com.dempe.ocean.common.R;
 import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.mqtt.*;
 import com.dempe.ocean.core.spi.persistence.UidSessionStore;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.CorruptedFrameException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +64,7 @@ public class NettyMQTTHandler extends ChannelHandlerAdapter {
                     break;
                 case PUBLISH:
                     PublishMessage publishMessage = (PublishMessage) msg;
+                    String topic = publishMessage.getTopicName();
                     Integer messageID = publishMessage.getMessageID();
                     ByteBuffer payload = publishMessage.getPayload();
                     payload = payload.order(ByteOrder.LITTLE_ENDIAN);
@@ -71,22 +74,35 @@ public class NettyMQTTHandler extends ChannelHandlerAdapter {
                     byte[] array = new byte[payload.remaining()];
                     payload.get(array);
                     String daemonName = new String(bytes, "UTF-8");
-                    // 如果消息类型为单播，且透传的进程非bus进程，将消息传递给下一个hanndler(分发消息到相应的业务进程)
-                    if (msgType == MsgType.UNICAST.getValue() && daemonName != R.FOREST_BUS_NAME) {
-                        BusMessage req = new BusMessage();
-                        req.setDaemonName(daemonName);
-                        req.setMsgType(msgType);
-                        payload.putInt(payload.position(), messageID);
-                        req.setJsonByteReq(array);
-                        ctx.fireChannelRead(req);
-                    } else if (msgType == MsgType.BCSUBCH.getValue()) {
-                        // 覆盖publishMessage 中的payload，去掉对客户端无价值的外层协议(daemonName&msgType)
-                        publishMessage.setPayload(ByteBuffer.wrap(array));
-                        m_processor.processPublish(ctx.channel(), publishMessage);
+                    // 单播消息，如果topic非空，则定义为点对点的聊天，单播消息的topic为聊天对象的uid
+                    if (StringUtils.isNotBlank(topic) && msgType == MsgType.UNICAST.getValue()) {
+                        // 获取channel，将消息直接发送到对应的client
+                        // 单播消息 topic非空情况下，定义存储为uid
+                        String uid = topic;
+                        Channel session = UidSessionStore.getSessionByUid(uid);
+                        if (session != null) {
+                            publishMessage.setPayload(ByteBuffer.wrap(array));
+                            session.writeAndFlush(publishMessage);
+                        }
+                    } else {
+                        // 如果消息类型为单播，且透传的进程非bus进程，将消息传递给下一个hanndler(分发消息到相应的业务进程)
+                        if (msgType == MsgType.UNICAST.getValue() && daemonName != R.FOREST_BUS_NAME) {
+                            BusMessage req = new BusMessage();
+                            req.setDaemonName(daemonName);
+                            req.setMsgType(msgType);
+                            payload.putInt(payload.position(), messageID);
+                            req.setJsonByteReq(array);
+                            ctx.fireChannelRead(req);
+                        } else if (msgType == MsgType.BCSUBCH.getValue()) {
+                            // 覆盖publishMessage 中的payload，去掉对客户端无价值的外层协议(daemonName&msgType)
+                            publishMessage.setPayload(ByteBuffer.wrap(array));
+                            m_processor.processPublish(ctx.channel(), publishMessage);
 
-                    } else if (msgType == MsgType.AREA_MULTICAST.getValue()) {
-                        // 多播 逻辑待实现
+                        } else if (msgType == MsgType.AREA_MULTICAST.getValue()) {
+                            // 多播 逻辑待实现
+                        }
                     }
+
                     break;
                 case PUBREC:
                     m_processor.processPubRec(ctx.channel(), (PubRecMessage) msg);

@@ -3,6 +3,7 @@ package com.dempe.ocean.bus;
 import com.dempe.ocean.common.protocol.BusMessage;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.EventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,9 +21,13 @@ public class BusBusinessHandler extends ChannelHandlerAdapter {
 
     DispatcherProcessor processor;
 
+
+
     public BusBusinessHandler(DispatcherProcessor processor) {
         this.processor = processor;
     }
+
+
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -31,6 +36,11 @@ public class BusBusinessHandler extends ChannelHandlerAdapter {
             BusMessage req = (BusMessage) msg;
             LOGGER.info("dispatcher msg to {}", req.getDaemonName());
             processor.dispatcher(req.getDaemonName(), req.getJsonByteReq());
+
+
+
+
+
 
         }
 

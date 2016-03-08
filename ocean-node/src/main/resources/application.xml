@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+
+    <!-- 数据库实例 -->
+    <bean id="mongo" class="com.mongodb.MongoClient">
+        <constructor-arg name="host" value="120.24.211.40"/>
+        <constructor-arg name="port" value="27000"/>
+    </bean>
+
+
+    <!-- morphia实例 -->
+    <bean id="morphia" class="org.mongodb.morphia.Morphia"/>
+
+    <!-- 库名称 -->
+    <bean id="dbName" class="java.lang.String">
+        <constructor-arg index="0" value="commons_vote"/>
+    </bean>
+
+    <!-- datastore实例 -->
+    <bean id="dataStore" class="org.mongodb.morphia.DatastoreImpl">
+        <constructor-arg name="morphia" ref="morphia"/>
+        <constructor-arg name="mongoClient" ref="mongo"/>
+        <constructor-arg name="dbName" ref="dbName"/>
+    </bean>
 
 
     <context:annotation-config/>

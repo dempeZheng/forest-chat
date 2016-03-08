@@ -49,6 +49,7 @@ public class MQTTClient {
         mqtt.setPassword(pwd);
         mqtt.setClientId(uid);
         connection = mqtt.futureConnection();
+        mqtt.blockingConnection();
         connection.connect();
 
     }
@@ -69,15 +70,25 @@ public class MQTTClient {
         return null;
     }
 
+    public Response publish(String topic,byte[] bytes) {
+        connection.publish(topic, bytes, QoS.AT_LEAST_ONCE, false);
+        return null;
+    }
+
 
     public Response publishBC(String topic, BusMessage request) {
         connection.publish(topic, request.toByteArray(), QoS.AT_LEAST_ONCE, false);
+        return null;
+    }
+    public Response publishBC(String topic, byte[] bytes) {
+        connection.publish(topic, bytes, QoS.AT_LEAST_ONCE, false);
         return null;
     }
 
     public Future<Message> receive() {
         return connection.receive();
     }
+
 
 
 }

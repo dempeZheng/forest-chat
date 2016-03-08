@@ -5,6 +5,7 @@ import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
+import org.fusesource.mqtt.client.QoS;
 
 import java.util.List;
 
@@ -37,13 +38,17 @@ public class BusClient implements LiveClient {
 
     @Override
     public void unSubscribe(String topic) {
-
         client.unSubscribe(topic);
     }
 
     @Override
     public Response publish(String topic, BusMessage request) {
         return client.publish(topic, request);
+    }
+
+    @Override
+    public Response publish(String topic, byte[] bytes) {
+        return client.publish(topic,bytes);
     }
 
     @Override
@@ -59,5 +64,10 @@ public class BusClient implements LiveClient {
     @Override
     public Future<Message> receive() {
         return client.receive();
+    }
+
+    public Response publishBC(String topic, byte[] bytes) {
+        client.publishBC(topic, bytes);
+        return null;
     }
 }

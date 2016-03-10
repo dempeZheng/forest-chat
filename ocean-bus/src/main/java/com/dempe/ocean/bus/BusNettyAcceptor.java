@@ -19,8 +19,7 @@ import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.codec.mqtt.MQTTDecoder;
 import com.dempe.ocean.common.codec.mqtt.MQTTEncoder;
 import com.dempe.ocean.core.Constants;
-import com.dempe.ocean.core.MoquetteIdleTimeoutHandler;
-import com.dempe.ocean.core.ProtocolProcessor;
+import com.dempe.ocean.core.IdleTimeoutHandler;
 import com.dempe.ocean.core.spi.metrics.*;
 import com.dempe.ocean.core.spi.security.ISslContextCreator;
 import io.netty.bootstrap.ServerBootstrap;
@@ -137,7 +136,7 @@ public class BusNettyAcceptor {
     }
 
     private void initializePlainTCPTransport(final BusMQTTHandler handler, OceanConfig config) throws IOException {
-        final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
+        final IdleTimeoutHandler timeoutHandler = new IdleTimeoutHandler();
         String host = config.host();
         int port = config.port();
         initFactory(host, port, new PipelineInitializer() {
@@ -158,7 +157,7 @@ public class BusNettyAcceptor {
     private void initializeWebSocketTransport(final BusMQTTHandler handler, OceanConfig config) throws IOException {
         int port = config.webSocketPort();
         String host = config.webSocketHost();
-        final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
+        final IdleTimeoutHandler timeoutHandler = new IdleTimeoutHandler();
         initFactory(host, port, new PipelineInitializer() {
             @Override
             void init(ChannelPipeline pipeline) {
@@ -188,7 +187,7 @@ public class BusNettyAcceptor {
         }
         LOG.info("Starting SSL on port {}", sslPort);
         String host = config.host();
-        final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
+        final IdleTimeoutHandler timeoutHandler = new IdleTimeoutHandler();
         initFactory(host, sslPort, new PipelineInitializer() {
             @Override
             void init(ChannelPipeline pipeline) throws Exception {
@@ -213,7 +212,7 @@ public class BusNettyAcceptor {
             return;
         }
 
-        final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
+        final IdleTimeoutHandler timeoutHandler = new IdleTimeoutHandler();
         String host = config.host();
         initFactory(host, sslPort, new PipelineInitializer() {
             @Override

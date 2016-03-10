@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dempe.ocean.common.anno.Param;
 import com.dempe.ocean.common.anno.Path;
 import com.dempe.ocean.common.utils.JsonResult;
-import com.dempe.ocean.node.common.model.User;
+import com.dempe.ocean.common.model.User;
 import com.dempe.ocean.node.common.service.UserService;
 import org.springframework.stereotype.Controller;
 

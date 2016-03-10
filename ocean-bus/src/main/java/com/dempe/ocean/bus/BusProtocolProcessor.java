@@ -18,12 +18,12 @@ package com.dempe.ocean.bus;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dempe.ocean.client.service.IMServiceClient;
+import com.dempe.ocean.common.model.User;
 import com.dempe.ocean.common.protocol.Message;
 import com.dempe.ocean.common.protocol.mqtt.AbstractMessage.QOSType;
 import com.dempe.ocean.common.protocol.mqtt.*;
 import com.dempe.ocean.core.BrokerInterceptor;
 import com.dempe.ocean.core.ConnectionDescriptor;
-import com.dempe.ocean.core.DebugUtils;
 import com.dempe.ocean.core.NettyUtils;
 import com.dempe.ocean.core.spi.ClientSession;
 import com.dempe.ocean.core.spi.IMatchingCondition;
@@ -153,10 +153,9 @@ public class BusProtocolProcessor {
                 return;
             }
             // 处理登录问题
-            Message login = imServiceClient.login(Long.valueOf(msg.getUsername()), new String(pwd));
-            JSONObject result = (JSONObject) JSONObject.parse(login.getExtendData());
+            User user = imServiceClient.login(Long.valueOf(msg.getUsername()), new String(pwd));
             // 如果登录失败
-            if (result.getJSONObject("data") == null) {
+            if (user== null) {
                 failedCredentials(channel);
                 channel.close();
                 return;
@@ -459,10 +458,6 @@ public class BusProtocolProcessor {
         pubMessage.setQos(qos);
         pubMessage.setPayload(message);
 
-        LOG.info("send publish message to <{}> on topic <{}>", clientId, topic);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("content <{}>", DebugUtils.payload2Str(message));
-        }
         //set the PacketIdentifier only for QoS > 0
         if (pubMessage.getQos() != QOSType.MOST_ONE) {
             pubMessage.setMessageID(messageID);
@@ -653,7 +648,6 @@ public class BusProtocolProcessor {
         SubAckMessage ackMessage = new SubAckMessage();
         ackMessage.setMessageID(msg.getMessageID());
 
-        String user = NettyUtils.userName(channel);
         List<Subscription> newSubscriptions = new ArrayList<>();
         for (SubscribeMessage.Couple req : msg.subscriptions()) {
 
@@ -666,11 +660,6 @@ public class BusProtocolProcessor {
             }
         }
 
-        //save session, persist subscriptions from session
-        LOG.debug("SUBACK for packetID {}", msg.getMessageID());
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("subscription tree {}", subscriptions.dumpTree());
-        }
         channel.writeAndFlush(ackMessage);
 
         //fire the publish

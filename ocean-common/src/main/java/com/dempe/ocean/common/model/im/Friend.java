@@ -1,4 +1,4 @@
-package com.dempe.ocean.node.im.model;
+package com.dempe.ocean.common.model.im;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
@@ -15,6 +15,7 @@ public class Friend {
 
     // uid&friendUid联合主键
     @Id
+    private String id;
     private Long uid;
     private Long friendUid;
     private Long applyTime;//申请时间
@@ -39,6 +40,14 @@ public class Friend {
         }
     }
 
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public Long getUid() {
         return uid;

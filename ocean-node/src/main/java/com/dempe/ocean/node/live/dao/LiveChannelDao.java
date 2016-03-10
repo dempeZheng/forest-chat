@@ -1,6 +1,6 @@
 package com.dempe.ocean.node.live.dao;
 
-import com.dempe.ocean.node.live.model.LiveChannel;
+import com.dempe.ocean.common.model.live.LiveChannel;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.springframework.beans.factory.annotation.Autowired;

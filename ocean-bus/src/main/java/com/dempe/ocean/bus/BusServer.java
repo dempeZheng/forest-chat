@@ -3,7 +3,7 @@ package com.dempe.ocean.bus;
 import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.protocol.mqtt.PublishMessage;
 import com.dempe.ocean.common.register.NameDiscoveryService;
-import com.dempe.ocean.core.DefaultMoquetteSslContextCreator;
+import com.dempe.ocean.core.DefaultSslContextCreator;
 import com.dempe.ocean.core.interception.InterceptHandler;
 import com.dempe.ocean.core.spi.security.ISslContextCreator;
 import org.aeonbits.owner.ConfigFactory;
@@ -84,7 +84,7 @@ public class BusServer {
         final BusProtocolProcessor processor = BusSimpleMessaging.getInstance().init(config, handlers);
 
         if (sslCtxCreator == null) {
-            sslCtxCreator = new DefaultMoquetteSslContextCreator(config);
+            sslCtxCreator = new DefaultSslContextCreator(config);
         }
 
         m_acceptor = new BusNettyAcceptor();

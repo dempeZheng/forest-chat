@@ -125,7 +125,7 @@ public class BusMQTTHandler extends ChannelHandlerAdapter {
         BusMessage busMessage = new BusMessage().unmarshal(new Unpack(payload));
         short msgType = busMessage.getMsgType();
         String daemonName = busMessage.getDaemonName();
-        // 如果消息类型为单播，且透传的进程非bus进程，将消息传递给下一个handler(分发消息到相应的业务进程)
+        // 如果消息类型为单播，且透传的进程非bus进程，分发消息到相应的业务进程
         if (StringUtils.equals("bus", topic) && msgType == MsgType.UNICAST.getValue() && daemonName != R.FOREST_BUS_NAME) {
             DefaultClientService clientService = getClientServiceByName(daemonName);
             Message request = busMessage.getRequest();

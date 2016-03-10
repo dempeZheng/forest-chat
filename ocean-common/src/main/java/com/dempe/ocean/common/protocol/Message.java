@@ -23,8 +23,6 @@ public class Message implements Marshallable {
 
     private Long uid = 0L;// 用户uid
 
-    private String topic = "";//消息主题
-
     private String uri = "/";//消息uri
 
     private Map<String, String> paramMap = Maps.newHashMap();// 参数map
@@ -64,14 +62,6 @@ public class Message implements Marshallable {
         this.uid = uid;
     }
 
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
     public byte[] getExtendData() {
         return extendData;
     }
@@ -83,7 +73,6 @@ public class Message implements Marshallable {
     public Pack marshal(Pack pack) {
         pack.putInt(messageID);
         pack.putLong(uid);
-        pack.putVarstr(topic);
         pack.putVarstr(uri);
         MarshallUtils.packMap(pack, paramMap, String.class, String.class);
         pack.putBuffer(ByteBuffer.wrap(extendData));
@@ -93,7 +82,6 @@ public class Message implements Marshallable {
     public Message unmarshal(Unpack unpack) throws IOException {
         messageID = unpack.popInt();
         uid = unpack.popLong();
-        topic = unpack.popVarstr();
         uri = unpack.popVarstr();
         paramMap = MarshallUtils.unpackMap(unpack, String.class, String.class, false);
         int remaining = unpack.getOriBuffer().remaining();
@@ -110,7 +98,6 @@ public class Message implements Marshallable {
         return "Request{" +
                 "messageID=" + messageID +
                 ", uid='" + uid + '\'' +
-                ", topic='" + topic + '\'' +
                 ", uri='" + uri + '\'' +
                 ", paramMap=" + paramMap +
                 '}';

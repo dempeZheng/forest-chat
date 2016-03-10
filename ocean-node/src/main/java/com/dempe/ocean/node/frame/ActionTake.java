@@ -76,7 +76,6 @@ public class ActionTake implements Take<Message, Message> {
         // set请求消息id标识，用于client将Response&Request对应
         resp.setExtendData(JSONObject.toJSONBytes(result));
         resp.setUid(request.getUid());
-        resp.setTopic(request.getTopic());
         resp.setMessageID(request.getMessageID());
         return resp;
     }

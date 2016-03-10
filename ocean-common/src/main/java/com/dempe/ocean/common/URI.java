@@ -16,7 +16,8 @@ public class URI {
         FRIEND_APPLY("/friend/apply"),//申请好友
         FRIEND_DEL("/friend/del"),//删除好友
         FRIEND_ACCEPT("/friend/accept"),//接受好友申请
-        USER_GROUP_SAVE("userGroup/save"),//创建群
+        IM_GROUP_SAVE("imGroup/save"),//创建群
+        USER_GROUP_LIST("userGroup/listUidByGroupId"),//创建群
         ;
         private String uri;
 

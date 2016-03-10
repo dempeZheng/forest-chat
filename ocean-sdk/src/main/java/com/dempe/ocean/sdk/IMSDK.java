@@ -85,7 +85,6 @@ public class IMSDK extends CommonSDK {
     public void sendMessage(Long friendUid, String message) throws NoAvailableClientException {
         Message request = new Message();
         request.setExtendData(message.getBytes());
-        request.setTopic(String.valueOf(friendUid));
         request.setUid(uid);
         request.setUri("/message");
         BusMessage busMessage = new BusMessage();
@@ -101,7 +100,6 @@ public class IMSDK extends CommonSDK {
     public void sendGroupMessage(Integer groupId, String message) throws NoAvailableClientException {
         Message request = new Message();
         request.setExtendData(message.getBytes());
-        request.setTopic(String.valueOf(groupId));
         request.setUid(uid);
         request.setUri("/groupMessage");
         publishSubBC(String.valueOf(groupId), request);

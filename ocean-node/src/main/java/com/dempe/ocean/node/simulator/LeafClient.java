@@ -20,7 +20,6 @@ public class LeafClient {
         Message request = new Message();
         request.setUri("/user/login");
         request.setUid(222L);
-        request.setTopic("2222");
         Map<String, String> paramMap = Maps.newHashMap();
         paramMap.put("uid", "2222");
         paramMap.put("pwd", "ssss");

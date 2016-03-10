@@ -33,13 +33,13 @@ import java.security.cert.CertificateException;
  * <p/>
  * Created by andrea on 13/12/15.
  */
-public class DefaultMoquetteSslContextCreator implements ISslContextCreator {
+public class DefaultSslContextCreator implements ISslContextCreator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultMoquetteSslContextCreator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultSslContextCreator.class);
 
     private OceanConfig config;
 
-    public DefaultMoquetteSslContextCreator(OceanConfig config) {
+    public DefaultSslContextCreator(OceanConfig config) {
         this.config = config;
     }
 

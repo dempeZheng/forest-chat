@@ -1,7 +1,7 @@
 package com.dempe.ocean.node.common.service;
 
 import com.dempe.ocean.node.common.dao.UserDao;
-import com.dempe.ocean.node.common.model.User;
+import com.dempe.ocean.common.model.User;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

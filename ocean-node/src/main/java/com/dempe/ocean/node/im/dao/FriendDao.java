@@ -1,6 +1,6 @@
 package com.dempe.ocean.node.im.dao;
 
-import com.dempe.ocean.node.im.model.Friend;
+import com.dempe.ocean.common.model.im.Friend;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;

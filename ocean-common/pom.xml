@@ -143,6 +143,12 @@
             <version>1.11</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.mongodb.morphia</groupId>
+            <artifactId>morphia</artifactId>
+            <version>0.108</version>
+        </dependency>
+
 
     </dependencies>
 

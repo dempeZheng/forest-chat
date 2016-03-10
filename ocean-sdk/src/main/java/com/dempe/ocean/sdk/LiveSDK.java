@@ -70,7 +70,6 @@ public class LiveSDK extends CommonSDK {
         String topic = topSid + "|" + subSid;
         Message request = new Message();
         request.setUid(uid);
-        request.setTopic(topic);
         request.setUri("/sample/hello");
 
         // 发送全频道广播

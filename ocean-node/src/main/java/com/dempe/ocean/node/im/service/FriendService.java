@@ -1,8 +1,6 @@
 package com.dempe.ocean.node.im.service;
 
 import com.dempe.ocean.node.im.dao.FriendDao;
-import com.dempe.ocean.node.im.model.Friend;
-import org.mongodb.morphia.query.Query;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

@@ -1,7 +1,7 @@
 package com.dempe.ocean.node.live.service;
 
 import com.dempe.ocean.node.live.dao.LiveChannelDao;
-import com.dempe.ocean.node.live.model.LiveChannel;
+import com.dempe.ocean.common.model.live.LiveChannel;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

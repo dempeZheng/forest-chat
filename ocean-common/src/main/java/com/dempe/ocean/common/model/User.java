@@ -1,4 +1,4 @@
-package com.dempe.ocean.node.common.model;
+package com.dempe.ocean.common.model;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;

@@ -15,13 +15,13 @@
  */
 package com.dempe.ocean.core.spi.metrics;
 
-import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 
-public class MessageMetricsHandler extends ChannelDuplexHandler {
+public class MessageMetricsHandler extends ChannelHandlerAdapter {
 
     private static final AttributeKey<MessageMetrics> ATTR_KEY_METRICS = AttributeKey.valueOf("MessageMetrics");
 
@@ -35,7 +35,6 @@ public class MessageMetricsHandler extends ChannelDuplexHandler {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Attribute<MessageMetrics> attr = ctx.attr(ATTR_KEY_METRICS);
         attr.set(new MessageMetrics());
-
         super.channelActive(ctx);
     }
 

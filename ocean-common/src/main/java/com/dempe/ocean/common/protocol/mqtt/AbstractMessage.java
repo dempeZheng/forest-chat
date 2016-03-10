@@ -41,7 +41,7 @@ public abstract class AbstractMessage {
     public static final byte UNICAST = 15;
 
     public static enum QOSType {
-        MOST_ONE, LEAST_ONE, EXACTLY_ONCE, RESERVED, FAILURE, UNICAST, QOSType;
+        MOST_ONE, LEAST_ONE, EXACTLY_ONCE, RESERVED, FAILURE, QOSType;
 
         public static QOSType valueOf(byte qos) {
             switch (qos) {
@@ -53,8 +53,6 @@ public abstract class AbstractMessage {
                     return EXACTLY_ONCE;
                 case (byte) 0x80:
                     return FAILURE;
-                case (byte) 3:
-                    return UNICAST;
                 default:
                     throw new IllegalArgumentException("Invalid QOS Type. Expected either 0, 1, 2, or 0x80. Given: " + qos);
             }
@@ -70,8 +68,6 @@ public abstract class AbstractMessage {
                     return 2;
                 case FAILURE:
                     return (byte) 0x80;
-                case UNICAST:
-                    return 3;
                 default:
                     throw new IllegalArgumentException("Cannot give byteValue of QOSType: " + this.name());
             }

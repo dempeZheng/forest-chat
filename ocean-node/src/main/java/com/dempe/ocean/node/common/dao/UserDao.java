@@ -1,6 +1,6 @@
 package com.dempe.ocean.node.common.dao;
 
-import com.dempe.ocean.node.common.model.User;
+import com.dempe.ocean.common.model.User;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.springframework.beans.factory.annotation.Autowired;

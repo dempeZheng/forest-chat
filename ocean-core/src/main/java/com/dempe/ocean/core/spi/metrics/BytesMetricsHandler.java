@@ -16,13 +16,13 @@
 package com.dempe.ocean.core.spi.metrics;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
 
-public class BytesMetricsHandler extends ChannelDuplexHandler {
+public class BytesMetricsHandler extends ChannelHandlerAdapter {
 
     private static final AttributeKey<BytesMetrics> ATTR_KEY_METRICS = AttributeKey.valueOf("BytesMetrics");
 

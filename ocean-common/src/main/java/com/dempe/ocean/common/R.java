@@ -11,4 +11,10 @@ public class R {
 
     public static final String FOREST_BUS_NAME = "forest_bus";
     public static final String FOREST_LEAF_NAME = "forest_leaf";
+
+
+    public final static String CODE = "code";
+    public final static String DATA = "data";
+    public final static int SUCCESS_CODE = 0;
+    public final static String MSG = "msg";
 }

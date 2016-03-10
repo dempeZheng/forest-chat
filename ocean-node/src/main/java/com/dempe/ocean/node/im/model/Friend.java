@@ -1,6 +1,7 @@
 package com.dempe.ocean.node.im.model;
 
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
 
 /**
  * 好友关系文档集
@@ -13,6 +14,7 @@ import org.mongodb.morphia.annotations.Entity;
 public class Friend {
 
     // uid&friendUid联合主键
+    @Id
     private Long uid;
     private Long friendUid;
     private Long applyTime;//申请时间

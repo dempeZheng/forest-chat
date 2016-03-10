@@ -1,8 +1,8 @@
-package com.dempe.ocean.client.node.cluster;
+package com.dempe.ocean.client.ha;
 
 
-import com.dempe.ocean.client.node.Client;
-import com.dempe.ocean.client.node.NodeClient;
+import com.dempe.ocean.client.DefaultClient;
+import com.dempe.ocean.client.Client;
 import com.dempe.ocean.common.NodeDetails;
 import com.dempe.ocean.common.cluster.HAProxy;
 import com.dempe.ocean.common.cluster.ProxyHandler;
@@ -26,9 +26,10 @@ import java.util.List;
  * Time: 11:01
  * To change this template use File | Settings | File Templates.
  */
-public class HANodeClient extends HAProxy<Client> {
+public class DefaultHAClient extends HAProxy<Client> {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(HANodeClient.class);
+
+    protected final static Logger LOGGER = LoggerFactory.getLogger(DefaultHAClient.class);
 
     private NameDiscoveryService forestNameService;
 
@@ -38,12 +39,12 @@ public class HANodeClient extends HAProxy<Client> {
      * @param strategy
      * @param period
      */
-    public HANodeClient(String name, Strategy strategy, long period) throws Exception {
+    public DefaultHAClient(String name, Strategy strategy, long period) throws Exception {
         super(strategy, name, period);
 
     }
 
-    public HANodeClient(String name) throws Exception {
+    public DefaultHAClient(String name) throws Exception {
         this(name, Strategy.DEFAULT, 1000L);
     }
 
@@ -71,7 +72,7 @@ public class HANodeClient extends HAProxy<Client> {
          *1s accessPolicy=5次发送失败则会自动切换client
          */
         AccessPolicy policy = new AccessPolicy(10, 1 * 1000, 5 * 1000 * 60, true);
-        NodeClient forestClient = new NodeClient(serverInstance);
+        DefaultClient forestClient = new DefaultClient(serverInstance.getIp(), serverInstance.getPort());
         Client client = (Client) ProxyHandler.getProxyInstance(forestClient, this, policy);
         return client;
     }

@@ -3,7 +3,6 @@ package com.dempe.ocean.client.bus;
 
 import com.dempe.ocean.common.NodeDetails;
 import com.dempe.ocean.common.protocol.BusMessage;
-import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.hawtbuf.UTF8Buffer;
 import org.fusesource.mqtt.client.*;
 import org.slf4j.Logger;
@@ -52,6 +51,7 @@ public class MQTTClient {
         mqtt.blockingConnection();
         connection.connect();
 
+
     }
 
 
@@ -65,30 +65,26 @@ public class MQTTClient {
     }
 
 
-    public Response publish(String topic, BusMessage request) {
-        connection.publish(topic, request.toByteArray(), QoS.AT_LEAST_ONCE, false);
-        return null;
+    public void publish(String topic, BusMessage message) {
+        connection.publish(topic, message.toByteArray(), QoS.AT_LEAST_ONCE, false);
     }
 
-    public Response publish(String topic,byte[] bytes) {
+    public void publish(String topic, byte[] bytes) {
         connection.publish(topic, bytes, QoS.AT_LEAST_ONCE, false);
-        return null;
     }
 
 
-    public Response publishBC(String topic, BusMessage request) {
+    public void publishBC(String topic, BusMessage request) {
         connection.publish(topic, request.toByteArray(), QoS.AT_LEAST_ONCE, false);
-        return null;
     }
-    public Response publishBC(String topic, byte[] bytes) {
+
+    public void publishBC(String topic, byte[] bytes) {
         connection.publish(topic, bytes, QoS.AT_LEAST_ONCE, false);
-        return null;
     }
 
     public Future<Message> receive() {
         return connection.receive();
     }
-
 
 
 }

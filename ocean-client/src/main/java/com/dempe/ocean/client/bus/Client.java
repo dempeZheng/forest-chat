@@ -1,5 +1,6 @@
 package com.dempe.ocean.client.bus;
 
+import com.dempe.ocean.client.NoAvailableClientException;
 import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.mqtt.client.Future;
@@ -21,7 +22,7 @@ public interface Client {
      *
      * @param topic
      */
-    public void subscribe(String topic);
+    public void subscribe(String topic) throws NoAvailableClientException;
 
 
     /**
@@ -29,16 +30,17 @@ public interface Client {
      *
      * @param topic
      */
-    public void unSubscribe(String topic);
+    public void unSubscribe(String topic) throws NoAvailableClientException;
 
     /**
      * 发布消息
      *
      * @param topic
-     * @param request
+     * @param message
      * @return
      */
-    public Response publish(String topic, BusMessage request);
+    public void publish(String topic, BusMessage message) throws NoAvailableClientException;
+
 
 
     /**
@@ -48,10 +50,10 @@ public interface Client {
      * @param bytes
      * @return
      */
-    public Response publish(String topic, byte[] bytes);
+    public void publish(String topic, byte[] bytes) throws NoAvailableClientException;
 
 
-    public Future<Message> receive();
+    public Future<Message> receive() throws NoAvailableClientException;
 
 
 }

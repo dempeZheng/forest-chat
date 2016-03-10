@@ -1,8 +1,7 @@
-package com.dempe.ocean.client.node;
+package com.dempe.ocean.client;
 
 
 import com.dempe.ocean.common.protocol.Request;
-import io.netty.buffer.ByteBuf;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,11 +12,16 @@ import io.netty.buffer.ByteBuf;
  */
 public interface Client {
 
+
     public void sendOnly(Request request) throws Exception;
 
-    public void sendBuffer(ByteBuf buffer);
+    /**
+     * 发送消息
+     *
+     * @param request
+     * @return Response
+     */
+    public Callback send(Request request, Callback callback) throws Exception;
 
-    public void sendBytes(byte[] bytes);
 
-//
 }

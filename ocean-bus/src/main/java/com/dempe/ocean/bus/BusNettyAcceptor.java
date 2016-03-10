@@ -20,7 +20,6 @@ import com.dempe.ocean.common.codec.mqtt.MQTTDecoder;
 import com.dempe.ocean.common.codec.mqtt.MQTTEncoder;
 import com.dempe.ocean.core.Constants;
 import com.dempe.ocean.core.MoquetteIdleTimeoutHandler;
-import com.dempe.ocean.core.NettyMQTTHandler;
 import com.dempe.ocean.core.ProtocolProcessor;
 import com.dempe.ocean.core.spi.metrics.*;
 import com.dempe.ocean.core.spi.security.ISslContextCreator;
@@ -92,7 +91,7 @@ public class BusNettyAcceptor {
     public void initialize(ProtocolProcessor processor, OceanConfig config, ISslContextCreator sslCtxCreator) throws IOException {
         m_bossGroup = new NioEventLoopGroup();
         m_workerGroup = new NioEventLoopGroup();
-        final NettyMQTTHandler handler = new NettyMQTTHandler(processor);
+        final BusMQTTHandler handler = new BusMQTTHandler(processor);
 
         initializePlainTCPTransport(handler, config);
         initializeWebSocketTransport(handler, config);
@@ -137,7 +136,7 @@ public class BusNettyAcceptor {
         }
     }
 
-    private void initializePlainTCPTransport(final NettyMQTTHandler handler, OceanConfig config) throws IOException {
+    private void initializePlainTCPTransport(final BusMQTTHandler handler, OceanConfig config) throws IOException {
         final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
         String host = config.host();
         int port = config.port();
@@ -152,12 +151,11 @@ public class BusNettyAcceptor {
                 pipeline.addLast("encoder", new MQTTEncoder());
                 pipeline.addLast("metrics", new MessageMetricsHandler(m_metricsCollector));
                 pipeline.addLast("handler", handler);
-                pipeline.addLast("businessHandler", new BusBusinessHandler(new DispatcherProcessor()));
             }
         });
     }
 
-    private void initializeWebSocketTransport(final NettyMQTTHandler handler, OceanConfig config) throws IOException {
+    private void initializeWebSocketTransport(final BusMQTTHandler handler, OceanConfig config) throws IOException {
         int port = config.webSocketPort();
         String host = config.webSocketHost();
         final MoquetteIdleTimeoutHandler timeoutHandler = new MoquetteIdleTimeoutHandler();
@@ -177,12 +175,11 @@ public class BusNettyAcceptor {
                 pipeline.addLast("encoder", new MQTTEncoder());
                 pipeline.addLast("metrics", new MessageMetricsHandler(m_metricsCollector));
                 pipeline.addLast("handler", handler);
-                pipeline.addLast("businessHandler", new BusBusinessHandler(new DispatcherProcessor()));
             }
         });
     }
 
-    private void initializeSSLTCPTransport(final NettyMQTTHandler handler, OceanConfig config, final SSLContext sslContext) throws IOException {
+    private void initializeSSLTCPTransport(final BusMQTTHandler handler, OceanConfig config, final SSLContext sslContext) throws IOException {
         int sslPort = config.sslPort();
         if (sslPort == 0) {
             //Do nothing no SSL configured
@@ -204,12 +201,11 @@ public class BusNettyAcceptor {
                 pipeline.addLast("encoder", new MQTTEncoder());
                 pipeline.addLast("metrics", new MessageMetricsHandler(m_metricsCollector));
                 pipeline.addLast("handler", handler);
-                pipeline.addLast("businessHandler", new BusBusinessHandler(new DispatcherProcessor()));
             }
         });
     }
 
-    private void initializeWSSTransport(final NettyMQTTHandler handler, OceanConfig config, final SSLContext sslContext) throws IOException {
+    private void initializeWSSTransport(final BusMQTTHandler handler, OceanConfig config, final SSLContext sslContext) throws IOException {
         int sslPort = config.secureWebsocketPort();
         if (sslPort == 0) {
             //Do nothing no SSL configured
@@ -236,7 +232,6 @@ public class BusNettyAcceptor {
                 pipeline.addLast("encoder", new MQTTEncoder());
                 pipeline.addLast("metrics", new MessageMetricsHandler(m_metricsCollector));
                 pipeline.addLast("handler", handler);
-                pipeline.addLast("businessHandler", new BusBusinessHandler(new DispatcherProcessor()));
             }
         });
     }

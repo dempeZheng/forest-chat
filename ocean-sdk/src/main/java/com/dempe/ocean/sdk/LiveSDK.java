@@ -1,5 +1,6 @@
 package com.dempe.ocean.sdk;
 
+import com.dempe.ocean.client.NoAvailableClientException;
 import com.dempe.ocean.common.protocol.Request;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
@@ -43,7 +44,7 @@ public class LiveSDK extends CommonSDK {
     }
 
 
-    public Future<Message> receive() {
+    public Future<Message> receive() throws NoAvailableClientException {
         return haBusCliService.receive();
     }
 
@@ -69,7 +70,7 @@ public class LiveSDK extends CommonSDK {
 
         String topic = topSid + "|" + subSid;
         Request request = new Request();
-        request.setUid(String.valueOf(uid));
+        request.setUid(uid);
         request.setTopic(topic);
         request.setUri("/sample/hello");
 

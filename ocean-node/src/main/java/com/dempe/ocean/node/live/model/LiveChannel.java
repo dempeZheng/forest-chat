@@ -1,6 +1,7 @@
 package com.dempe.ocean.node.live.model;
 
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
 
 /**
  * 直播频道
@@ -11,6 +12,7 @@ import org.mongodb.morphia.annotations.Entity;
  */
 @Entity("live_channel")
 public class LiveChannel {
+    @Id
     private Long topSid;
     private Long subSid;
     private Long createByUid;

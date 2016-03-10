@@ -1,14 +1,11 @@
-package com.dempe.ocean.client.node;
-
+package com.dempe.ocean.client;
 
 import com.dempe.ocean.common.NodeDetails;
-import com.dempe.ocean.common.codec.ByteArrayEncoder;
+import com.dempe.ocean.common.codec.DefaultEncoder;
 import com.dempe.ocean.common.codec.ResponseDecoder;
 import com.dempe.ocean.common.protocol.Request;
-import com.dempe.ocean.core.ProtocolProcessor;
-import com.dempe.ocean.core.SimpleMessaging;
+import com.dempe.ocean.common.protocol.Response;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -19,8 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,9 +27,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Time: 11:02
  * To change this template use File | Settings | File Templates.
  */
-public class NodeClient implements Client {
+public class CommonClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NodeClient.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(CommonClient.class);
 
     protected Bootstrap b;
 
@@ -40,25 +38,19 @@ public class NodeClient implements Client {
     protected Channel channel;
 
     protected EventLoopGroup group;
-
+    protected Map<Integer, Context> contextMap = new ConcurrentHashMap<Integer, Context>();
     private DefaultEventExecutorGroup executorGroup;
-
     private String host;
-
     private int port;
-
     private long connectTimeout = 5000L;
 
-    // 消息id生成器，消息id用户标识消息，标识sendAndWait方法的返回
-    private static AtomicInteger idMaker = new AtomicInteger(0);
-
-
-    public NodeClient(NodeDetails nodeDetails) {
+    public CommonClient(NodeDetails nodeDetails) {
         this(nodeDetails.getIp(), nodeDetails.getPort());
 
     }
 
-    public NodeClient(String host, int port) {
+
+    public CommonClient(String host, int port) {
         this.host = host;
         this.port = port;
         init();
@@ -94,13 +86,24 @@ public class NodeClient implements Client {
     }
 
     public void initClientChannel(SocketChannel ch) {
-        final ProtocolProcessor processor = SimpleMessaging.getProtocolProcessor();
         ChannelPipeline pipeline = ch.pipeline();
-        pipeline.addLast("RequestEncoder", new ByteArrayEncoder())
+        pipeline.addLast("RequestEncoder", new DefaultEncoder())
                 .addLast("ResponseDecoder", new ResponseDecoder())
-                .addLast("ClientHandler", new NodeClientHandler(processor));
+                .addLast("ClientHandler", new ChannelHandlerAdapter() {
+                    @Override
+                    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                        Integer id = 0;
+                        Response resp = (Response) msg;
+                        id = resp.getMessageID();
+                        Context context = contextMap.remove(id);
+                        if (context == null) {
+                            LOGGER.debug("messageID:{}, take Context null", id);
+                            return;
+                        }
+                        context.cb.onReceive(resp);
+                    }
+                });
     }
-
 
     public void connect(final String host, final int port) {
         try {
@@ -110,7 +113,6 @@ public class NodeClient implements Client {
             LOGGER.error(e.getMessage(), e);
         }
     }
-
 
     public void closeSync() throws IOException {
         try {
@@ -128,7 +130,6 @@ public class NodeClient implements Client {
         }
     }
 
-
     public boolean reconnect() throws Exception {
         close();
         LOGGER.info("start reconnect to server.");
@@ -142,29 +143,23 @@ public class NodeClient implements Client {
         return f != null && f.channel().isActive();
     }
 
-    public void send(Request request) throws Exception {
+    public void writeAndFlush(Object request) throws Exception {
         if (!isConnected()) {
             reconnect();
         }
         f.channel().writeAndFlush(request);
     }
 
-    /**
-     * 仅仅发现消息，不关心返回
-     *
-     * @param request 请求消息
-     */
-    @Override
-    public void sendOnly(Request request) throws Exception {
-        send(request);
-    }
+    public static class Context {
+        protected final Request request;
+        public final Callback cb;
+        protected final short id;
 
-    public void sendBuffer(ByteBuf buffer) {
-        f.channel().writeAndFlush(buffer);
-    }
-
-    public void sendBytes(byte[] bytes) {
-        f.channel().writeAndFlush(bytes);
+        public Context(int id, Request request, Callback cb) {
+            this.id = (short) id;
+            this.cb = cb;
+            this.request = request;
+        }
     }
 
 

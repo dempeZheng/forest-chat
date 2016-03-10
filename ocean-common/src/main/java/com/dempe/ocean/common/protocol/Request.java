@@ -1,12 +1,14 @@
 package com.dempe.ocean.common.protocol;
 
-import com.alibaba.fastjson.JSONObject;
+import com.dempe.ocean.common.pack.MarshallUtils;
 import com.dempe.ocean.common.pack.Marshallable;
 import com.dempe.ocean.common.pack.Pack;
 import com.dempe.ocean.common.pack.Unpack;
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.collect.Maps;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,15 +19,18 @@ import java.io.IOException;
  */
 public class Request implements Marshallable {
 
-    private Integer messageID = 0;
+    private Integer messageID = 0;//消息id
 
-    private String uid;
+    private Long uid = 0L;// 用户uid
 
-    private String topic;
+    private String topic = "";//消息主题
 
-    private String uri;
+    private String uri = "/";//消息uri
 
-    private String data;
+    private Map<String, String> paramMap = Maps.newHashMap();// 参数map
+
+    private byte[] extendData = new byte[0];//扩展数据byte，目前主要用于im中消息的存储
+
 
     public String getUri() {
         return uri;
@@ -35,19 +40,12 @@ public class Request implements Marshallable {
         this.uri = uri;
     }
 
-    public String getData() {
-        return data;
+    public Map<String, String> getParamMap() {
+        return paramMap;
     }
 
-    public void setData(String data) {
-        this.data = data;
-    }
-
-    public JSONObject paramJSON() {
-        if (StringUtils.isBlank(data)) {
-            return new JSONObject();
-        }
-        return JSONObject.parseObject(data);
+    public void setParamMap(Map<String, String> paramMap) {
+        this.paramMap = paramMap;
     }
 
     public Integer getMessageID() {
@@ -58,11 +56,11 @@ public class Request implements Marshallable {
         this.messageID = messageID;
     }
 
-    public String getUid() {
+    public Long getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
+    public void setUid(Long uid) {
         this.uid = uid;
     }
 
@@ -74,32 +72,38 @@ public class Request implements Marshallable {
         this.topic = topic;
     }
 
-    public void putParaJSON(JSONObject paramJSON) {
-        this.data = paramJSON.toJSONString();
+    public byte[] getExtendData() {
+        return extendData;
+    }
+
+    public void setExtendData(byte[] extendData) {
+        this.extendData = extendData;
     }
 
     public Pack marshal(Pack pack) {
         pack.putInt(messageID);
-        pack.putVarstr(uid);
+        pack.putLong(uid);
         pack.putVarstr(topic);
         pack.putVarstr(uri);
-        pack.putVarstr(data);
+        MarshallUtils.packMap(pack, paramMap, String.class, String.class);
+        pack.putBuffer(ByteBuffer.wrap(extendData));
         return pack;
     }
 
     public Request unmarshal(Unpack unpack) throws IOException {
         messageID = unpack.popInt();
-        uid = unpack.popVarstr();
+        uid = unpack.popLong();
         topic = unpack.popVarstr();
         uri = unpack.popVarstr();
-        data = unpack.popVarstr();
+        paramMap = MarshallUtils.unpackMap(unpack, String.class, String.class, false);
+        int remaining = unpack.getOriBuffer().remaining();
+        extendData = unpack.popFetch(remaining);
         return this;
     }
 
     public byte[] toByteArray() {
         return this.marshal(new Pack()).getBuffer().array();
     }
-
 
     @Override
     public String toString() {
@@ -108,7 +112,7 @@ public class Request implements Marshallable {
                 ", uid='" + uid + '\'' +
                 ", topic='" + topic + '\'' +
                 ", uri='" + uri + '\'' +
-                ", data='" + data + '\'' +
+                ", paramMap=" + paramMap +
                 '}';
     }
 }

@@ -1,5 +1,6 @@
 package com.dempe.ocean.sdk;
 
+import com.dempe.ocean.client.NoAvailableClientException;
 import com.dempe.ocean.client.bus.cluster.HABusCliService;
 import com.dempe.ocean.common.MsgType;
 import com.dempe.ocean.common.R;
@@ -44,13 +45,18 @@ public class CommonSDK {
         haBusCliService = new HABusCliService(R.FOREST_BUS_NAME);
     }
 
-    protected void init() {
+    protected void init() throws NoAvailableClientException {
         d_thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
                     // 收频道内消息
-                    Future<Message> receive = haBusCliService.receive();
+                    Future<Message> receive = null;
+                    try {
+                        receive = haBusCliService.receive();
+                    } catch (NoAvailableClientException e) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
                     Message message = null;
                     try {
                         message = receive.await();
@@ -77,36 +83,32 @@ public class CommonSDK {
     }
 
 
-    public void publish(BusMessage message) {
-        haBusCliService.publish("", message);
+    public void publish(BusMessage message) throws NoAvailableClientException {
+        publish("bus", message);
     }
 
     /**
      * 单播协议
      *
-     * @param daemonName
-     * @param request
+     * @param topic
+     * @param message
      */
-    public void publish(String daemonName, Request request) {
-        BusMessage message = new BusMessage();
-        message.setDaemonName(daemonName);
-        message.setMsgType(MsgType.UNICAST.getValue());
-        message.setJsonByteReq(request.toByteArray());
-        haBusCliService.publish("", message);
-    }
-
-    /**
-     * 单播协议
-     *
-     * @param daemonName
-     * @param request
-     */
-    public void publish(String daemonName, String topic, Request request) {
-        BusMessage message = new BusMessage();
-        message.setDaemonName(daemonName);
-        message.setMsgType(MsgType.UNICAST.getValue());
-        message.setJsonByteReq(request.toByteArray());
+    public void publish(String topic, BusMessage message) throws NoAvailableClientException {
         haBusCliService.publish(topic, message);
+    }
+
+    /**
+     * 单播协议
+     *
+     * @param daemonName
+     * @param request
+     */
+    public void publish(String daemonName, String topic, Request request) throws NoAvailableClientException {
+        BusMessage message = new BusMessage();
+        message.setDaemonName(daemonName);
+        message.setMsgType(MsgType.UNICAST.getValue());
+        message.setRequest(request);
+        publish(topic, message);
     }
 
     /**
@@ -115,11 +117,11 @@ public class CommonSDK {
      * @param topic
      * @param request
      */
-    public void publishSubBC(String topic, Request request) {
+    public void publishSubBC(String topic, Request request) throws NoAvailableClientException {
         BusMessage message = new BusMessage();
         message.setDaemonName(R.FOREST_LEAF_NAME);
         message.setMsgType(MsgType.BCSUBCH.getValue());
-        message.setJsonByteReq(request.toByteArray());
+        message.setRequest(request);
         haBusCliService.publish(topic, message);
     }
 
@@ -127,12 +129,12 @@ public class CommonSDK {
         haBusCliService.connect(String.valueOf(uid), pwd);
     }
 
-    public void subscribe(String topic) {
+    public void subscribe(String topic) throws NoAvailableClientException {
         haBusCliService.subscribe(topic);
     }
 
 
-    public Future<Message> receive() {
+    public Future<Message> receive() throws NoAvailableClientException {
         return haBusCliService.receive();
     }
 

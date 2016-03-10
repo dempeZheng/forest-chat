@@ -7,7 +7,7 @@ package com.dempe.ocean.client;
  * Time: 11:50
  * To change this template use File | Settings | File Templates.
  */
-public class NoAvailableClientException extends RuntimeException {
+public class NoAvailableClientException extends java.lang.Exception{
 
     private static final long serialVersionUID = -8195288970886184158L;
 

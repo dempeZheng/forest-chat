@@ -13,13 +13,19 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.dempe.ocean.core;
+package com.dempe.ocean.bus;
 
+import com.dempe.ocean.client.Callback;
+import com.dempe.ocean.client.ha.DefaultClientService;
 import com.dempe.ocean.common.MsgType;
 import com.dempe.ocean.common.R;
 import com.dempe.ocean.common.pack.Unpack;
 import com.dempe.ocean.common.protocol.BusMessage;
+import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Response;
 import com.dempe.ocean.common.protocol.mqtt.*;
+import com.dempe.ocean.core.NettyUtils;
+import com.dempe.ocean.core.ProtocolProcessor;
 import com.dempe.ocean.core.spi.persistence.UidSessionStore;
 import com.google.common.collect.Maps;
 import io.netty.channel.Channel;
@@ -41,17 +47,38 @@ import static com.dempe.ocean.common.protocol.mqtt.AbstractMessage.*;
  * @author andrea
  */
 @Sharable
-public class NettyMQTTHandler extends ChannelHandlerAdapter {
+public class BusMQTTHandler extends ChannelHandlerAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NettyMQTTHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BusMQTTHandler.class);
     private final ProtocolProcessor m_processor;
 
-    public NettyMQTTHandler(ProtocolProcessor processor) {
+    public BusMQTTHandler(ProtocolProcessor processor) {
         m_processor = processor;
     }
 
+    private final static Map<String, DefaultClientService> nameClientMap = Maps.newConcurrentMap();
+
+
+    /**
+     * 根据节点名称获取对应的HAClientService
+     * HAClientService 会选择路由策略选择合适的业务进程，将消息透传
+     *
+     * @param name
+     * @return
+     * @throws Exception
+     */
+    private DefaultClientService getClientServiceByName(String name) throws Exception {
+        DefaultClientService clientService = nameClientMap.get(name);
+        if (clientService == null) {
+            clientService = new DefaultClientService(name);
+            nameClientMap.put(name, clientService);
+        }
+        return clientService;
+    }
+
+
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object message) {
+    public void channelRead(final ChannelHandlerContext ctx, Object message) {
         AbstractMessage msg = (AbstractMessage) message;
         LOG.info("Received a message of type {}", Utils.msgType2String(msg.getMessageType()));
         try {
@@ -66,40 +93,7 @@ public class NettyMQTTHandler extends ChannelHandlerAdapter {
                     m_processor.processUnsubscribe(ctx.channel(), (UnsubscribeMessage) msg);
                     break;
                 case PUBLISH:
-                    PublishMessage publishMessage = (PublishMessage) msg;
-                    String topic = publishMessage.getTopicName();
-                    Integer messageID = publishMessage.getMessageID();
-                    ByteBuffer payload = publishMessage.getPayload();
-                    payload = payload.order(ByteOrder.LITTLE_ENDIAN);
-                    BusMessage busMessage = new BusMessage().unmarshal(new Unpack(payload));
-                    short msgType = busMessage.getMsgType();
-                    String daemonName = busMessage.getDaemonName();
-                    // 如果消息类型为单播，且透传的进程非bus进程，将消息传递给下一个hanndler(分发消息到相应的业务进程)
-                    if (msgType == MsgType.UNICAST.getValue() && daemonName != R.FOREST_BUS_NAME) {
-
-                        ctx.fireChannelRead(publishMessage);
-                        // 单播消息，如果topic非空，则定义为点对点的聊天，单播消息的topic为聊天对象的uid
-                    } else if (StringUtils.isNotBlank(topic) && msgType == MsgType.UNICAST.getValue()) {
-                        // 获取channel，将消息直接发送到对应的client
-                        // 单播消息 topic非空情况下，定义存储为uid
-                        String uid = topic;
-                        Channel session = UidSessionStore.getSessionByUid(uid);
-                        if (session != null) {
-                            ByteBuffer wrap = ByteBuffer.wrap(busMessage.getRequest().toByteArray());
-                            publishMessage.setPayload(wrap);
-                            session.writeAndFlush(publishMessage);
-                        }
-                        // 如果为广播
-                    } else if (msgType == MsgType.BCSUBCH.getValue()) {
-                        // 覆盖publishMessage 中的payload，去掉对客户端无价值的外层协议(daemonName&msgType)
-                        ByteBuffer wrap = ByteBuffer.wrap(busMessage.getRequest().toByteArray());
-                        publishMessage.setPayload(wrap);
-                        m_processor.processPublish(ctx.channel(), publishMessage);
-
-                    } else if (msgType == MsgType.AREA_MULTICAST.getValue()) {
-                        // 多播 逻辑待实现
-                    }
-
+                    processPublish(ctx, msg);
                     break;
                 case PUBREC:
                     m_processor.processPubRec(ctx.channel(), (PubRecMessage) msg);
@@ -126,6 +120,59 @@ public class NettyMQTTHandler extends ChannelHandlerAdapter {
         }
     }
 
+    private void processPublish(final ChannelHandlerContext ctx, AbstractMessage msg) throws Exception {
+        final PublishMessage publishMessage = (PublishMessage) msg;
+        String topic = publishMessage.getTopicName();
+        Integer messageID = publishMessage.getMessageID();
+        ByteBuffer payload = publishMessage.getPayload();
+        payload = payload.order(ByteOrder.LITTLE_ENDIAN);
+        BusMessage busMessage = new BusMessage().unmarshal(new Unpack(payload));
+        short msgType = busMessage.getMsgType();
+        String daemonName = busMessage.getDaemonName();
+        // 如果消息类型为单播，且透传的进程非bus进程，将消息传递给下一个handler(分发消息到相应的业务进程)
+        if (StringUtils.equals("bus",topic) && msgType == MsgType.UNICAST.getValue() && daemonName != R.FOREST_BUS_NAME) {
+            DefaultClientService clientService = getClientServiceByName(daemonName);
+            Request request = busMessage.getRequest();
+            request.setMessageID(messageID);
+            clientService.send(request, new Callback() {
+                @Override
+                public void onReceive(Object message) {
+                    Response resp = (Response) message;
+                    byte[] bytes = resp.toByteArray();
+                    ByteBuffer buffer = ByteBuffer.wrap(bytes);
+                    publishMessage.setPayload(buffer);
+                    ctx.executor().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            ctx.writeAndFlush(publishMessage);
+                        }
+                    });
+                }
+            });
+
+            // 单播消息，如果topic非空，则定义为点对点的聊天，单播消息的topic为聊天对象的uid
+        } else if (StringUtils.isNotBlank(topic) && msgType == MsgType.UNICAST.getValue()) {
+            // 获取channel，将消息直接发送到对应的client
+            // 单播消息 topic非空情况下，定义存储为uid
+            String uid = topic;
+            Channel session = UidSessionStore.getSessionByUid(uid);
+            if (session != null) {
+                ByteBuffer wrap = ByteBuffer.wrap(busMessage.getRequest().toByteArray());
+                publishMessage.setPayload(wrap);
+                session.writeAndFlush(publishMessage);
+            }
+            // 如果为广播
+        } else if (msgType == MsgType.BCSUBCH.getValue()) {
+            // 覆盖publishMessage 中的payload，去掉对客户端无价值的外层协议(daemonName&msgType)
+            ByteBuffer wrap = ByteBuffer.wrap(busMessage.getRequest().toByteArray());
+            publishMessage.setPayload(wrap);
+            m_processor.processPublish(ctx.channel(), publishMessage);
+
+        } else if (msgType == MsgType.AREA_MULTICAST.getValue()) {
+            // 多播 逻辑待实现
+        }
+
+    }
 
 
     @Override

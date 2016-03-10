@@ -1,10 +1,9 @@
-package com.dempe.ocean.core.frame;
+package com.dempe.ocean.node.frame;
 
 import com.dempe.ocean.common.protocol.Request;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.DefaultThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +22,7 @@ public class ProcessorHandler extends ChannelHandlerAdapter {
     public static final Logger LOGGER = LoggerFactory.getLogger(ProcessorHandler.class);
 
     // 业务逻辑线程池(业务逻辑最好跟netty io线程分开处理，线程切换虽会带来一定的性能损耗，但可以防止业务逻辑阻塞io线程)
-    private final static ExecutorService workerThreadService = Executors.newFixedThreadPool(
-            Runtime.getRuntime().availableProcessors() * 2, new DefaultThreadFactory("workerThread"));
-
-    private static ExecutorService executorService = newBlockingExecutorsUseCallerRun( Runtime.getRuntime().availableProcessors() * 2);
+    private static ExecutorService executorService = newBlockingExecutorsUseCallerRun(Runtime.getRuntime().availableProcessors() * 2);
 
     private ServerContext context;
 
@@ -39,7 +35,7 @@ public class ProcessorHandler extends ChannelHandlerAdapter {
         if (msg instanceof Request) {
 
 
-            workerThreadService.submit(new TaskWorker(ctx, context, (Request) msg));
+            executorService.submit(new TaskWorker(ctx, context, (Request) msg));
         }
     }
 

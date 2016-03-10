@@ -1,8 +1,8 @@
 package com.dempe.ocean.client.bus.cluster;
 
+import com.dempe.ocean.client.NoAvailableClientException;
 import com.dempe.ocean.client.bus.Client;
 import com.dempe.ocean.common.protocol.BusMessage;
-import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
 import org.slf4j.Logger;
@@ -29,8 +29,6 @@ public class HABusCliService implements Client {
                 if (haBusClient == null) {
                     haBusClient = new HABusClient(name);
                     client = haBusClient.getClient();
-                    // TODO
-
                 }
             }
         }
@@ -38,39 +36,48 @@ public class HABusCliService implements Client {
 
     @Override
     public void connect(String uid, String pwd) throws Exception {
-        assert client != null : "no available client!";
+       checkClient();
         client.connect(uid, pwd);
     }
 
     @Override
-    public void subscribe(String topic) {
-        assert client != null : "no available client!";
+    public void subscribe(String topic) throws NoAvailableClientException {
+        checkClient();
         client.subscribe(topic);
     }
 
 
     @Override
-    public void unSubscribe(String topic) {
-        assert client != null : "no available client!";
+    public void unSubscribe(String topic) throws NoAvailableClientException {
+        checkClient();
         client.unSubscribe(topic);
     }
 
     @Override
-    public Response publish(String topic, BusMessage request) {
-        assert client != null : "no available client!";
-        return client.publish(topic, request);
+    public void publish(String topic, BusMessage message) throws NoAvailableClientException {
+        checkClient();
+        client.publish(topic, message);
     }
 
     @Override
-    public Response publish(String topic, byte[] bytes) {
-        assert client != null : "no available client!";
-        return client.publish(topic, bytes);
+    public void publish(String topic, byte[] bytes) throws NoAvailableClientException {
+        checkClient();
+        client.publish(topic, bytes);
     }
 
 
     @Override
-    public Future<Message> receive() {
-        assert client != null : "no available client!";
+    public Future<Message> receive() throws NoAvailableClientException {
+        checkClient();
         return client.receive();
+    }
+
+    private void checkClient() throws NoAvailableClientException {
+        if(client==null){
+            client = haBusClient.getClient();
+        }
+        if(client==null){
+            throw  new NoAvailableClientException();
+        }
     }
 }

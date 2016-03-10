@@ -1,6 +1,5 @@
-package com.dempe.ocean.core.frame;
+package com.dempe.ocean.node.frame;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dempe.ocean.common.anno.Param;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
@@ -44,7 +43,7 @@ public class MethodParam {
         return parameterNames;
     }
 
-    public static Object[] getParameterValues(String[] parameterNames, Method method, JSONObject params) {
+    public static Object[] getParameterValues(String[] parameterNames, Method method, Map<String, String> paramMap) {
         Object[] paramTarget = null;
         if (parameterNames != null) {
             paramTarget = new Object[parameterNames.length];
@@ -52,25 +51,26 @@ public class MethodParam {
             for (int i = 0; i < parameterNames.length; i++) {
                 String parameterName = parameterNames[i];
                 if (Integer.class == type[i] || StringUtils.equals(type[i].toString(), "int")) {
-                    paramTarget[i] = params.getInteger(parameterName);
+                    paramTarget[i] = Integer.parseInt(paramMap.get(parameterName));
                 } else if (String.class == type[i]) {
-                    paramTarget[i] = params.getString(parameterName);
+                    paramTarget[i] = paramMap.get(parameterName);
                 } else if (Boolean.class == type[i] || StringUtils.equals(type[i].toString(), "boolean")) {
-                    paramTarget[i] = params.getBoolean(parameterName);
+                    paramTarget[i] = Boolean.parseBoolean(paramMap.get(parameterName));
                 } else if (Long.class == type[i] || StringUtils.equals(type[i].toString(), "long")) {
-                    paramTarget[i] = params.getLong(parameterName);
+                    paramTarget[i] = Long.parseLong(paramMap.get(parameterName));
                 } else if (Short.class == type[i] || StringUtils.equals(type[i].toString(), "short")) {
-                    paramTarget[i] = params.getShort(parameterName);
+                    paramTarget[i] = Short.parseShort(paramMap.get(parameterName));
                 } else if (Double.class == type[i] || StringUtils.equals(type[i].toString(), "double")) {
-                    paramTarget[i] = params.getDouble(parameterName);
+                    paramTarget[i] = Double.parseDouble(paramMap.get(parameterName));
                 } else if (Float.class == type[i] || StringUtils.equals(type[i].toString(), "float")) {
-                    paramTarget[i] = params.getFloat(parameterName);
+                    paramTarget[i] = Float.parseFloat(paramMap.get(parameterName));
                 }
 
             }
         }
         return paramTarget;
     }
+
 
 
 }

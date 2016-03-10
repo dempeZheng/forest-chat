@@ -1,7 +1,12 @@
 package com.dempe.ocean.node;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dempe.ocean.client.node.cluster.HANodeCliService;
+import com.dempe.ocean.client.ha.DefaultClientService;
+import com.dempe.ocean.common.IMUri;
+import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Response;
+import com.google.common.collect.Maps;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,14 +17,20 @@ import com.dempe.ocean.client.node.cluster.HANodeCliService;
  */
 public class IMServiceClient {
 
-    private HANodeCliService haNodeCliService;
+    private DefaultClientService clientService;
 
     public IMServiceClient(String daemonName) throws Exception {
-        haNodeCliService = new HANodeCliService(daemonName);
+        clientService = new DefaultClientService(daemonName);
     }
 
-    public JSONObject login(Long uid, String pwd) {
-        return null;
+    public Response login(Long uid, String topic, String pwd) throws Exception {
+        Request request = new Request();
+        request.setTopic(topic);
+        Map<String, String> paramMap = Maps.newHashMap();
+        paramMap.put("pwd", pwd);
+        request.setUid(uid);
+        request.setUri(IMUri.FRIEND_DEL.getUri());
+        return clientService.sendAndWait(request);
     }
 
 }

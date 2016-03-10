@@ -8,8 +8,8 @@
 
     <!-- 数据库实例 -->
     <bean id="mongo" class="com.mongodb.MongoClient">
-        <constructor-arg name="host" value="120.24.211.40"/>
-        <constructor-arg name="port" value="27000"/>
+        <constructor-arg name="host" value="127.0.0.1"/>
+        <constructor-arg name="port" value="27017"/>
     </bean>
 
 
@@ -18,7 +18,7 @@
 
     <!-- 库名称 -->
     <bean id="dbName" class="java.lang.String">
-        <constructor-arg index="0" value="commons_vote"/>
+        <constructor-arg index="0" value="im"/>
     </bean>
 
     <!-- datastore实例 -->

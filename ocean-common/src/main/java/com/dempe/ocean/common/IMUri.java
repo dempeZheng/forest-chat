@@ -1,4 +1,4 @@
-package com.dempe.ocean.sdk;
+package com.dempe.ocean.common;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,6 +9,7 @@ package com.dempe.ocean.sdk;
  */
 public enum IMUri {
 
+    USER_INIT("/user/imInit"),//申请好友
     FRIEND_APPLY("/friend/apply"),//申请好友
     FRIEND_DEL("/friend/del"),//删除好友
     FRIEND_ACCEPT("/friend/accept"),//接受好友申请

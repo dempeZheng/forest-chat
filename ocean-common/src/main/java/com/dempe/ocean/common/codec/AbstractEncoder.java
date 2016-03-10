@@ -54,10 +54,13 @@ public abstract class AbstractEncoder extends MessageToByteEncoder<Marshallable>
     protected byte[] getOutBytes(ByteBuffer data, byte protoType) {
         int len = data.limit() - data.position() + 4;
         ByteBuffer out = ByteBuffer.allocate(len);
+        // 设置小端模式
+        out.order(ByteOrder.LITTLE_ENDIAN);
         int nFirstValue = ProtocolValue.combine(len, protoType);
         // 长度包含包长度int 4个字节
         out.putInt(nFirstValue);
         out.put(data);
+        out.flip();
         return out.array();
     }
 

@@ -1,11 +1,15 @@
 package com.dempe.ocean.sdk;
 
-import com.alibaba.fastjson.JSONObject;
+import com.dempe.ocean.client.NoAvailableClientException;
+import com.dempe.ocean.common.IMUri;
 import com.dempe.ocean.common.R;
 import com.dempe.ocean.common.protocol.BusMessage;
 import com.dempe.ocean.common.protocol.Request;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * IM聊天类业务SDK
@@ -34,11 +38,11 @@ public class IMSDK extends CommonSDK {
      * @param uid
      * @param friendUid
      */
-    public void acceptFriend(Long uid, Long friendUid) {
-        JSONObject param = new JSONObject();
-        param.put("uid", uid);
-        param.put("friendUid", friendUid);
-        BusMessage message = builder.buildMessage(uid, param.toJSONString(), IMUri.FRIEND_ACCEPT);
+    public void acceptFriend(Long uid, Long friendUid) throws NoAvailableClientException {
+        Map<String, String> param = Maps.newHashMap();
+        param.put("uid", String.valueOf(uid));
+        param.put("friendUid", String.valueOf(friendUid));
+        BusMessage message = builder.buildMessage(uid, param, IMUri.FRIEND_ACCEPT);
         publish(message);
     }
 
@@ -49,12 +53,12 @@ public class IMSDK extends CommonSDK {
      * @param friendUid
      * @param applyMsg
      */
-    public void applyFriend(Long uid, Long friendUid, String applyMsg) {
-        JSONObject param = new JSONObject();
-        param.put("uid", uid);
-        param.put("friendUid", friendUid);
+    public void applyFriend(Long uid, Long friendUid, String applyMsg) throws NoAvailableClientException {
+        Map<String, String> param = Maps.newHashMap();
+        param.put("uid", String.valueOf(uid));
+        param.put("friendUid", String.valueOf(friendUid));
         param.put("applyMsg", applyMsg);
-        BusMessage message = builder.buildMessage(uid, param.toJSONString(), IMUri.FRIEND_APPLY);
+        BusMessage message = builder.buildMessage(uid, param, IMUri.FRIEND_APPLY);
         publish(message);
     }
 
@@ -64,11 +68,11 @@ public class IMSDK extends CommonSDK {
      * @param uid
      * @param friendUid
      */
-    public void delFriend(Long uid, Long friendUid) {
-        JSONObject param = new JSONObject();
-        param.put("uid", uid);
-        param.put("friendUid", friendUid);
-        BusMessage message = builder.buildMessage(uid, param.toJSONString(), IMUri.FRIEND_DEL);
+    public void delFriend(Long uid, Long friendUid) throws NoAvailableClientException {
+        Map<String, String> param = Maps.newHashMap();
+        param.put("uid", String.valueOf(uid));
+        param.put("friendUid", String.valueOf(friendUid));
+        BusMessage message = builder.buildMessage(uid, param, IMUri.FRIEND_DEL);
         publish(message);
     }
 
@@ -78,12 +82,13 @@ public class IMSDK extends CommonSDK {
      * @param friendUid
      * @param message
      */
-    public void sendMessage(Long friendUid, String message) {
+    public void sendMessage(Long friendUid, String message) throws NoAvailableClientException {
         Request request = new Request();
-        request.setData(message);
+        request.setExtendData(message.getBytes());
         request.setTopic(String.valueOf(friendUid));
-        request.setUid(String.valueOf(uid));
+        request.setUid(uid);
         request.setUri("/message");
+        BusMessage busMessage = new BusMessage();
         publish(R.FOREST_BUS_NAME, String.valueOf(friendUid), request);
     }
 
@@ -93,13 +98,19 @@ public class IMSDK extends CommonSDK {
      * @param groupId
      * @param message
      */
-    public void sendGroupMessage(Integer groupId, String message) {
+    public void sendGroupMessage(Integer groupId, String message) throws NoAvailableClientException {
         Request request = new Request();
-        request.setData(message);
+        request.setExtendData(message.getBytes());
         request.setTopic(String.valueOf(groupId));
-        request.setUid(String.valueOf(uid));
+        request.setUid(uid);
         request.setUri("/groupMessage");
         publishSubBC(String.valueOf(groupId), request);
+    }
+
+    public void imInit() throws NoAvailableClientException {
+        BusMessage message = builder.buildMessage(uid, IMUri.USER_INIT);
+        publish(message);
+
     }
 
 
@@ -128,7 +139,10 @@ public class IMSDK extends CommonSDK {
 
         imsdk.init();
 
-        imsdk.sendMessage(uid, "hello");
+
+//        imsdk.sendMessage(uid, "hello");
+
+        imsdk.imInit();
     }
 
 }

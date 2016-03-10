@@ -6,8 +6,6 @@ import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
 
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Dempe
@@ -41,13 +39,13 @@ public class BusClient implements Client {
     }
 
     @Override
-    public Response publish(String topic, BusMessage request) {
-        return client.publish(topic, request);
+    public void publish(String topic, BusMessage message) {
+        client.publish(topic, message);
     }
 
     @Override
-    public Response publish(String topic, byte[] bytes) {
-        return client.publish(topic,bytes);
+    public void publish(String topic, byte[] bytes) {
+        client.publish(topic,bytes);
     }
 
 

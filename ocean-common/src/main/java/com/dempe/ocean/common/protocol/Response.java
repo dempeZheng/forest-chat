@@ -16,7 +16,7 @@ import java.io.IOException;
 public class Response implements Marshallable {
 
     private Integer messageID = 0;
-    private String uid;
+    private Long uid;
     private String topic;
     private String result;
 
@@ -28,14 +28,13 @@ public class Response implements Marshallable {
         this.topic = topic;
     }
 
-    public String getUid() {
+    public Long getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
+    public void setUid(Long uid) {
         this.uid = uid;
     }
-
 
     public String getResult() {
         return result;
@@ -57,7 +56,7 @@ public class Response implements Marshallable {
     @Override
     public Pack marshal(Pack pack) {
         pack.putInt(messageID);
-        pack.putVarstr(uid);
+        pack.putLong(uid);
         pack.putVarstr(topic);
         pack.putVarstr(result);
         return pack;
@@ -66,7 +65,7 @@ public class Response implements Marshallable {
     @Override
     public Response unmarshal(Unpack unpack) throws IOException {
         messageID = unpack.popInt();
-        uid = unpack.popVarstr();
+        uid = unpack.popLong();
         topic = unpack.popVarstr();
         result = unpack.popVarstr();
         return this;

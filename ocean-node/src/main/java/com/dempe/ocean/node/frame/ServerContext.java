@@ -1,4 +1,4 @@
-package com.dempe.ocean.core.frame;
+package com.dempe.ocean.node.frame;
 
 
 import com.dempe.ocean.common.OceanConfig;

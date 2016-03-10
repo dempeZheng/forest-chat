@@ -17,7 +17,11 @@ public class URI {
         FRIEND_DEL("/friend/del"),//删除好友
         FRIEND_ACCEPT("/friend/accept"),//接受好友申请
         IM_GROUP_SAVE("imGroup/save"),//创建群
-        USER_GROUP_LIST("userGroup/listUidByGroupId"),//创建群
+        USER_GROUP_LIST("userGroup/listUidByGroupId"),//列出群里用户
+        USER_GROUP_SAVE("userGroup/saveUserGroup"),//列出群里用户
+        USER_GROUP_DEL("userGroup/delUserGroup"),//用户退出群
+
+
         ;
         private String uri;
 

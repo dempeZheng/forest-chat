@@ -38,4 +38,11 @@ public class UserGroupController {
         return JsonResult.getJsonResult(0);
     }
 
+    @Path
+    public JSONObject delUserGroup(@Param String groupId, @Param Long uid) {
+        userGroupService.delUserGroup(groupId, uid);
+        return JsonResult.getJsonResult(0);
+    }
+
+
 }

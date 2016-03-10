@@ -87,7 +87,7 @@ public class IMServiceClient extends DefaultClientService {
         Map<String, String> paramMap = Maps.newHashMap();
         paramMap.put("uid", uid);
         paramMap.put("groupId", topic);
-        request.setUri(URI.IM.USER_GROUP_LIST.getUri());
+        request.setUri(URI.IM.USER_GROUP_SAVE.getUri());
         Message response = sendAndWait(request);
         byte[] extendData = response.getExtendData();
         JSONObject result = (JSONObject) JSONObject.parse(extendData);
@@ -97,6 +97,23 @@ public class IMServiceClient extends DefaultClientService {
         }
         return true;
     }
+
+    public boolean unSubscribeTopic(String uid, String topic) throws Exception {
+        Message request = new Message();
+        Map<String, String> paramMap = Maps.newHashMap();
+        paramMap.put("uid", uid);
+        paramMap.put("groupId", topic);
+        request.setUri(URI.IM.USER_GROUP_DEL.getUri());
+        Message response = sendAndWait(request);
+        byte[] extendData = response.getExtendData();
+        JSONObject result = (JSONObject) JSONObject.parse(extendData);
+        if (result.get(R.CODE) != 0) {
+            LOGGER.info("msg:{}", result.getString(R.MSG));
+            return false;
+        }
+        return true;
+    }
+
 
 
 }

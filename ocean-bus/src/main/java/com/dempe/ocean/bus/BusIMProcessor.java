@@ -13,19 +13,22 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.dempe.ocean.core;
+package com.dempe.ocean.bus;
 
 
-import com.dempe.ocean.common.protocol.mqtt.*;
+import com.alibaba.fastjson.JSONArray;
+import com.dempe.ocean.client.service.IMServiceClient;
+import com.dempe.ocean.common.model.User;
 import com.dempe.ocean.common.protocol.mqtt.AbstractMessage.QOSType;
+import com.dempe.ocean.common.protocol.mqtt.*;
+import com.dempe.ocean.core.BrokerInterceptor;
+import com.dempe.ocean.core.ConnectionDescriptor;
+import com.dempe.ocean.core.NettyUtils;
 import com.dempe.ocean.core.spi.ClientSession;
-import com.dempe.ocean.core.spi.IMatchingCondition;
 import com.dempe.ocean.core.spi.IMessagesStore;
 import com.dempe.ocean.core.spi.ISessionsStore;
 import com.dempe.ocean.core.spi.impl.subscriptions.Subscription;
 import com.dempe.ocean.core.spi.impl.subscriptions.SubscriptionsStore;
-import com.dempe.ocean.core.spi.security.IAuthenticator;
-import com.dempe.ocean.core.spi.security.IAuthorizator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -34,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -48,7 +50,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author andrea
  */
-public class ProtocolProcessor {
+public class BusIMProcessor {
 
     static final class WillMessage {
         private final String topic;
@@ -81,50 +83,40 @@ public class ProtocolProcessor {
 
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProtocolProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BusIMProcessor.class);
 
     protected static ConcurrentMap<String, ConnectionDescriptor> m_clientIDs;
-    private SubscriptionsStore subscriptions;
     private boolean allowAnonymous;
-    private IAuthorizator m_authorizator;
     private IMessagesStore m_messagesStore;
     private ISessionsStore m_sessionsStore;
-    private IAuthenticator m_authenticator;
     private BrokerInterceptor m_interceptor;
+    private IMServiceClient imServiceClient;
 
     //maps clientID to Will testament, if specified on CONNECT
     private ConcurrentMap<String, WillMessage> m_willStore = new ConcurrentHashMap<>();
 
-    ProtocolProcessor() {
-    }
 
     /**
-     * @param subscriptions  the subscription store where are stored all the existing
-     *                       clients subscriptions.
-     * @param storageService the persistent store to use for save/load of messages
-     *                       for QoS1 and QoS2 handling.
-     * @param sessionsStore  the clients sessions store, used to persist subscriptions.
-     * @param authenticator  the authenticator used in connect messages.
-     * @param allowAnonymous true connection to clients without credentials.
-     * @param authorizator   used to apply ACL policies to publishes and subscriptions.
-     * @param interceptor    to notify events to an intercept handler
+     *                        clients subscriptions.
+     * @param storageService  the persistent store to use for save/load of messages
+     *                        for QoS1 and QoS2 handling.
+     * @param sessionsStore   the clients sessions store, used to persist subscriptions.
+     * @param allowAnonymous  true connection to clients without credentials.
+     * @param imServiceClient used to apply ACL policies to publishes and subscriptions.
+     * @param interceptor     to notify events to an intercept handler
      */
-    void init(SubscriptionsStore subscriptions, IMessagesStore storageService,
+    void init( IMessagesStore storageService,
               ISessionsStore sessionsStore,
-              IAuthenticator authenticator,
-              boolean allowAnonymous, IAuthorizator authorizator, BrokerInterceptor interceptor) {
+              boolean allowAnonymous, IMServiceClient imServiceClient, BrokerInterceptor interceptor) {
         this.m_clientIDs = new ConcurrentHashMap<>();
         this.m_interceptor = interceptor;
-        this.subscriptions = subscriptions;
         this.allowAnonymous = allowAnonymous;
-        m_authorizator = authorizator;
-        LOG.trace("subscription tree on init {}", subscriptions.dumpTree());
-        m_authenticator = authenticator;
+        this.imServiceClient = imServiceClient;
         m_messagesStore = storageService;
         m_sessionsStore = sessionsStore;
     }
 
-    public void processConnect(Channel channel, ConnectMessage msg) {
+    public void processConnect(Channel channel, ConnectMessage msg) throws Exception {
         LOG.debug("CONNECT for client <{}>", msg.getClientID());
         if (msg.getProtocolVersion() != 3 && msg.getProtocolVersion() != 4) {
             ConnAckMessage badProto = new ConnAckMessage();
@@ -143,7 +135,6 @@ public class ProtocolProcessor {
             return;
         }
 
-
         //handle user authentication
         if (msg.isUserFlag()) {
             byte[] pwd = null;
@@ -154,26 +145,25 @@ public class ProtocolProcessor {
                 return;
             }
             // 处理登录问题
-            if (!m_authenticator.checkValid(msg.getUsername(), pwd)) {
+            User user = imServiceClient.login(Long.valueOf(msg.getUsername()), new String(pwd));
+            // 如果登录失败
+            if (user == null) {
                 failedCredentials(channel);
                 channel.close();
                 return;
             }
             NettyUtils.userName(channel, msg.getUsername());
-            //
+
         } else if (!this.allowAnonymous) {
             failedCredentials(channel);
             return;
         }
-
 
         //if an old client with the same ID already exists close its session.
         if (m_clientIDs.containsKey(msg.getClientID())) {
             LOG.info("Found an existing connection with same client ID <{}>, forcing to close", msg.getClientID());
             //clean the subscriptions if the old used a cleanSession = true
             Channel oldChannel = m_clientIDs.get(msg.getClientID()).channel;
-            ClientSession oldClientSession = m_sessionsStore.sessionForClient(msg.getClientID());
-            oldClientSession.disconnect();
             NettyUtils.sessionStolen(oldChannel, true);
             oldChannel.close();
             LOG.debug("Existing connection with same client ID <{}>, forced to close", msg.getClientID());
@@ -196,7 +186,7 @@ public class ProtocolProcessor {
 
         //Handle will flag
         if (msg.isWillFlag()) {
-            AbstractMessage.QOSType willQos = AbstractMessage.QOSType.valueOf(msg.getWillQos());
+            QOSType willQos = QOSType.valueOf(msg.getWillQos());
             byte[] willPayload = msg.getWillMessage();
             ByteBuffer bb = (ByteBuffer) ByteBuffer.allocate(willPayload.length).put(willPayload).flip();
             //save the will testament in the clientID store
@@ -207,32 +197,7 @@ public class ProtocolProcessor {
         ConnAckMessage okResp = new ConnAckMessage();
         okResp.setReturnCode(ConnAckMessage.CONNECTION_ACCEPTED);
 
-        ClientSession clientSession = m_sessionsStore.sessionForClient(msg.getClientID());
-        boolean isSessionAlreadyStored = clientSession != null;
-        if (!msg.isCleanSession() && isSessionAlreadyStored) {
-            okResp.setSessionPresent(true);
-        }
-        if (isSessionAlreadyStored) {
-            clientSession.cleanSession(msg.isCleanSession());
-        }
-        channel.writeAndFlush(okResp);
-        m_interceptor.notifyClientConnected(msg);
-
-        if (!isSessionAlreadyStored) {
-            LOG.info("Create persistent session for clientID <{}>", msg.getClientID());
-            clientSession = m_sessionsStore.createNewSession(msg.getClientID(), msg.isCleanSession());
-        }
-        clientSession.activate();
-        if (msg.isCleanSession()) {
-            clientSession.cleanSession();
-        }
-        LOG.info("Connected client ID <{}> with clean session {}", msg.getClientID(), msg.isCleanSession());
-        if (!msg.isCleanSession()) {
-            //force the republish of stored QoS1 and QoS2
-            republishStoredInSession(clientSession);
-        }
         LOG.info("CONNECT processed");
-//        LOG.info("CONNECT clients descriptors {}", m_clientIDs);
     }
 
     private void setIdleTime(ChannelPipeline pipeline, int idleTime) {
@@ -248,25 +213,6 @@ public class ProtocolProcessor {
         session.writeAndFlush(okResp);
     }
 
-    /**
-     * Republish QoS1 and QoS2 messages stored into the session for the clientID.
-     */
-    private void republishStoredInSession(ClientSession clientSession) {
-        LOG.trace("republishStoredInSession for client <{}>", clientSession);
-        List<IMessagesStore.StoredMessage> publishedEvents = clientSession.storedMessages();
-        if (publishedEvents.isEmpty()) {
-            LOG.info("No stored messages for client <{}>", clientSession.clientID);
-            return;
-        }
-
-        LOG.info("republishing stored messages to client <{}>", clientSession.clientID);
-        for (IMessagesStore.StoredMessage pubEvt : publishedEvents) {
-            //TODO put in flight zone
-            directSend(clientSession, pubEvt.getTopic(), pubEvt.getQos(),
-                    pubEvt.getMessage(), false, pubEvt.getMessageID());
-            clientSession.removeEnqueued(pubEvt.getGuid());
-        }
-    }
 
     public void processPubAck(Channel session, PubAckMessage msg) {
         String clientID = NettyUtils.clientID(session);
@@ -295,89 +241,39 @@ public class ProtocolProcessor {
         pub.setRetained(will.isRetained());
         return pub;
     }
-    public void unicast(Channel session, PublishMessage msg) {
-        LOG.trace("PUB --PUBLISH--> SRV executePublish invoked with {}", msg);
-        String clientID = NettyUtils.clientID(session);
-        final String topic = msg.getTopicName();
-        //check if the topic can be wrote
-        String user = NettyUtils.userName(session);
-        if (!m_authorizator.canWrite(topic, user, clientID)) {
-            LOG.debug("topic {} doesn't have write credentials", topic);
-            return;
-        }
-        final AbstractMessage.QOSType qos = msg.getQos();
-        final Integer messageID = msg.getMessageID();
-        LOG.info("PUBLISH from clientID <{}> on topic <{}> with QoS {}", clientID, topic, qos);
 
-        String guid = null;
-        IMessagesStore.StoredMessage toStoreMsg = asStoredMessage(msg);
-        toStoreMsg.setClientID(clientID);
-        if (qos == AbstractMessage.QOSType.MOST_ONE) { //QoS0
-            route2Subscribers(toStoreMsg);
-        } else if (qos == AbstractMessage.QOSType.LEAST_ONE) { //QoS1
-            route2Subscribers(toStoreMsg);
-            sendPubAck(clientID, messageID);
-            LOG.debug("replying with PubAck to MSG ID {}", messageID);
-        } else if (qos == AbstractMessage.QOSType.EXACTLY_ONCE) { //QoS2
-            guid = m_messagesStore.storePublishForFuture(toStoreMsg);
-            sendPubRec(clientID, messageID);
-            //Next the client will send us a pub rel
-            //NB publish to subscribers for QoS 2 happen upon PUBREL from publisher
-        }
-
-        if (msg.isRetainFlag()) {
-            if (qos == AbstractMessage.QOSType.MOST_ONE) {
-                //QoS == 0 && retain => clean old retained
-                m_messagesStore.cleanRetained(topic);
-            } else {
-                if (!msg.getPayload().hasRemaining()) {
-                    m_messagesStore.cleanRetained(topic);
-                } else {
-                    if (guid == null) {
-                        //before wasn't stored
-                        guid = m_messagesStore.storePublishForFuture(toStoreMsg);
-                    }
-                    m_messagesStore.storeRetained(topic, guid);
-                }
+    public void sendMsg(String clientID, PublishMessage message) {
+        ConnectionDescriptor connectionDescriptor = m_clientIDs.get(clientID);
+        if (connectionDescriptor != null) {
+            if (connectionDescriptor.channel != null) {
+                connectionDescriptor.channel.writeAndFlush(message);
             }
         }
-        m_interceptor.notifyTopicPublished(msg, clientID);
     }
 
-
-
-    public void processPublish(Channel session, PublishMessage msg) {
+    public void processPublish(Channel session, PublishMessage msg) throws Exception {
         LOG.trace("PUB --PUBLISH--> SRV executePublish invoked with {}", msg);
         String clientID = NettyUtils.clientID(session);
         final String topic = msg.getTopicName();
-        //check if the topic can be wrote
-        String user = NettyUtils.userName(session);
-        if (!m_authorizator.canWrite(topic, user, clientID)) {
-            LOG.debug("topic {} doesn't have write credentials", topic);
-            return;
-        }
-        final AbstractMessage.QOSType qos = msg.getQos();
+        final QOSType qos = msg.getQos();
         final Integer messageID = msg.getMessageID();
         LOG.info("PUBLISH from clientID <{}> on topic <{}> with QoS {}", clientID, topic, qos);
-
         String guid = null;
-        IMessagesStore.StoredMessage toStoreMsg = asStoredMessage(msg);
-        toStoreMsg.setClientID(clientID);
-        if (qos == AbstractMessage.QOSType.MOST_ONE) { //QoS0
-            route2Subscribers(toStoreMsg);
-        } else if (qos == AbstractMessage.QOSType.LEAST_ONE) { //QoS1
-            route2Subscribers(toStoreMsg);
+        if (qos == QOSType.MOST_ONE) { //QoS0
+            dispatcher4Subscribers(msg);
+        } else if (qos == QOSType.LEAST_ONE) { //QoS1
+            dispatcher4Subscribers(msg);
             sendPubAck(clientID, messageID);
             LOG.debug("replying with PubAck to MSG ID {}", messageID);
-        } else if (qos == AbstractMessage.QOSType.EXACTLY_ONCE) { //QoS2
-            guid = m_messagesStore.storePublishForFuture(toStoreMsg);
+        } else if (qos == QOSType.EXACTLY_ONCE) { //QoS2
+//            guid = m_messagesStore.storePublishForFuture(toStoreMsg);
             sendPubRec(clientID, messageID);
             //Next the client will send us a pub rel
             //NB publish to subscribers for QoS 2 happen upon PUBREL from publisher
         }
 
         if (msg.isRetainFlag()) {
-            if (qos == AbstractMessage.QOSType.MOST_ONE) {
+            if (qos == QOSType.MOST_ONE) {
                 //QoS == 0 && retain => clean old retained
                 m_messagesStore.cleanRetained(topic);
             } else {
@@ -386,7 +282,7 @@ public class ProtocolProcessor {
                 } else {
                     if (guid == null) {
                         //before wasn't stored
-                        guid = m_messagesStore.storePublishForFuture(toStoreMsg);
+//                        guid = m_messagesStore.storePublishForFuture(toStoreMsg);
                     }
                     m_messagesStore.storeRetained(topic, guid);
                 }
@@ -404,7 +300,7 @@ public class ProtocolProcessor {
      * it's publishing.
      */
     public void internalPublish(PublishMessage msg) {
-        final AbstractMessage.QOSType qos = msg.getQos();
+        final QOSType qos = msg.getQos();
         final String topic = msg.getTopicName();
         LOG.info("embedded PUBLISH on topic <{}> with QoS {}", topic, qos);
 
@@ -412,7 +308,7 @@ public class ProtocolProcessor {
         IMessagesStore.StoredMessage toStoreMsg = asStoredMessage(msg);
         toStoreMsg.setClientID("BROKER_SELF");
         toStoreMsg.setMessageID(1);
-        if (qos == AbstractMessage.QOSType.EXACTLY_ONCE) { //QoS2
+        if (qos == QOSType.EXACTLY_ONCE) { //QoS2
             guid = m_messagesStore.storePublishForFuture(toStoreMsg);
         }
         route2Subscribers(toStoreMsg);
@@ -420,7 +316,7 @@ public class ProtocolProcessor {
         if (!msg.isRetainFlag()) {
             return;
         }
-        if (qos == AbstractMessage.QOSType.MOST_ONE || !msg.getPayload().hasRemaining()) {
+        if (qos == QOSType.MOST_ONE || !msg.getPayload().hasRemaining()) {
             //QoS == 0 && retain => clean old retained
             m_messagesStore.cleanRetained(topic);
             return;
@@ -439,7 +335,7 @@ public class ProtocolProcessor {
         //it has just to publish the message downstream to the subscribers
         //NB it's a will publish, it needs a PacketIdentifier for this conn, default to 1
         Integer messageId = null;
-        if (will.getQos() != AbstractMessage.QOSType.MOST_ONE) {
+        if (will.getQos() != QOSType.MOST_ONE) {
             messageId = m_sessionsStore.nextPacketID(clientID);
         }
 
@@ -450,59 +346,68 @@ public class ProtocolProcessor {
     }
 
 
+    public void dispatcher4Subscribers(PublishMessage message) throws Exception {
+        final String topic = message.getTopicName();
+        JSONArray uids = imServiceClient.listUidByTopic(topic);
+        for (int i = 0; i < uids.size(); i++) {
+            String clientID = uids.getString(i);
+            ConnectionDescriptor connectionDescriptor = m_clientIDs.get(clientID);
+            if (connectionDescriptor != null) {
+                Channel channel = connectionDescriptor.channel;
+                channel.writeAndFlush(message);
+            }
+
+        }
+    }
+
     /**
      * Flood the subscribers with the message to notify. MessageID is optional and should only used for QoS 1 and 2
      */
     void route2Subscribers(IMessagesStore.StoredMessage pubMsg) {
         final String topic = pubMsg.getTopic();
-        final AbstractMessage.QOSType publishingQos = pubMsg.getQos();
+        final QOSType publishingQos = pubMsg.getQos();
         ByteBuffer origMessage = pubMsg.getMessage();
 
-        LOG.debug("route2Subscribers republishing to existing subscribers that matches the topic {}", topic);
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("content <{}>", DebugUtils.payload2Str(origMessage));
-            LOG.trace("subscription tree {}", subscriptions.dumpTree());
-        }
         //if QoS 1 or 2 store the message
         String guid = null;
         if (publishingQos == QOSType.EXACTLY_ONCE || publishingQos == QOSType.LEAST_ONE) {
             guid = m_messagesStore.storePublishForFuture(pubMsg);
         }
+//
 
-        for (final Subscription sub : subscriptions.matches(topic)) {
-            AbstractMessage.QOSType qos = publishingQos;
-            if (qos.byteValue() > sub.getRequestedQos().byteValue()) {
-                qos = sub.getRequestedQos();
-            }
-            ClientSession targetSession = m_sessionsStore.sessionForClient(sub.getClientId());
-            verifyToActivate(sub.getClientId(), targetSession);
-
-            LOG.debug("Broker republishing to client <{}> topic <{}> qos <{}>, active {}",
-                    sub.getClientId(), sub.getTopicFilter(), qos, targetSession.isActive());
-            ByteBuffer message = origMessage.duplicate();
-            if (qos == AbstractMessage.QOSType.MOST_ONE && targetSession.isActive()) {
-                //QoS 0
-                directSend(targetSession, topic, qos, message, false, null);
-            } else {
-                //QoS 1 or 2
-                //if the target subscription is not clean session and is not connected => store it
-                if (!targetSession.isCleanSession() && !targetSession.isActive()) {
-                    //store the message in targetSession queue to deliver
-                    targetSession.enqueueToDeliver(guid);
-                } else {
-                    //publish
-                    if (targetSession.isActive()) {
-                        int messageId = targetSession.nextPacketId();
-                        targetSession.inFlightAckWaiting(guid, messageId);
-                        directSend(targetSession, topic, qos, message, false, messageId);
-                    }
-                }
-            }
-        }
+//        for (final Subscription sub : subscriptions.matches(topic)) {
+//            QOSType qos = publishingQos;
+//            if (qos.byteValue() > sub.getRequestedQos().byteValue()) {
+//                qos = sub.getRequestedQos();
+//            }
+//            ClientSession targetSession = m_sessionsStore.sessionForClient(sub.getClientId());
+//            verifyToActivate(sub.getClientId(), targetSession);
+//
+//            LOG.debug("Broker republishing to client <{}> topic <{}> qos <{}>, active {}",
+//                    sub.getClientId(), sub.getTopicFilter(), qos, targetSession.isActive());
+//            ByteBuffer message = origMessage.duplicate();
+//            if (qos == QOSType.MOST_ONE && targetSession.isActive()) {
+//                //QoS 0
+//                directSend(targetSession.clientID, topic, qos, message, false, null);
+//            } else {
+//                //QoS 1 or 2
+//                //if the target subscription is not clean session and is not connected => store it
+//                if (!targetSession.isCleanSession() && !targetSession.isActive()) {
+//                    //store the message in targetSession queue to deliver
+//                    targetSession.enqueueToDeliver(guid);
+//                } else {
+//                    //publish
+//                    if (targetSession.isActive()) {
+//                        int messageId = targetSession.nextPacketId();
+//                        targetSession.inFlightAckWaiting(guid, messageId);
+//                        directSend(targetSession.clientID, topic, qos, message, false, messageId);
+//                    }
+//                }
+//            }
+//        }
     }
 
-    protected void directSend(ClientSession clientsession, String topic, AbstractMessage.QOSType qos, ByteBuffer message, boolean retained, Integer messageID) {
-        String clientId = clientsession.clientID;
+    protected void directSend(String clientId, String topic, QOSType qos, ByteBuffer message, boolean retained, Integer messageID) {
         LOG.debug("directSend invoked clientId <{}> on topic <{}> QoS {} retained {} messageID {}", clientId, topic, qos, retained, messageID);
         PublishMessage pubMessage = new PublishMessage();
         pubMessage.setRetainFlag(retained);
@@ -510,12 +415,8 @@ public class ProtocolProcessor {
         pubMessage.setQos(qos);
         pubMessage.setPayload(message);
 
-        LOG.info("send publish message to <{}> on topic <{}>", clientId, topic);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("content <{}>", DebugUtils.payload2Str(message));
-        }
         //set the PacketIdentifier only for QoS > 0
-        if (pubMessage.getQos() != AbstractMessage.QOSType.MOST_ONE) {
+        if (pubMessage.getQos() != QOSType.MOST_ONE) {
             pubMessage.setMessageID(messageID);
         } else {
             if (messageID != null) {
@@ -608,7 +509,7 @@ public class ProtocolProcessor {
         LOG.debug("\t\tSRV <--PUBREC-- SUB processPubRec invoked for clientID {} ad messageID {}", clientID, messageID);
         PubRelMessage pubRelMessage = new PubRelMessage();
         pubRelMessage.setMessageID(messageID);
-        pubRelMessage.setQos(AbstractMessage.QOSType.LEAST_ONE);
+        pubRelMessage.setQos(QOSType.LEAST_ONE);
 
         channel.writeAndFlush(pubRelMessage);
     }
@@ -624,7 +525,6 @@ public class ProtocolProcessor {
     }
 
     public void processDisconnect(Channel channel) throws InterruptedException {
-        //
         String clientID = NettyUtils.clientID(channel);
         boolean cleanSession = NettyUtils.cleanSession(channel);
         LOG.info("DISCONNECT client <{}> with clean session {}", clientID, cleanSession);
@@ -664,29 +564,15 @@ public class ProtocolProcessor {
      * Remove the clientID from topic subscription, if not previously subscribed,
      * doesn't reply any error
      */
-    public void processUnsubscribe(Channel channel, UnsubscribeMessage msg) {
+    public void processUnsubscribe(Channel channel, UnsubscribeMessage msg) throws Exception {
         List<String> topics = msg.topicFilters();
         int messageID = msg.getMessageID();
         String clientID = NettyUtils.clientID(channel);
-
         LOG.debug("UNSUBSCRIBE subscription on topics {} for clientID <{}>", topics, clientID);
-
-        ClientSession clientSession = m_sessionsStore.sessionForClient(clientID);
-        verifyToActivate(clientID, clientSession);
         for (String topic : topics) {
-            boolean validTopic = SubscriptionsStore.validate(topic);
-            if (!validTopic) {
-                //close the connection, not valid topicFilter is a protocol violation
-                channel.close();
-                LOG.warn("UNSUBSCRIBE found an invalid topic filter <{}> for clientID <{}>", topic, clientID);
-                return;
-            }
-
-            subscriptions.removeSubscription(topic, clientID);
-            clientSession.unsubscribeFrom(topic);
+            imServiceClient.unSubscribeTopic(clientID, topic);
             m_interceptor.notifyTopicUnsubscribed(topic, clientID);
         }
-
         //ack the client
         UnsubAckMessage ackMessage = new UnsubAckMessage();
         ackMessage.setMessageID(messageID);
@@ -695,72 +581,33 @@ public class ProtocolProcessor {
         channel.writeAndFlush(ackMessage);
     }
 
-    public void processSubscribe(Channel channel, SubscribeMessage msg) {
+    public void processSubscribe(Channel channel, SubscribeMessage msg) throws Exception {
+
         String clientID = NettyUtils.clientID(channel);
         LOG.debug("SUBSCRIBE client <{}> packetID {}", clientID, msg.getMessageID());
 
-        ClientSession clientSession = m_sessionsStore.sessionForClient(clientID);
-        verifyToActivate(clientID, clientSession);
         //ack the client
         SubAckMessage ackMessage = new SubAckMessage();
         ackMessage.setMessageID(msg.getMessageID());
 
-        String user = NettyUtils.userName(channel);
         List<Subscription> newSubscriptions = new ArrayList<>();
         for (SubscribeMessage.Couple req : msg.subscriptions()) {
-            if (!m_authorizator.canRead(req.topicFilter, user, clientSession.clientID)) {
-                //send SUBACK with 0x80, the user hasn't credentials to read the topic
-                LOG.debug("topic {} doesn't have read credentials", req.topicFilter);
-                ackMessage.addType(AbstractMessage.QOSType.FAILURE);
-                continue;
-            }
-
-            AbstractMessage.QOSType qos = AbstractMessage.QOSType.valueOf(req.qos);
+            QOSType qos = QOSType.valueOf(req.qos);
             Subscription newSubscription = new Subscription(clientID, req.topicFilter, qos);
-            boolean valid = clientSession.subscribe(req.topicFilter, newSubscription);
-            ackMessage.addType(valid ? qos : AbstractMessage.QOSType.FAILURE);
+            boolean valid = imServiceClient.subscribeTopic(clientID, req.topicFilter);
+            ackMessage.addType(valid ? qos : QOSType.FAILURE);
             if (valid) {
                 newSubscriptions.add(newSubscription);
             }
         }
-
-        //save session, persist subscriptions from session
-        LOG.debug("SUBACK for packetID {}", msg.getMessageID());
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("subscription tree {}", subscriptions.dumpTree());
-        }
         channel.writeAndFlush(ackMessage);
-
         //fire the publish
         for (Subscription subscription : newSubscriptions) {
             subscribeSingleTopic(subscription);
         }
     }
 
-    private boolean subscribeSingleTopic(final Subscription newSubscription) {
-        subscriptions.add(newSubscription.asClientTopicCouple());
-
-        //scans retained messages to be published to the new subscription
-        //TODO this is ugly, it does a linear scan on potential big dataset
-        Collection<IMessagesStore.StoredMessage> messages = m_messagesStore.searchMatching(new IMatchingCondition() {
-            public boolean match(String key) {
-                return SubscriptionsStore.matchTopics(key, newSubscription.getTopicFilter());
-            }
-        });
-
-        ClientSession targetSession = m_sessionsStore.sessionForClient(newSubscription.getClientId());
-        verifyToActivate(newSubscription.getClientId(), targetSession);
-        for (IMessagesStore.StoredMessage storedMsg : messages) {
-            //fire the as retained the message
-            LOG.debug("send publish message for topic {}", newSubscription.getTopicFilter());
-            //forwardPublishQoS0(newSubscription.getClientId(), storedMsg.getTopic(), storedMsg.getQos(), storedMsg.getPayload(), true);
-            Integer packetID = storedMsg.getQos() == QOSType.MOST_ONE ? null :
-                    targetSession.nextPacketId();
-            directSend(targetSession, storedMsg.getTopic(), storedMsg.getQos(), storedMsg.getPayload(), true, packetID);
-        }
-
-        //notify the Observables
-        m_interceptor.notifyTopicSubscribed(newSubscription);
-        return true;
+    private boolean subscribeSingleTopic(final Subscription newSubscription) throws Exception {
+        return imServiceClient.subscribeTopic(newSubscription.getClientId(), newSubscription.getTopicFilter());
     }
 }

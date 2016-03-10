@@ -3,6 +3,7 @@ package com.dempe.ocean.node.im.service;
 import com.dempe.ocean.common.model.im.UserGroup;
 import com.dempe.ocean.node.im.dao.UserGroupDao;
 import com.google.common.collect.Lists;
+import com.mongodb.WriteResult;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,6 +34,10 @@ public class UserGroupService {
 
     public void saveUserGroup(UserGroup userGroup) {
         userGroupDao.save(userGroup);
+    }
+
+    public WriteResult delUserGroup(String groupId, Long uid) {
+        return userGroupDao.delUserGroup(groupId, uid);
     }
 
 

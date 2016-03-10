@@ -1,8 +1,10 @@
 package com.dempe.ocean.node.im.dao;
 
 import com.dempe.ocean.common.model.im.UserGroup;
+import com.mongodb.WriteResult;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
+import org.mongodb.morphia.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -29,5 +31,9 @@ public class UserGroupDao extends BasicDAO<UserGroup, Serializable> {
         return createQuery().field("groupId").equal(groupId).asList();
     }
 
+    public WriteResult delUserGroup(String groupId, Long uid) {
+        Query<UserGroup> query = createQuery().field("groupId").equal(groupId).field("uid").equal(uid);
+        return deleteByQuery(query);
+    }
 
 }

@@ -21,7 +21,8 @@ public class IMGroupService {
 
     public void saveUserGroup(Long createByUid, String groupName, String groupProfile) {
         userGroupDao.saveUserGroup(createByUid, groupName, groupProfile);
-
     }
+
+
 
 }

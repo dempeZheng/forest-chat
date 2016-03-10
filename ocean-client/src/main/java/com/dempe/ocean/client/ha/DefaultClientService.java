@@ -5,8 +5,7 @@ import com.dempe.ocean.client.Client;
 import com.dempe.ocean.client.Future;
 import com.dempe.ocean.client.Promise;
 import com.dempe.ocean.common.cluster.HAProxy;
-import com.dempe.ocean.common.protocol.Request;
-import com.dempe.ocean.common.protocol.Response;
+import com.dempe.ocean.common.protocol.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +50,7 @@ public class DefaultClientService {
      * @return
      * @throws Exception
      */
-    public Callback send(Request request, Callback callback) throws Exception {
+    public Callback send(Message request, Callback callback) throws Exception {
         Client client = defaultHAClient.getClient();
         if (client == null) {
             LOGGER.warn("no available node for request:{}", request);
@@ -67,8 +66,8 @@ public class DefaultClientService {
      * @return
      * @throws Exception
      */
-    public Future<Response> send(Request request) throws Exception {
-        Promise<Response> future = new Promise<Response>();
+    public Future<Message> send(Message request) throws Exception {
+        Promise<Message> future = new Promise<Message>();
         send(request, future);
         return future;
     }
@@ -80,11 +79,11 @@ public class DefaultClientService {
      * @return
      * @throws Exception
      */
-    public Response sendAndWait(Request request) throws Exception {
+    public Message sendAndWait(Message request) throws Exception {
         return send(request).await();
     }
 
-    public Response sendAndWait(Request request, long amount, TimeUnit unit) throws Exception {
+    public Message sendAndWait(Message request, long amount, TimeUnit unit) throws Exception {
         return send(request).await(amount, unit);
     }
 

@@ -88,7 +88,7 @@ public class BusNettyAcceptor {
     BytesMetricsCollector m_bytesMetricsCollector = new BytesMetricsCollector();
     MessageMetricsCollector m_metricsCollector = new MessageMetricsCollector();
 
-    public void initialize(ProtocolProcessor processor, OceanConfig config, ISslContextCreator sslCtxCreator) throws IOException {
+    public void initialize(BusProtocolProcessor processor, OceanConfig config, ISslContextCreator sslCtxCreator) throws IOException {
         m_bossGroup = new NioEventLoopGroup();
         m_workerGroup = new NioEventLoopGroup();
         final BusMQTTHandler handler = new BusMQTTHandler(processor);

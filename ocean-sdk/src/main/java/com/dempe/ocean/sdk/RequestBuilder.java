@@ -1,9 +1,9 @@
 package com.dempe.ocean.sdk;
 
-import com.dempe.ocean.common.IMUri;
+import com.dempe.ocean.common.URI;
 import com.dempe.ocean.common.MsgType;
 import com.dempe.ocean.common.protocol.BusMessage;
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Message;
 
 import java.util.Map;
 
@@ -21,8 +21,8 @@ public class RequestBuilder {
         this.daemonName = daemonName;
     }
 
-    public BusMessage buildMessage(Long uid, Map<String, String> paramMap, IMUri imUri) {
-        Request request = new Request();
+    public BusMessage buildMessage(Long uid, Map<String, String> paramMap, URI.IM imUri) {
+        Message request = new Message();
         request.setUri(imUri.getUri());
         request.setUid(uid);
         request.setParamMap(paramMap);
@@ -33,8 +33,8 @@ public class RequestBuilder {
         return busMessage;
     }
 
-    public BusMessage buildMessage(Long uid, IMUri imUri) {
-        Request request = new Request();
+    public BusMessage buildMessage(Long uid, URI.IM imUri) {
+        Message request = new Message();
         request.setUri(imUri.getUri());
         request.setUid(uid);
         BusMessage busMessage = new BusMessage();

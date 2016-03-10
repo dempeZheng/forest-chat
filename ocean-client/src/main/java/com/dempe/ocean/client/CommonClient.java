@@ -2,9 +2,8 @@ package com.dempe.ocean.client;
 
 import com.dempe.ocean.common.NodeDetails;
 import com.dempe.ocean.common.codec.DefaultEncoder;
-import com.dempe.ocean.common.codec.ResponseDecoder;
-import com.dempe.ocean.common.protocol.Request;
-import com.dempe.ocean.common.protocol.Response;
+import com.dempe.ocean.common.codec.MessageDecoder;
+import com.dempe.ocean.common.protocol.Message;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -88,12 +87,12 @@ public class CommonClient {
     public void initClientChannel(SocketChannel ch) {
         ChannelPipeline pipeline = ch.pipeline();
         pipeline.addLast("RequestEncoder", new DefaultEncoder())
-                .addLast("ResponseDecoder", new ResponseDecoder())
+                .addLast("ResponseDecoder", new MessageDecoder())
                 .addLast("ClientHandler", new ChannelHandlerAdapter() {
                     @Override
                     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
                         Integer id = 0;
-                        Response resp = (Response) msg;
+                        Message resp = (Message) msg;
                         id = resp.getMessageID();
                         Context context = contextMap.remove(id);
                         if (context == null) {
@@ -151,11 +150,11 @@ public class CommonClient {
     }
 
     public static class Context {
-        protected final Request request;
+        protected final Message request;
         public final Callback cb;
         protected final short id;
 
-        public Context(int id, Request request, Callback cb) {
+        public Context(int id, Message request, Callback cb) {
             this.id = (short) id;
             this.cb = cb;
             this.request = request;

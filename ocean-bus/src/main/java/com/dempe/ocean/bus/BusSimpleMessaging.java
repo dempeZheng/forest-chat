@@ -13,23 +13,23 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.dempe.ocean.core;
+package com.dempe.ocean.bus;
 
 
+import com.dempe.ocean.client.service.IMServiceClient;
 import com.dempe.ocean.common.OceanConfig;
+import com.dempe.ocean.common.R;
+import com.dempe.ocean.core.BrokerInterceptor;
 import com.dempe.ocean.core.interception.InterceptHandler;
 import com.dempe.ocean.core.spi.IMessagesStore;
 import com.dempe.ocean.core.spi.ISessionsStore;
 import com.dempe.ocean.core.spi.impl.subscriptions.SubscriptionsStore;
 import com.dempe.ocean.core.spi.persistence.MapDBPersistentStore;
-import com.dempe.ocean.core.spi.security.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +40,9 @@ import java.util.List;
  *
  * @author andrea
  */
-public class SimpleMessaging {
+public class BusSimpleMessaging {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleMessaging.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BusSimpleMessaging.class);
 
     private SubscriptionsStore subscriptions;
 
@@ -50,39 +50,31 @@ public class SimpleMessaging {
 
     private BrokerInterceptor m_interceptor;
 
-    private static SimpleMessaging INSTANCE;
+    private static BusSimpleMessaging INSTANCE;
 
-    private final static ProtocolProcessor m_processor = new ProtocolProcessor();
+    private final static BusProtocolProcessor m_processor = new BusProtocolProcessor();
 
-    private SimpleMessaging() {
+    private BusSimpleMessaging() {
     }
 
-    public static SimpleMessaging getInstance() {
+    public static BusSimpleMessaging getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new SimpleMessaging();
+            INSTANCE = new BusSimpleMessaging();
         }
         return INSTANCE;
     }
 
 
-    public static ProtocolProcessor getProtocolProcessor() {
+    public static BusProtocolProcessor getProtocolProcessor() {
         return m_processor;
     }
 
     /**
      * Initialize the processing part of the broker.
      *
-     * @param props             the properties carrier where some props like port end host could be loaded.
-     *                          For the full list check of configurable properties check moquette.conf file.
      * @param embeddedObservers a list of callbacks to be notified of certain events inside the broker.
-     *                          Could be empty list of null.
-     * @param authenticator     an implementation of the authenticator to be used, if null load that specified in config
-     *                          and fallback on the default one (permit all).
-     * @param authorizator      an implementation of the authorizator to be used, if null load that specified in config
-     *                          and fallback on the default one (permit all).
      */
-    public ProtocolProcessor init(OceanConfig config, List<? extends InterceptHandler> embeddedObservers,
-                                  IAuthenticator authenticator, IAuthorizator authorizator) {
+    public BusProtocolProcessor init(OceanConfig config, List<? extends InterceptHandler> embeddedObservers) throws Exception {
         subscriptions = new SubscriptionsStore();
 
         m_mapStorage = new MapDBPersistentStore(config);
@@ -104,49 +96,9 @@ public class SimpleMessaging {
 
         subscriptions.init(sessionsStore);
 
-        String configPath = System.getProperty("moquette.path", null);
-        String authenticatorClassName = config.authenticatorClass();
-
-        if (!authenticatorClassName.isEmpty()) {
-            authenticator = (IAuthenticator) loadClass(authenticatorClassName, IAuthenticator.class);
-            LOG.info("Loaded custom authenticator {}", authenticatorClassName);
-        }
-
-        if (authenticator == null) {
-            String passwdPath = config.pwdFile();
-            if (passwdPath.isEmpty()) {
-                authenticator = new AcceptAllAuthenticator();
-            } else {
-                authenticator = new FileAuthenticator(configPath, passwdPath);
-            }
-        }
-
-        String authorizatorClassName = config.authenticatorClass();
-        if (!authorizatorClassName.isEmpty()) {
-            authorizator = (IAuthorizator) loadClass(authorizatorClassName, IAuthorizator.class);
-            LOG.info("Loaded custom authorizator {}", authorizatorClassName);
-        }
-
-        if (authorizator == null) {
-            String aclFilePath = config.aclFile();
-            if (aclFilePath != null && !aclFilePath.isEmpty()) {
-                authorizator = new DenyAllAuthorizator();
-                File aclFile = new File(configPath, aclFilePath);
-                try {
-                    authorizator = ACLFileParser.parse(aclFile);
-                } catch (ParseException pex) {
-                    LOG.error(String.format("Format error in parsing acl file %s", aclFile), pex);
-                }
-                LOG.info("Using acl file defined at path {}", aclFilePath);
-            } else {
-                authorizator = new PermitAllAuthorizator();
-                LOG.info("Starting without ACL definition");
-            }
-
-        }
-
         boolean allowAnonymous = config.allowAnonymous();
-        m_processor.init(subscriptions, messagesStore, sessionsStore, authenticator, allowAnonymous, authorizator, m_interceptor);
+        IMServiceClient imServiceClient = new IMServiceClient(R.FOREST_LEAF_NAME);
+        m_processor.init(subscriptions, messagesStore, sessionsStore, allowAnonymous, imServiceClient, m_interceptor);
         return m_processor;
     }
 

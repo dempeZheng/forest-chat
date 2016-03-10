@@ -6,9 +6,8 @@ import com.dempe.ocean.common.MsgType;
 import com.dempe.ocean.common.R;
 import com.dempe.ocean.common.pack.Unpack;
 import com.dempe.ocean.common.protocol.BusMessage;
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Message;
 import org.fusesource.mqtt.client.Future;
-import org.fusesource.mqtt.client.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,20 +50,20 @@ public class CommonSDK {
             public void run() {
                 while (true) {
                     // 收频道内消息
-                    Future<Message> receive = null;
+                    Future<org.fusesource.mqtt.client.Message> receive = null;
                     try {
                         receive = haBusCliService.receive();
                     } catch (NoAvailableClientException e) {
                         LOGGER.error(e.getMessage(), e);
                     }
-                    Message message = null;
+                    org.fusesource.mqtt.client.Message message = null;
                     try {
                         message = receive.await();
                         String topic = message.getTopic();
                         System.out.println("++++++++++++++++++++++++++++topic>>>>>>>>>" + topic);
                         LOGGER.info("receive message topic:{}", topic);
                         byte[] payload = message.getPayload();
-                        Request req = new Request().unmarshal(new Unpack(payload));
+                        Message req = new Message().unmarshal(new Unpack(payload));
                         if (listener == null) {
                             return;
                         }
@@ -103,7 +102,7 @@ public class CommonSDK {
      * @param daemonName
      * @param request
      */
-    public void publish(String daemonName, String topic, Request request) throws NoAvailableClientException {
+    public void publish(String daemonName, String topic, Message request) throws NoAvailableClientException {
         BusMessage message = new BusMessage();
         message.setDaemonName(daemonName);
         message.setMsgType(MsgType.UNICAST.getValue());
@@ -117,7 +116,7 @@ public class CommonSDK {
      * @param topic
      * @param request
      */
-    public void publishSubBC(String topic, Request request) throws NoAvailableClientException {
+    public void publishSubBC(String topic, Message request) throws NoAvailableClientException {
         BusMessage message = new BusMessage();
         message.setDaemonName(R.FOREST_LEAF_NAME);
         message.setMsgType(MsgType.BCSUBCH.getValue());
@@ -134,7 +133,7 @@ public class CommonSDK {
     }
 
 
-    public Future<Message> receive() throws NoAvailableClientException {
+    public Future<org.fusesource.mqtt.client.Message> receive() throws NoAvailableClientException {
         return haBusCliService.receive();
     }
 

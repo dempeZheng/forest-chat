@@ -3,7 +3,7 @@ package com.dempe.ocean.common.codec;
 
 import com.dempe.ocean.common.pack.Marshallable;
 import com.dempe.ocean.common.pack.Unpack;
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Message;
 
 import java.io.IOException;
 
@@ -14,10 +14,10 @@ import java.io.IOException;
  * Time: 11:33
  * To change this template use File | Settings | File Templates.
  */
-public class RequestDecoder extends AbstractDecoder {
+public class MessageDecoder extends AbstractDecoder {
 
     @Override
     public Marshallable decode(Unpack unpack) throws IOException {
-        return new Request().unmarshal(unpack);
+        return new Message().unmarshal(unpack);
     }
 }

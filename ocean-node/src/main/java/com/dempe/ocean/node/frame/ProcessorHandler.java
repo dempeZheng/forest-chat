@@ -1,6 +1,6 @@
 package com.dempe.ocean.node.frame;
 
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Message;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
@@ -32,10 +32,10 @@ public class ProcessorHandler extends ChannelHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof Request) {
+        if (msg instanceof Message) {
 
 
-            executorService.submit(new TaskWorker(ctx, context, (Request) msg));
+            executorService.submit(new TaskWorker(ctx, context, (Message) msg));
         }
     }
 

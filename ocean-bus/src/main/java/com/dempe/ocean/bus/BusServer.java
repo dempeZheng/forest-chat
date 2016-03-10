@@ -4,17 +4,12 @@ import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.protocol.mqtt.PublishMessage;
 import com.dempe.ocean.common.register.NameDiscoveryService;
 import com.dempe.ocean.core.DefaultMoquetteSslContextCreator;
-import com.dempe.ocean.core.ProtocolProcessor;
-import com.dempe.ocean.core.SimpleMessaging;
 import com.dempe.ocean.core.interception.InterceptHandler;
-import com.dempe.ocean.core.spi.security.IAuthenticator;
-import com.dempe.ocean.core.spi.security.IAuthorizator;
 import com.dempe.ocean.core.spi.security.ISslContextCreator;
 import org.aeonbits.owner.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +29,7 @@ public class BusServer {
 
     private volatile boolean m_initialized;
 
-    private ProtocolProcessor m_processor;
+    private BusProtocolProcessor m_processor;
 
     public static void main(String[] args) throws Exception {
         final BusServer server = new BusServer();
@@ -57,7 +52,7 @@ public class BusServer {
      * Starts Moquette bringing the configuration from the file
      * located at m_config/moquette.conf
      */
-    public void startServer() throws IOException {
+    public void startServer() throws Exception {
         final OceanConfig config = ConfigFactory.create(OceanConfig.class);
         startServer(config);
     }
@@ -65,7 +60,7 @@ public class BusServer {
     /**
      * Starts Moquette bringing the configuration from the given file
      */
-    public void startServer(OceanConfig config) throws IOException {
+    public void startServer(OceanConfig config) throws Exception {
 
         startServer(config, null);
     }
@@ -75,19 +70,18 @@ public class BusServer {
      * Starts Moquette with config provided by an implementation of IConfig class and with the
      * set of InterceptHandler.
      */
-    public void startServer(OceanConfig config, List<? extends InterceptHandler> handlers) throws IOException {
-        startServer(config, handlers, null, null, null);
+    public void startServer(OceanConfig config, List<? extends InterceptHandler> handlers) throws Exception {
+        startServer(config, handlers, null);
     }
 
     public void startServer(OceanConfig config, List<? extends InterceptHandler> handlers,
-                            ISslContextCreator sslCtxCreator, IAuthenticator authenticator,
-                            IAuthorizator authorizator) throws IOException {
+                            ISslContextCreator sslCtxCreator) throws Exception {
         if (handlers == null) {
             handlers = Collections.emptyList();
         }
 
 
-        final ProtocolProcessor processor = SimpleMessaging.getInstance().init(config, handlers, authenticator, authorizator);
+        final BusProtocolProcessor processor = BusSimpleMessaging.getInstance().init(config, handlers);
 
         if (sslCtxCreator == null) {
             sslCtxCreator = new DefaultMoquetteSslContextCreator(config);
@@ -116,7 +110,7 @@ public class BusServer {
     public void stopServer() {
         LOG.info("Server stopping...");
         m_acceptor.close();
-        SimpleMessaging.getInstance().shutdown();
+        BusSimpleMessaging.getInstance().shutdown();
         m_initialized = false;
         LOG.info("Server stopped");
     }

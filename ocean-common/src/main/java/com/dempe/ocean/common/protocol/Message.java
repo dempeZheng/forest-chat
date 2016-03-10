@@ -17,7 +17,7 @@ import java.util.Map;
  * Time: 17:54
  * To change this template use File | Settings | File Templates.
  */
-public class Request implements Marshallable {
+public class Message implements Marshallable {
 
     private Integer messageID = 0;//消息id
 
@@ -90,7 +90,7 @@ public class Request implements Marshallable {
         return pack;
     }
 
-    public Request unmarshal(Unpack unpack) throws IOException {
+    public Message unmarshal(Unpack unpack) throws IOException {
         messageID = unpack.popInt();
         uid = unpack.popLong();
         topic = unpack.popVarstr();

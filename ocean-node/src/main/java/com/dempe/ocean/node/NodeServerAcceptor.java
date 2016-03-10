@@ -4,7 +4,7 @@ import com.dempe.ocean.common.AbstractAcceptor;
 import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.PipelineInitializer;
 import com.dempe.ocean.common.codec.DefaultEncoder;
-import com.dempe.ocean.common.codec.RequestDecoder;
+import com.dempe.ocean.common.codec.MessageDecoder;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -52,7 +52,7 @@ public class NodeServerAcceptor extends AbstractAcceptor {
             @Override
             public void init(ChannelPipeline pipeline) {
                 //pipeline.addLast("logger", new LoggingHandler("Netty", LogLevel.ERROR));
-                pipeline.addLast("requestDecoder", new RequestDecoder());
+                pipeline.addLast("requestDecoder", new MessageDecoder());
                 pipeline.addLast("encode", new DefaultEncoder());
                 pipeline.addLast("ProcessorHandler", handlerAdapter);
             }

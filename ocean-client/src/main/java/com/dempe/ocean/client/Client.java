@@ -1,7 +1,7 @@
 package com.dempe.ocean.client;
 
 
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Message;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +13,7 @@ import com.dempe.ocean.common.protocol.Request;
 public interface Client {
 
 
-    public void sendOnly(Request request) throws Exception;
+    public void sendOnly(Message request) throws Exception;
 
     /**
      * 发送消息
@@ -21,7 +21,7 @@ public interface Client {
      * @param request
      * @return Response
      */
-    public Callback send(Request request, Callback callback) throws Exception;
+    public Callback send(Message request, Callback callback) throws Exception;
 
 
 }

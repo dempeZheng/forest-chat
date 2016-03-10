@@ -4,7 +4,7 @@ package com.dempe.ocean.node;
 import com.dempe.ocean.common.OceanConfig;
 import com.dempe.ocean.common.PipelineInitializer;
 import com.dempe.ocean.common.codec.DefaultEncoder;
-import com.dempe.ocean.common.codec.RequestDecoder;
+import com.dempe.ocean.common.codec.MessageDecoder;
 import com.dempe.ocean.common.register.NameDiscoveryService;
 import com.dempe.ocean.node.frame.ProcessorHandler;
 import com.dempe.ocean.node.frame.ServerContext;
@@ -55,7 +55,7 @@ public class BootServer {
             @Override
             public void init(ChannelPipeline pipeline) {
                 //pipeline.addLast("logger", new LoggingHandler("Netty", LogLevel.ERROR));
-                pipeline.addLast("requestDecoder", new RequestDecoder());
+                pipeline.addLast("requestDecoder", new MessageDecoder());
                 pipeline.addLast("encode", new DefaultEncoder());
                 pipeline.addLast("ProcessorHandler", new ProcessorHandler(servercontext));
             }

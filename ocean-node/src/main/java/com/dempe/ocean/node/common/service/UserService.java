@@ -23,4 +23,8 @@ public class UserService {
         return userDao.login(uid, pwd);
     }
 
+    public void save(User user) {
+        userDao.save(user);
+    }
+
 }

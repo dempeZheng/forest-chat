@@ -21,14 +21,10 @@ import com.dempe.ocean.common.MsgType;
 import com.dempe.ocean.common.R;
 import com.dempe.ocean.common.pack.Unpack;
 import com.dempe.ocean.common.protocol.BusMessage;
-import com.dempe.ocean.common.protocol.Request;
-import com.dempe.ocean.common.protocol.Response;
+import com.dempe.ocean.common.protocol.Message;
 import com.dempe.ocean.common.protocol.mqtt.*;
 import com.dempe.ocean.core.NettyUtils;
-import com.dempe.ocean.core.ProtocolProcessor;
-import com.dempe.ocean.core.spi.persistence.UidSessionStore;
 import com.google.common.collect.Maps;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
@@ -50,9 +46,9 @@ import static com.dempe.ocean.common.protocol.mqtt.AbstractMessage.*;
 public class BusMQTTHandler extends ChannelHandlerAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BusMQTTHandler.class);
-    private final ProtocolProcessor m_processor;
+    private final BusProtocolProcessor m_processor;
 
-    public BusMQTTHandler(ProtocolProcessor processor) {
+    public BusMQTTHandler(BusProtocolProcessor processor) {
         m_processor = processor;
     }
 
@@ -130,14 +126,14 @@ public class BusMQTTHandler extends ChannelHandlerAdapter {
         short msgType = busMessage.getMsgType();
         String daemonName = busMessage.getDaemonName();
         // 如果消息类型为单播，且透传的进程非bus进程，将消息传递给下一个handler(分发消息到相应的业务进程)
-        if (StringUtils.equals("bus",topic) && msgType == MsgType.UNICAST.getValue() && daemonName != R.FOREST_BUS_NAME) {
+        if (StringUtils.equals("bus", topic) && msgType == MsgType.UNICAST.getValue() && daemonName != R.FOREST_BUS_NAME) {
             DefaultClientService clientService = getClientServiceByName(daemonName);
-            Request request = busMessage.getRequest();
+            Message request = busMessage.getRequest();
             request.setMessageID(messageID);
             clientService.send(request, new Callback() {
                 @Override
                 public void onReceive(Object message) {
-                    Response resp = (Response) message;
+                    Message resp = (Message) message;
                     byte[] bytes = resp.toByteArray();
                     ByteBuffer buffer = ByteBuffer.wrap(bytes);
                     publishMessage.setPayload(buffer);
@@ -152,15 +148,10 @@ public class BusMQTTHandler extends ChannelHandlerAdapter {
 
             // 单播消息，如果topic非空，则定义为点对点的聊天，单播消息的topic为聊天对象的uid
         } else if (StringUtils.isNotBlank(topic) && msgType == MsgType.UNICAST.getValue()) {
-            // 获取channel，将消息直接发送到对应的client
             // 单播消息 topic非空情况下，定义存储为uid
             String uid = topic;
-            Channel session = UidSessionStore.getSessionByUid(uid);
-            if (session != null) {
-                ByteBuffer wrap = ByteBuffer.wrap(busMessage.getRequest().toByteArray());
-                publishMessage.setPayload(wrap);
-                session.writeAndFlush(publishMessage);
-            }
+            publishMessage.setPayload(ByteBuffer.wrap(busMessage.getRequest().toByteArray()));
+            m_processor.sendMsg(uid, publishMessage);
             // 如果为广播
         } else if (msgType == MsgType.BCSUBCH.getValue()) {
             // 覆盖publishMessage 中的payload，去掉对客户端无价值的外层协议(daemonName&msgType)
@@ -197,7 +188,6 @@ public class BusMQTTHandler extends ChannelHandlerAdapter {
             //something goes bad with decoding
             LOG.warn("Error decoding a packet, probably a bad formatted packet, message: " + cause.getMessage());
         } else {
-            UidSessionStore.remove(NettyUtils.userName(ctx.channel()));
             LOG.error("Ugly error on networking");
         }
         ctx.close();

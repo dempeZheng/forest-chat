@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dempe.ocean.common.anno.Param;
 import com.dempe.ocean.common.anno.Path;
 import com.dempe.ocean.common.utils.JsonResult;
+import com.dempe.ocean.node.common.model.User;
 import com.dempe.ocean.node.common.service.UserService;
 import org.springframework.stereotype.Controller;
 
@@ -24,7 +25,14 @@ public class UserController {
 
     @Path
     public JSONObject login(@Param String uid, @Param String pwd) {
-        return JsonResult.getJsonResult(userService.login(uid, pwd));
+        User login = userService.login(uid, pwd);
+        // 4 test
+        if (login == null) {
+            login = new User();
+            login.setClientID(uid);
+            login.setPwd(pwd);
+        }
+        return JsonResult.getJsonResult(login);
     }
 
 

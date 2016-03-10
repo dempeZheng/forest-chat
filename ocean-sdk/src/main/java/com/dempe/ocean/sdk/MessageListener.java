@@ -1,6 +1,6 @@
 package com.dempe.ocean.sdk;
 
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Message;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,6 +11,6 @@ import com.dempe.ocean.common.protocol.Request;
  */
 public interface MessageListener {
 
-    public void onPublish(Request request);
+    public void onPublish(Message request);
 
 }

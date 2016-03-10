@@ -1,8 +1,7 @@
 package com.dempe.ocean.client;
 
 
-import com.dempe.ocean.common.protocol.Request;
-import com.dempe.ocean.common.protocol.Response;
+import com.dempe.ocean.common.protocol.Message;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +29,7 @@ public class DefaultClient extends CommonClient implements Client {
         return rc;
     }
 
-    public void sendOnly(Request request) throws Exception {
+    public void sendOnly(Message request) throws Exception {
         writeAndFlush(request);
     }
 
@@ -40,7 +39,7 @@ public class DefaultClient extends CommonClient implements Client {
      * @param request
      * @return Response
      */
-    public Callback send(Request request, Callback callback) throws Exception {
+    public Callback send(Message request, Callback callback) throws Exception {
         int id = getNextMessageId();
         request.setMessageID(id);
         Context context = new Context(id, request, callback);
@@ -50,20 +49,20 @@ public class DefaultClient extends CommonClient implements Client {
     }
 
 
-    public Future<Response> send(Request request) throws Exception {
-        Promise<Response> future = new Promise<Response>();
+    public Future<Message> send(Message request) throws Exception {
+        Promise<Message> future = new Promise<Message>();
         send(request, future);
         return future;
     }
 
 
-    public Response sendAnWait(Request request) throws Exception {
-        Future<Response> future = send(request);
+    public Message sendAnWait(Message request) throws Exception {
+        Future<Message> future = send(request);
         return future.await();
     }
 
-    public Response sendAnWait(Request request, long amount, TimeUnit unit) throws Exception {
-        Future<Response> future = send(request);
+    public Message sendAnWait(Message request, long amount, TimeUnit unit) throws Exception {
+        Future<Message> future = send(request);
         return future.await(amount, unit);
     }
 

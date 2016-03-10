@@ -29,5 +29,6 @@ public class UserDao extends BasicDAO<User, Serializable> {
     }
 
 
+
 }
 

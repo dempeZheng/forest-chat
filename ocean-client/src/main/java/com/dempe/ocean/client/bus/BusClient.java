@@ -2,7 +2,6 @@ package com.dempe.ocean.client.bus;
 
 import com.dempe.ocean.common.NodeDetails;
 import com.dempe.ocean.common.protocol.BusMessage;
-import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
 
@@ -54,7 +53,7 @@ public class BusClient implements Client {
         return client.receive();
     }
 
-    public Response publishBC(String topic, byte[] bytes) {
+    public Message publishBC(String topic, byte[] bytes) {
         client.publishBC(topic, bytes);
         return null;
     }

@@ -21,7 +21,7 @@ public class BusMessage implements Marshallable {
     // 消息路由节点进程名
     private String daemonName;
 
-    private Request request = new Request();
+    private Message request = new Message();
 
     public short getMsgType() {
         return msgType;
@@ -39,11 +39,11 @@ public class BusMessage implements Marshallable {
         this.daemonName = daemonName;
     }
 
-    public Request getRequest() {
+    public Message getRequest() {
         return request;
     }
 
-    public void setRequest(Request request) {
+    public void setRequest(Message request) {
         this.request = request;
     }
 
@@ -57,7 +57,7 @@ public class BusMessage implements Marshallable {
     public BusMessage unmarshal(Unpack unpack) throws IOException {
         msgType = unpack.popShort();
         daemonName = unpack.popVarstr();
-        request = (Request) unpack.popMarshallable(new Request());
+        request = (Message) unpack.popMarshallable(new Message());
         return this;
     }
 

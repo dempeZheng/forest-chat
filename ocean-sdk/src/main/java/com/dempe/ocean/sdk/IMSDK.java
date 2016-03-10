@@ -1,10 +1,10 @@
 package com.dempe.ocean.sdk;
 
 import com.dempe.ocean.client.NoAvailableClientException;
-import com.dempe.ocean.common.IMUri;
+import com.dempe.ocean.common.URI;
 import com.dempe.ocean.common.R;
 import com.dempe.ocean.common.protocol.BusMessage;
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Message;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class IMSDK extends CommonSDK {
         Map<String, String> param = Maps.newHashMap();
         param.put("uid", String.valueOf(uid));
         param.put("friendUid", String.valueOf(friendUid));
-        BusMessage message = builder.buildMessage(uid, param, IMUri.FRIEND_ACCEPT);
+        BusMessage message = builder.buildMessage(uid, param, URI.IM.FRIEND_ACCEPT);
         publish(message);
     }
 
@@ -58,7 +58,7 @@ public class IMSDK extends CommonSDK {
         param.put("uid", String.valueOf(uid));
         param.put("friendUid", String.valueOf(friendUid));
         param.put("applyMsg", applyMsg);
-        BusMessage message = builder.buildMessage(uid, param, IMUri.FRIEND_APPLY);
+        BusMessage message = builder.buildMessage(uid, param, URI.IM.FRIEND_APPLY);
         publish(message);
     }
 
@@ -72,7 +72,7 @@ public class IMSDK extends CommonSDK {
         Map<String, String> param = Maps.newHashMap();
         param.put("uid", String.valueOf(uid));
         param.put("friendUid", String.valueOf(friendUid));
-        BusMessage message = builder.buildMessage(uid, param, IMUri.FRIEND_DEL);
+        BusMessage message = builder.buildMessage(uid, param, URI.IM.FRIEND_DEL);
         publish(message);
     }
 
@@ -83,7 +83,7 @@ public class IMSDK extends CommonSDK {
      * @param message
      */
     public void sendMessage(Long friendUid, String message) throws NoAvailableClientException {
-        Request request = new Request();
+        Message request = new Message();
         request.setExtendData(message.getBytes());
         request.setTopic(String.valueOf(friendUid));
         request.setUid(uid);
@@ -99,7 +99,7 @@ public class IMSDK extends CommonSDK {
      * @param message
      */
     public void sendGroupMessage(Integer groupId, String message) throws NoAvailableClientException {
-        Request request = new Request();
+        Message request = new Message();
         request.setExtendData(message.getBytes());
         request.setTopic(String.valueOf(groupId));
         request.setUid(uid);
@@ -108,7 +108,7 @@ public class IMSDK extends CommonSDK {
     }
 
     public void imInit() throws NoAvailableClientException {
-        BusMessage message = builder.buildMessage(uid, IMUri.USER_INIT);
+        BusMessage message = builder.buildMessage(uid, URI.IM.USER_INIT);
         publish(message);
 
     }
@@ -132,7 +132,7 @@ public class IMSDK extends CommonSDK {
         // set listener 监听频道内消息
         imsdk.setListener(new MessageListener() {
             @Override
-            public void onPublish(Request request) {
+            public void onPublish(Message request) {
                 LOGGER.info("request>>>>>>>>>>>>>>{}", request);
             }
         });
@@ -140,9 +140,9 @@ public class IMSDK extends CommonSDK {
         imsdk.init();
 
 
-//        imsdk.sendMessage(uid, "hello");
+        imsdk.sendMessage(uid, "hello");
 
-        imsdk.imInit();
+//        imsdk.imInit();
     }
 
 }

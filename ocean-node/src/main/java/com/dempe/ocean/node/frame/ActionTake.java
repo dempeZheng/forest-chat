@@ -1,8 +1,8 @@
 package com.dempe.ocean.node.frame;
 
 
-import com.dempe.ocean.common.protocol.Request;
-import com.dempe.ocean.common.protocol.Response;
+import com.alibaba.fastjson.JSONObject;
+import com.dempe.ocean.common.protocol.Message;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ import java.util.Map;
  * Time: 10:17
  * To change this template use File | Settings | File Templates.
  */
-public class ActionTake implements Take<Request, Response> {
+public class ActionTake implements Take<Message, Message> {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ActionTake.class);
 
@@ -36,7 +36,7 @@ public class ActionTake implements Take<Request, Response> {
      * @throws java.lang.reflect.InvocationTargetException
      * @throws IllegalAccessException
      */
-    public Response act(Request request) throws InvocationTargetException, IllegalAccessException,
+    public Message act(Message request) throws InvocationTargetException, IllegalAccessException,
             ClassNotFoundException, InstantiationException {
         String uri = request.getUri();
         if (StringUtils.isBlank(uri)) {
@@ -70,11 +70,11 @@ public class ActionTake implements Take<Request, Response> {
      * @param result
      * @return
      */
-    public Response buildResp(Object result, Request request) throws IllegalAccessException, InstantiationException,
+    public Message buildResp(Object result, Message request) throws IllegalAccessException, InstantiationException,
             ClassNotFoundException {
-        Response resp = new Response();
+        Message resp = new Message();
         // set请求消息id标识，用于client将Response&Request对应
-        resp.setResult(result.toString());
+        resp.setExtendData(JSONObject.toJSONBytes(result));
         resp.setUid(request.getUid());
         resp.setTopic(request.getTopic());
         resp.setMessageID(request.getMessageID());

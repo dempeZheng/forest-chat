@@ -1,8 +1,7 @@
 package com.dempe.ocean.node.frame;
 
 
-import com.dempe.ocean.common.protocol.Request;
-import com.dempe.ocean.common.protocol.Response;
+import com.dempe.ocean.common.protocol.Message;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +21,9 @@ public class TaskWorker implements Runnable {
 
     private ChannelHandlerContext ctx;
     private ServerContext context;
-    private Request request;
+    private Message request;
 
-    public TaskWorker(ChannelHandlerContext ctx, ServerContext context, Request request) {
+    public TaskWorker(ChannelHandlerContext ctx, ServerContext context, Message request) {
         this.ctx = ctx;
         this.context = context;
         this.request = request;
@@ -36,7 +35,7 @@ public class TaskWorker implements Runnable {
             // set执行上下文环境
             context.setLocalContext(request, ctx);
             ActionTake tack = new ActionTake(context);
-            final Response act = tack.act(request);
+            final Message act = tack.act(request);
 
             // 交给netty线程池处理剩下的业务
             if (ctx.executor().inEventLoop()) {

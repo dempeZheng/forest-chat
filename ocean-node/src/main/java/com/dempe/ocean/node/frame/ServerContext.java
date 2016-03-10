@@ -2,7 +2,7 @@ package com.dempe.ocean.node.frame;
 
 
 import com.dempe.ocean.common.OceanConfig;
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Message;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.context.ApplicationContext;
 
@@ -33,7 +33,7 @@ public class ServerContext {
      *
      * @return
      */
-    public static Request getRequest() {
+    public static Message getRequest() {
         return getContext().getRequest();
     }
 
@@ -54,7 +54,7 @@ public class ServerContext {
      * @param request 请求消息
      * @param ctx     netty执行上下文环境
      */
-    public void setLocalContext(Request request, ChannelHandlerContext ctx) {
+    public void setLocalContext(Message request, ChannelHandlerContext ctx) {
         localContext.set(new Context(request, ctx));
     }
 
@@ -68,16 +68,16 @@ public class ServerContext {
 
     static class Context {
 
-        final Request request;
+        final Message request;
 
         final ChannelHandlerContext response;
 
-        Context(Request request, ChannelHandlerContext response) {
+        Context(Message request, ChannelHandlerContext response) {
             this.request = request;
             this.response = response;
         }
 
-        Request getRequest() {
+        Message getRequest() {
             return request;
         }
 

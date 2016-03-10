@@ -1,9 +1,8 @@
 package com.dempe.ocean.sdk;
 
 import com.dempe.ocean.client.NoAvailableClientException;
-import com.dempe.ocean.common.protocol.Request;
+import com.dempe.ocean.common.protocol.Message;
 import org.fusesource.mqtt.client.Future;
-import org.fusesource.mqtt.client.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +43,7 @@ public class LiveSDK extends CommonSDK {
     }
 
 
-    public Future<Message> receive() throws NoAvailableClientException {
+    public Future<org.fusesource.mqtt.client.Message> receive() throws NoAvailableClientException {
         return haBusCliService.receive();
     }
 
@@ -59,7 +58,7 @@ public class LiveSDK extends CommonSDK {
         // set listener 监听频道内消息
         liveSDK.setListener(new MessageListener() {
             @Override
-            public void onPublish(Request request) {
+            public void onPublish(Message request) {
                 LOGGER.info("request>>>>>>>>>>>>>>{}", request);
             }
         });
@@ -69,7 +68,7 @@ public class LiveSDK extends CommonSDK {
 
 
         String topic = topSid + "|" + subSid;
-        Request request = new Request();
+        Message request = new Message();
         request.setUid(uid);
         request.setTopic(topic);
         request.setUri("/sample/hello");

@@ -2,7 +2,6 @@ package com.dempe.ocean.client.bus;
 
 import com.dempe.ocean.client.NoAvailableClientException;
 import com.dempe.ocean.common.protocol.BusMessage;
-import com.dempe.ocean.common.protocol.Response;
 import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.Message;
 

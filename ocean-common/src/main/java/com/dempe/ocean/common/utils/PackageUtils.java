@@ -22,6 +22,8 @@ import java.util.regex.Pattern;
 public class PackageUtils {
     public final static List<String> EMPTY_LIST = new ArrayList<String>(0);
 
+    private PackageUtils() {}
+
     /**
      * 查找指定package下的class
      *

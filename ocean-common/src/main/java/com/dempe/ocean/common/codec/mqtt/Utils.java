@@ -35,6 +35,8 @@ public class Utils {
     public static final byte VERSION_3_1 = 3;
     public static final byte VERSION_3_1_1 = 4;
 
+    private Utils() {}
+
     static byte readMessageType(ByteBuf in) {
         byte h1 = in.readByte();
         byte messageType = (byte) ((h1 & 0x00F0) >> 4);

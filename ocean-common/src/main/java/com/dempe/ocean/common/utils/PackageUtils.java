@@ -157,7 +157,7 @@ public class PackageUtils {
      * @return include-true,else-false
      */
     private static boolean isIncluded(String name, List<String> included, List<String> excluded) {
-        boolean result = false;
+        boolean result;
         if (included.size() == 0 && excluded.size() == 0) {
             result = true;
         } else {
@@ -193,6 +193,5 @@ public class PackageUtils {
         }
 
         String className = "com.yy.ent.commons.accessdb.util.BlankUtil";
-        Class<?> b = Class.forName(className);
     }
 }

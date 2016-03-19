@@ -87,7 +87,6 @@ public class IMSDK extends CommonSDK {
         request.setExtendData(message.getBytes());
         request.setUid(uid);
         request.setUri("/message");
-        BusMessage busMessage = new BusMessage();
         publish(R.FOREST_BUS_NAME, String.valueOf(friendUid), request);
     }
 

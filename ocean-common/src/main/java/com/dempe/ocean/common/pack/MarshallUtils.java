@@ -185,7 +185,7 @@ public class MarshallUtils {
     }
 
     public static <K, V> Map<K, V> unpackMap(Unpack unpack, Class<K> primitiveClazzK, Class<V> primitiveClazzV, boolean ordered) {
-        Map<K, V> map = null;
+        Map<K, V> map;
         if (ordered) {
             map = new LinkedHashMap<K, V>();
         } else {
@@ -221,7 +221,7 @@ public class MarshallUtils {
     @SuppressWarnings("unchecked")
     public static <T> T unpackObject(Unpack unpack, Type genericType) {
         Type[] argTypes = null;
-        Class<?> clazz = null;
+        Class<?> clazz;
         if (genericType instanceof ParameterizedType) {
             ParameterizedType aType = (ParameterizedType) genericType;
             argTypes = aType.getActualTypeArguments();

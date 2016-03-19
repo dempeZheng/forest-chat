@@ -158,7 +158,7 @@ public class PackageUtils {
      */
     private static boolean isIncluded(String name, List<String> included, List<String> excluded) {
         boolean result = false;
-        if (included.size() == 0 && excluded.size() == 0) {
+        if (included.isEmpty() && excluded.isEmpty()) {
             result = true;
         } else {
             boolean isIncluded = find(name, included);
@@ -168,7 +168,7 @@ public class PackageUtils {
             } else if (isExcluded) {
                 result = false;
             } else {
-                result = included.size() == 0;
+                result = included.isEmpty();
             }
         }
         return result;

@@ -113,7 +113,7 @@ public abstract class HAProxy<T> extends TimerTask {
      */
     private void toAvailable(NodeDetails serverInstance) {
         LOGGER.info("unAvailable server：{}", serverInstance.toString());
-        if (this.availServers.size() == 0) { //如果可用节点的列表已空,则不需考虑负载的策略
+        if (this.availServers.isEmpty()) { //如果可用节点的列表已空,则不需考虑负载的策略
             this.availServers.add(serverInstance);
         } else {
             if (this.strategy.equals(Strategy.DEFAULT)) {
@@ -231,12 +231,12 @@ public abstract class HAProxy<T> extends TimerTask {
 
         }
         if (server == null) {
-            if (availServers.size() > 0) {
+            if (!availServers.isEmpty()) {
                 // 删除当前节点
                 toUnAvailable(serverInstance);
                 initLoadBalance();
             }
-            if (availServers.size() < 1) {
+            if (availServers.isEmpty()) {
                 checkToAvailable();
             }
             server = getClient(getAvailServerInstance());
@@ -252,7 +252,7 @@ public abstract class HAProxy<T> extends TimerTask {
      * @throws Exception
      */
     public T getClient() {
-        if (availServers.size() < 1) {
+        if (availServers.isEmpty()) {
             return null;
         }
         return getClient(getAvailServerInstance());
@@ -265,7 +265,7 @@ public abstract class HAProxy<T> extends TimerTask {
      * @return
      */
     public T getClientByHashKey(String key) {
-        if (availServers.size() < 1) {
+        if (availServers.isEmpty()) {
             return null;
         }
         return getClient(getAvailServerInstance(key));
@@ -297,11 +297,11 @@ public abstract class HAProxy<T> extends TimerTask {
      * @return
      */
     public T changeClient(NodeDetails serverInstance) {
-        if (availServers.size() > 0) {
+        if (!availServers.isEmpty()) {
             toUnAvailable(serverInstance);
         }
         initLoadBalance();
-        if (availServers.size() > 0) {
+        if (!availServers.isEmpty()) {
             return getClient();
         }
         return null;

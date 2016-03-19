@@ -364,47 +364,7 @@ public class BusIMProcessor {
      * Flood the subscribers with the message to notify. MessageID is optional and should only used for QoS 1 and 2
      */
     void route2Subscribers(IMessagesStore.StoredMessage pubMsg) {
-        final String topic = pubMsg.getTopic();
         final QOSType publishingQos = pubMsg.getQos();
-        ByteBuffer origMessage = pubMsg.getMessage();
-
-        //if QoS 1 or 2 store the message
-        String guid = null;
-        if (publishingQos == QOSType.EXACTLY_ONCE || publishingQos == QOSType.LEAST_ONE) {
-            guid = m_messagesStore.storePublishForFuture(pubMsg);
-        }
-//
-
-//        for (final Subscription sub : subscriptions.matches(topic)) {
-//            QOSType qos = publishingQos;
-//            if (qos.byteValue() > sub.getRequestedQos().byteValue()) {
-//                qos = sub.getRequestedQos();
-//            }
-//            ClientSession targetSession = m_sessionsStore.sessionForClient(sub.getClientId());
-//            verifyToActivate(sub.getClientId(), targetSession);
-//
-//            LOG.debug("Broker republishing to client <{}> topic <{}> qos <{}>, active {}",
-//                    sub.getClientId(), sub.getTopicFilter(), qos, targetSession.isActive());
-//            ByteBuffer message = origMessage.duplicate();
-//            if (qos == QOSType.MOST_ONE && targetSession.isActive()) {
-//                //QoS 0
-//                directSend(targetSession.clientID, topic, qos, message, false, null);
-//            } else {
-//                //QoS 1 or 2
-//                //if the target subscription is not clean session and is not connected => store it
-//                if (!targetSession.isCleanSession() && !targetSession.isActive()) {
-//                    //store the message in targetSession queue to deliver
-//                    targetSession.enqueueToDeliver(guid);
-//                } else {
-//                    //publish
-//                    if (targetSession.isActive()) {
-//                        int messageId = targetSession.nextPacketId();
-//                        targetSession.inFlightAckWaiting(guid, messageId);
-//                        directSend(targetSession.clientID, topic, qos, message, false, messageId);
-//                    }
-//                }
-//            }
-//        }
     }
 
     protected void directSend(String clientId, String topic, QOSType qos, ByteBuffer message, boolean retained, Integer messageID) {

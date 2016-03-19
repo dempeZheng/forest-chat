@@ -91,7 +91,7 @@ public class CommonClient {
                 .addLast("ClientHandler", new ChannelHandlerAdapter() {
                     @Override
                     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        Integer id = 0;
+                        Integer id;
                         Message resp = (Message) msg;
                         id = resp.getMessageID();
                         Context context = contextMap.remove(id);

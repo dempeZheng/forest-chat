@@ -21,6 +21,9 @@ import java.nio.ByteBuffer;
  * @author andrea
  */
 public class DebugUtils {
+
+    private DebugUtils() {}
+
     public static String payload2Str(ByteBuffer content) {
         byte[] b = new byte[content.remaining()];
         content.mark();

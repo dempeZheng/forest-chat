@@ -25,6 +25,8 @@ public class Utils {
 
     public static final int MAX_LENGTH_LIMIT = 268435455;
 
+    private Utils() {}
+
 //    /**
 //     * Read 2 bytes from in buffer first MSB, and then LSB returning as int.
 //     */

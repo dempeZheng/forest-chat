@@ -27,6 +27,8 @@ import io.netty.util.AttributeKey;
  */
 public class NettyUtils {
 
+    private NettyUtils() {}
+
     public static final String ATTR_USERNAME = "username";
     public static final String ATTR_SESSION_STOLEN = "sessionStolen";
 

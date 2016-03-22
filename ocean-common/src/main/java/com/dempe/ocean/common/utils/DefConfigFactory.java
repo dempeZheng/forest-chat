@@ -17,6 +17,8 @@ import java.util.Map;
  */
 public class DefConfigFactory {
 
+    private DefConfigFactory() {}
+
     public static OceanConfig createUATConfig() {
         return createConfig(EnvEnum.UAT.getEnv());
     }

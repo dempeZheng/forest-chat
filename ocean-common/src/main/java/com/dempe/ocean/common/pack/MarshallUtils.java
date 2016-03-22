@@ -14,6 +14,8 @@ import java.util.*;
 public class MarshallUtils {
     private static Set<Type> supported = new HashSet<Type>();
 
+    private MarshallUtils() {}
+
     static {
         supported.add(int.class);
         supported.add(short.class);

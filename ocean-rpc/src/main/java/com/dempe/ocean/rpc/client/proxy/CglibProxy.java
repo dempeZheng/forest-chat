@@ -96,8 +96,6 @@ public class CglibProxy<T> extends BaseObjectProxy<T> implements MethodIntercept
                     + packetData.getRpcMeta().getResponse().getErrorText());
         }
         byte[] data = packetData.getData();
-        JSONObject json = JSONObject.parseObject(new String(data));
-        return json;
-
+        return JSONObject.parseObject(new String(data));
     }
 }

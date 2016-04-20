@@ -58,9 +58,8 @@ public class ActionTake implements Take<PacketData, PacketData> {
                 // 这里返回空data数据,快速响应client
                 return packetData;
             } else {
-                if (result instanceof String) {
-                    packetData.data(((String) result).getBytes());
-                } else if (result instanceof JSONObject) {
+                // 仅仅支持业务方法返回为json
+                if (result instanceof JSONObject) {
                     packetData.data(JSON.toJSONBytes(result));
                 }
                 packetData.errorCode(ErrorCodes.ST_SUCCESS);

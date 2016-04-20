@@ -1,7 +1,8 @@
 package com.dempe.ocean.rpc.core;
 
-import com.dempe.ocean.rpc.RPCService;
+import com.alibaba.fastjson.JSONObject;
 import com.dempe.ocean.rpc.RPCMethod;
+import com.dempe.ocean.rpc.RPCService;
 import com.dempe.ocean.rpc.utils.PackageUtils;
 import com.dempe.ocean.rpc.utils.PathUtil;
 import com.google.common.collect.Lists;
@@ -63,6 +64,11 @@ public class ServiceMapping {
                     Method[] declaredMethods = actionClass.getDeclaredMethods();
                     for (Method method : declaredMethods) {
                         RPCMethod refs = method.getAnnotation(RPCMethod.class);
+                        // rpc方法目前约定返回的对象类型为JSONObject
+                        if (method.getReturnType().getName() != JSONObject.class.getName()) {
+                            LOGGER.error(method.getName() + " return type not supported");
+                            continue;
+                        }
                         if (refs != null) {
                             String methodName = String.valueOf(refs.methodName());
                             if (StringUtils.isBlank(methodName)) {

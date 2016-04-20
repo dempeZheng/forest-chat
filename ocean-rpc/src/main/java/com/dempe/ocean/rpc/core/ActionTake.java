@@ -63,12 +63,14 @@ public class ActionTake implements Take<PacketData, PacketData> {
                 } else if (result instanceof JSONObject) {
                     packetData.data(JSON.toJSONBytes(result));
                 }
+                packetData.errorCode(ErrorCodes.ST_SUCCESS);
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             // 未知异常
             packetData.errorCode(ErrorCodes.ST_ERROR);
         }
+
         return packetData;
 
 

@@ -35,6 +35,13 @@ public class BootServer {
     private DefaultEventExecutorGroup executorGroup;
     private ChannelInitializer channelInitializer;
 
+    private int port = 8888;
+
+    public BootServer(int port) {
+        this();
+        this.port = port;
+    }
+
 
     public BootServer() {
         init();
@@ -55,7 +62,7 @@ public class BootServer {
 
     public void start() throws IOException {
         try {
-            ChannelFuture f = b.bind(8888).sync();
+            ChannelFuture f = b.bind(port).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             LOGGER.error(e.getMessage(), e);

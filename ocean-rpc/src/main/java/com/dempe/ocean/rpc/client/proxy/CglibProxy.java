@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
  * To change this template use File | Settings | File Templates.
  */
 public class CglibProxy<T> extends BaseObjectProxy<T> implements MethodInterceptor {
+
     private Enhancer enhancer = new Enhancer();
 
     public CglibProxy(String host, int port) {
@@ -88,7 +89,6 @@ public class CglibProxy<T> extends BaseObjectProxy<T> implements MethodIntercept
         // 超时时间
         long timeout = rpcMethod.timeout();
         PacketData packetData = send.await(timeout, TimeUnit.MILLISECONDS);
-
         Integer errorCode = packetData.getRpcMeta().getResponse().getErrorCode();
         if (ErrorCodes.ST_SUCCESS != errorCode) {
             // 服务端返回状态码非成功状态，抛出异常

@@ -24,7 +24,6 @@ public class ServerContext {
         this.context = context;
         this.config = config;
         this.mapping = new ServiceMapping(config.getPackageName(), context);
-
     }
 
     /**

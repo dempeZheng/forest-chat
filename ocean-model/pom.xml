@@ -9,17 +9,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ocean-sdk</artifactId>
+    <artifactId>ocean-model</artifactId>
 
     <dependencies>
-
         <dependency>
-            <groupId>com.dempe.ocean</groupId>
-            <artifactId>ocean-model</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>org.mongodb.morphia</groupId>
+            <artifactId>morphia</artifactId>
+            <version>0.108</version>
         </dependency>
-
     </dependencies>
-
 
 </project>

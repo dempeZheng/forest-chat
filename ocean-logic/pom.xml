@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ocean</artifactId>
+        <groupId>com.dempe.ocean</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ocean-logic</artifactId>
+
+    <properties>
+        <org.springframework.version>3.2.0.RELEASE</org.springframework.version>
+
+        <!-- Mongo DB driver & Spring Data MongoDB -->
+        <spring.data.mongodb.version>1.1.1.RELEASE</spring.data.mongodb.version>
+        <mongodb.driver.version>2.10.1</mongodb.driver.version>
+        <spring.security.core.version>3.1.4.RELEASE</spring.security.core.version>
+        <jackson.version>2.1.1</jackson.version>
+        <log4j.version>1.2.14</log4j.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.dempe.ocean</groupId>
+            <artifactId>ocean-model</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>3.2.16.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.dempe.ocean</groupId>
+            <artifactId>ocean-rpc</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>${mongodb.driver.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies>
+
+
+</project>

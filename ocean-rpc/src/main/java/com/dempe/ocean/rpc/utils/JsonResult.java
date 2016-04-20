@@ -29,6 +29,7 @@ public class JsonResult extends JSONObject {
         return this;
     }
 
+
     public static enum CodeType {
         SUCCESS(0),
         SRV_ERR(1);

@@ -2,7 +2,7 @@ package com.dempe.ocean.logic;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.dempe.ocean.logic.common.controller.UserController;
+import com.dempe.ocean.logic.common.action.UserAction;
 import com.dempe.ocean.rpc.client.Future;
 import com.dempe.ocean.rpc.client.RPCClient;
 import com.dempe.ocean.rpc.client.proxy.CglibProxy;
@@ -27,7 +27,7 @@ public class LeafSimulator {
 
 
     public static void test2() {
-        UserController client = RPCClient.proxyBuilder(UserController.class)
+        UserAction client = RPCClient.proxyBuilder(UserAction.class)
                 .withServerNode("127.0.0.1", 8888)
                 .build();
         System.out.println(client);
@@ -37,7 +37,7 @@ public class LeafSimulator {
     }
 
     public static void test() throws Exception {
-        CglibProxy objectProxy = RPCClient.proxyBuilder(UserController.class)
+        CglibProxy objectProxy = RPCClient.proxyBuilder(UserAction.class)
                 .withServerNode("127.0.0.1", 8888)
                 .buildAsyncObjPrx();
         Future<PacketData> hello = objectProxy.call("login", "222", "");

@@ -70,10 +70,7 @@ public class ActionTake implements Take<PacketData, PacketData> {
             // 未知异常
             packetData.errorCode(ErrorCodes.ST_ERROR);
         }
-
         return packetData;
-
-
     }
 
 

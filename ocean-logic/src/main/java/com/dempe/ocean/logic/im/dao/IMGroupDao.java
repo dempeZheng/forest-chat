@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,6 +34,7 @@ public class IMGroupDao extends BasicDAO<IMGroup, Serializable> {
         group.setCreateTime(System.currentTimeMillis());
         save(group);
     }
+
 
 
 }

@@ -1,7 +1,6 @@
 package com.dempe.ocean.rpc.client;
 
-import com.dempe.ocean.rpc.client.DefaultClient;
-import com.dempe.ocean.rpc.client.Future;
+import com.dempe.ocean.rpc.transport.compress.CompressType;
 import com.dempe.ocean.rpc.transport.protocol.PacketData;
 import com.dempe.ocean.rpc.transport.protocol.ProtocolConstant;
 import org.apache.commons.lang3.StringUtils;
@@ -19,9 +18,24 @@ public class OceanClient extends DefaultClient {
     }
 
 
-    public Callback send(byte[] data, String serviceName, String methodName, int compressType,Callback<PacketData> callback) throws Exception {
+    public Callback send(byte[] data, String serviceName, String methodName, int compressType, Callback<PacketData> callback) throws Exception {
         PacketData packet = createPacket(serviceName, methodName, compressType, data);
-        return send(packet,callback);
+        return send(packet, callback);
+    }
+
+    public Callback send(byte[] data, String serviceName, String methodName, Callback<PacketData> callback) throws Exception {
+        PacketData packet = createPacket(serviceName, methodName, CompressType.NO.value(), data);
+        return send(packet, callback);
+    }
+
+    public Future<PacketData> send(byte[] data, String serviceName, String methodName) throws Exception {
+        PacketData packet = createPacket(serviceName, methodName, CompressType.NO.value(), data);
+        return send(packet);
+    }
+
+    public Future<PacketData> send(byte[] data, String serviceName, int compressType, String methodName) throws Exception {
+        PacketData packet = createPacket(serviceName, methodName, compressType, data);
+        return send(packet);
     }
 
     PacketData createPacket(String serviceName, String methodName, int compressType, byte[] data) {

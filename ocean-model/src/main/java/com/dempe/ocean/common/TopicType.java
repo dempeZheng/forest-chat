@@ -1,4 +1,4 @@
-package com.dempe.chat.common;
+package com.dempe.ocean.common;
 
 /**
  * Created with IntelliJ IDEA.

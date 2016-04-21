@@ -35,4 +35,5 @@ public class IMGroupAction {
         imGroupService.saveUserGroup(createByUid, groupName, groupProfile);
         return JsonResult.getJsonResult("");
     }
+
 }

@@ -1,12 +1,16 @@
 package com.dempe.chat.connector.processor;
 
-import com.dempe.chat.common.TopicType;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.dempe.ocean.common.TopicType;
 import com.dempe.chat.common.mqtt.messages.AbstractMessage;
 import com.dempe.chat.common.mqtt.messages.PublishMessage;
 import com.dempe.chat.connector.NettyUtils;
 import com.dempe.chat.connector.store.ClientSession;
+import com.dempe.ocean.logic.im.action.UserGroupAction;
 import com.dempe.ocean.rpc.client.Callback;
 import com.dempe.ocean.rpc.client.OceanClient;
+import com.dempe.ocean.rpc.client.RPCClient;
 import com.dempe.ocean.rpc.transport.compress.CompressType;
 import com.dempe.ocean.rpc.transport.protocol.PacketData;
 import io.netty.channel.Channel;
@@ -30,6 +34,11 @@ public class PublishMessageProcessor extends MessageProcessor {
     // TODO
     OceanClient client = new OceanClient("localhost", 8888);
 
+    UserGroupAction userGroupAction = RPCClient.proxyBuilder(UserGroupAction.class)
+            .withServerNode("127.0.0.1", 8888)
+            .build();
+
+
     /**
      * 1.存储消息到mongodb
      * 2.
@@ -51,25 +60,45 @@ public class PublishMessageProcessor extends MessageProcessor {
 
         } else if (StringUtils.startsWith(topic, TopicType.FRIEND.getType())) {
             // 发给朋友的消息
-            String[] split = topic.split("\\|");
-            if (split.length == 2) {
-                String toUid = split[1];
-                ClientSession clientSession = m_sessionsStore.sessionForClient(toUid);
-                directSend(clientSession, topic, AbstractMessage.QOSType.QOSType, msg.getPayload(), false,
-                        (int) clientSession.getNextMessageId());
-
-            }
-
-
+            handleFriendMsg(topic, msg);
         } else if (StringUtils.startsWith(topic, TopicType.GROUP.getType())) {
             // 发给群组的消息
+            handleGroupMsg(topic, msg);
 
         } else if (StringUtils.startsWith(topic, TopicType.MYSELF.getType())) {
             // 发给自己的，属于传统的问答模式的消息，这类消息需要直接透传到逻辑层，交由逻辑层处理
             handleMyselfMsg(topic, session, msg);
         }
 
+    }
 
+    private void handleFriendMsg(String topic, final PublishMessage msg) {
+        String[] split = topic.split("\\|");
+        if (split.length == 2) {
+            String toUid = split[1];
+            ClientSession clientSession = m_sessionsStore.sessionForClient(toUid);
+            directSend(clientSession, topic, AbstractMessage.QOSType.QOSType, msg.getPayload(), false,
+                    (int) clientSession.getNextMessageId());
+        }
+    }
+
+
+    private void handleGroupMsg(String topic, final PublishMessage msg) {
+        String[] split = topic.split("\\|");
+        if (split.length != 2) {
+            LOGGER.warn("wrong topic for request & response msg");
+            return;
+        }
+        String groupId = split[1];
+        JSONObject jsonObject = userGroupAction.listUidByGroupId(groupId);
+        JSONArray data = jsonObject.getJSONArray("data");
+        for (int i = 0; i < data.size(); i++) {
+            String uid = data.getString(i);
+            ClientSession clientSession = m_sessionsStore.sessionForClient(uid);
+            directSend(clientSession, topic, AbstractMessage.QOSType.QOSType, msg.getPayload(), false,
+                    (int) clientSession.getNextMessageId());
+
+        }
     }
 
     /**

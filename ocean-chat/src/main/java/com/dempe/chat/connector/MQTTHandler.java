@@ -2,10 +2,7 @@ package com.dempe.chat.connector;
 
 import com.dempe.chat.common.Utils;
 import com.dempe.chat.common.mqtt.messages.*;
-import com.dempe.chat.connector.processor.ConnMessageProcessor;
-import com.dempe.chat.connector.processor.DisconnectMessageProcessor;
-import com.dempe.chat.connector.processor.SubscribeMessageProcessor;
-import com.dempe.chat.connector.processor.UnSubscriptionMessageProcessor;
+import com.dempe.chat.connector.processor.*;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
@@ -46,6 +43,7 @@ public class MQTTHandler extends ChannelHandlerAdapter {
                     new UnSubscriptionMessageProcessor().processUnsubscribe(channel, (UnsubscribeMessage) msg);
                     break;
                 case PUBLISH:
+                    new PublishMessageProcessor().processPublish(channel, (PublishMessage) msg);
                     break;
                 case PUBREC:
                     break;

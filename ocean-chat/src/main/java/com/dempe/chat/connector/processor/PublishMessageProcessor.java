@@ -4,8 +4,15 @@ import com.dempe.chat.common.TopicType;
 import com.dempe.chat.common.mqtt.messages.AbstractMessage;
 import com.dempe.chat.common.mqtt.messages.PublishMessage;
 import com.dempe.chat.connector.NettyUtils;
+import com.dempe.chat.connector.store.ClientSession;
+import com.dempe.ocean.rpc.client.Callback;
+import com.dempe.ocean.rpc.client.OceanClient;
+import com.dempe.ocean.rpc.transport.compress.CompressType;
+import com.dempe.ocean.rpc.transport.protocol.PacketData;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
+
+import java.nio.ByteBuffer;
 
 /**
  * 扩展publish消息，规定topicName为空的时候为单播请求，即问答模式
@@ -20,6 +27,8 @@ import org.apache.commons.lang3.StringUtils;
  * To change this template use File | Settings | File Templates.
  */
 public class PublishMessageProcessor extends MessageProcessor {
+    // TODO
+    OceanClient client = new OceanClient("localhost", 8888);
 
     /**
      * 1.存储消息到mongodb
@@ -28,7 +37,7 @@ public class PublishMessageProcessor extends MessageProcessor {
      * @param session
      * @param msg
      */
-    public void processPublish(Channel session, PublishMessage msg) {
+    public void processPublish(final Channel session, final PublishMessage msg) throws Exception {
         LOGGER.trace("PUB --PUBLISH--> SRV executePublish invoked with {}", msg);
         String clientID = NettyUtils.clientID(session);
         final String topic = msg.getTopicName();
@@ -42,18 +51,62 @@ public class PublishMessageProcessor extends MessageProcessor {
 
         } else if (StringUtils.startsWith(topic, TopicType.FRIEND.getType())) {
             // 发给朋友的消息
+            String[] split = topic.split("\\|");
+            if (split.length == 2) {
+                String toUid = split[1];
+                ClientSession clientSession = m_sessionsStore.sessionForClient(toUid);
+                directSend(clientSession, topic, AbstractMessage.QOSType.QOSType, msg.getPayload(), false,
+                        (int) clientSession.getNextMessageId());
 
+            }
 
 
         } else if (StringUtils.startsWith(topic, TopicType.GROUP.getType())) {
             // 发给群组的消息
 
         } else if (StringUtils.startsWith(topic, TopicType.MYSELF.getType())) {
-            // 发给自己的，属于传统的问答模式的消息，
-
+            // 发给自己的，属于传统的问答模式的消息，这类消息需要直接透传到逻辑层，交由逻辑层处理
+            handleMyselfMsg(topic, session, msg);
         }
 
 
+    }
+
+    /**
+     * 处理问答类型的消息，消息透传到logic层，logic层返回数据后直接封装到mqtt publish msg的payload中返回给客户端
+     * 这类消息Qos为0，不保证消息一定到达
+     *
+     * @param topic
+     * @param session
+     * @param msg
+     * @throws Exception
+     */
+    private void handleMyselfMsg(String topic, final Channel session, final PublishMessage msg) throws Exception {
+        String[] split = topic.split("\\|");
+        if (split.length < 3) {
+            LOGGER.warn("wrong topic for request & response msg");
+            return;
+        }
+        final String serviceName = split[1];
+        String methodName = split[2];
+        int compressType = CompressType.NO.value();
+        if (split.length == 4) {
+            compressType = Integer.parseInt(split[3]);
+        }
+        client.send(msg.getPayload().array(), serviceName, methodName, compressType, new Callback<PacketData>() {
+            @Override
+            public void onReceive(PacketData message) {
+                byte[] data = message.getData();
+                msg.setPayload(ByteBuffer.wrap(data));
+                // 有netty原生线程池写入msg
+                session.eventLoop().submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        session.writeAndFlush(msg);
+                    }
+                });
+            }
+        });
     }
 
 }

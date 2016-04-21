@@ -1,9 +1,9 @@
 package com.dempe.ocean.rpc.handler;
 
-import com.dempe.ocean.rpc.utils.BetterExecutorService;
 import com.dempe.ocean.rpc.core.ServerContext;
 import com.dempe.ocean.rpc.core.TaskWorker;
 import com.dempe.ocean.rpc.transport.protocol.PacketData;
+import com.dempe.ocean.rpc.utils.BetterExecutorService;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
@@ -35,6 +35,12 @@ public class ProcessorHandler extends ChannelHandlerAdapter {
         if (msg instanceof PacketData) {
             threadPool.submit(new TaskWorker(ctx, context, (PacketData) msg));
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        LOGGER.error(cause.getMessage(), cause);
+        ctx.close();
     }
 
 

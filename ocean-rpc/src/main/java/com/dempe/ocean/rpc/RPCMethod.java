@@ -22,6 +22,7 @@ import java.lang.annotation.*;
 
 /**
  * 暴露method方法
+ * 为了方便使用，rpcMethod的返回type目前仅支持JSONObject
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

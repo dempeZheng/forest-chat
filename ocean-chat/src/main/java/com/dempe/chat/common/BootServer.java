@@ -55,7 +55,7 @@ public class BootServer {
 
     public void start() throws IOException {
         try {
-            ChannelFuture f = b.bind(8888).sync();
+            ChannelFuture f = b.bind(9999).sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             LOGGER.error(e.getMessage(), e);

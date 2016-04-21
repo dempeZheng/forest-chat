@@ -2,6 +2,9 @@ package com.dempe.ocean.sdk.example;
 
 import com.dempe.ocean.sdk.Callback;
 import com.dempe.ocean.sdk.ChatSdk;
+import org.fusesource.mqtt.client.Future;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,6 +39,12 @@ public class ChatSdkDemo {
         sdk.connect();
         sdk.start();
         // 点对点消息
-        sdk.publishToAlias("222", "hello".getBytes());
+
+
+        while (true) {
+            Future<Void> voidFuture = sdk.publishToAlias("222", "hello".getBytes());
+            System.out.println("-------------");
+            TimeUnit.SECONDS.sleep(10);
+        }
     }
 }

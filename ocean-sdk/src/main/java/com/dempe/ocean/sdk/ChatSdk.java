@@ -7,8 +7,6 @@ import org.fusesource.mqtt.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Dempe
@@ -28,7 +26,7 @@ public class ChatSdk {
 
     private MQTT mqtt;
 
-    private Thread thread;
+    private Thread d_thread;
     private Callback callback;
 
 
@@ -46,14 +44,13 @@ public class ChatSdk {
     }
 
     public void start() {
-        thread = new Thread(new Runnable() {
+       d_thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {
                     try {
                         Future<Message> receive = connection.receive();
-                        Message message = null;
-                        message = receive.await();
+                        Message message = receive.await();
                         String topic = message.getTopic();
                         byte[] payload = message.getPayload();
                         if (StringUtils.isBlank(topic)) {
@@ -77,8 +74,9 @@ public class ChatSdk {
                 }
             }
         });
-        thread.setName("MessageThread");
-        thread.setDaemon(true);
+        d_thread.setName("MessageThread");
+        d_thread.setDaemon(true);
+        d_thread.start();
     }
 
 
@@ -91,7 +89,7 @@ public class ChatSdk {
     }
 
     public FutureConnection connect() throws Exception {
-        connection = mqtt.futureConnection();
+        this.connection = mqtt.futureConnection();
         connection.connect();
         return connection;
     }
@@ -163,20 +161,5 @@ public class ChatSdk {
         return connection;
     }
 
-
-    public static void main(String[] args) throws Exception {
-        String uid = "222222";
-        String pwd = "pwd";
-        String clientID = "222222222222";
-        ChatSdk client = new ChatSdk("0.0.0.0", 8888, uid, pwd, clientID, new ChatCallback());
-        FutureConnection connection = client.connect();
-        boolean connected = connection.isConnected();
-        Future<Void> publish = connection.publish("", "".getBytes(), QoS.AT_LEAST_ONCE, false);
-        System.out.println(publish.await());
-        TimeUnit.SECONDS.sleep(100);
-        System.out.println(connected);
-
-
-    }
 
 }

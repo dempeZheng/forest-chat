@@ -2,11 +2,11 @@ package com.dempe.chat.connector.processor;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.dempe.ocean.common.TopicType;
 import com.dempe.chat.common.mqtt.messages.AbstractMessage;
 import com.dempe.chat.common.mqtt.messages.PublishMessage;
 import com.dempe.chat.connector.NettyUtils;
 import com.dempe.chat.connector.store.ClientSession;
+import com.dempe.ocean.common.TopicType;
 import com.dempe.ocean.logic.im.action.UserGroupAction;
 import com.dempe.ocean.rpc.client.Callback;
 import com.dempe.ocean.rpc.client.OceanClient;
@@ -73,6 +73,7 @@ public class PublishMessageProcessor extends MessageProcessor {
     }
 
     private void handleFriendMsg(String topic, final PublishMessage msg) {
+        LOGGER.info("handleFriendMsg topic:{},msg:{}", topic, msg);
         String[] split = topic.split("\\|");
         if (split.length == 2) {
             String toUid = split[1];

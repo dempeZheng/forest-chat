@@ -99,6 +99,7 @@ public class ConnMessageProcessor extends MessageProcessor {
 
         ConnAckMessage okResp = new ConnAckMessage();
         okResp.setReturnCode(ConnAckMessage.CONNECTION_ACCEPTED);
+        channel.write(okResp);
         // TODO 连接成功，主动publish下发初始化信息，例如用户好友列表，群组等基础信息
 
         if (!msg.isCleanSession()) {

@@ -29,17 +29,16 @@
             <artifactId>ocean-model</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.dempe.ocean</groupId>
+            <artifactId>ocean-rpc</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>3.2.16.RELEASE</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.dempe.ocean</groupId>
-            <artifactId>ocean-rpc</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>

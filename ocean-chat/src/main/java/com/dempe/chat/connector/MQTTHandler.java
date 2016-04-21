@@ -43,6 +43,7 @@ public class MQTTHandler extends ChannelHandlerAdapter {
                     new UnSubscriptionMessageProcessor().processUnsubscribe(channel, (UnsubscribeMessage) msg);
                     break;
                 case PUBLISH:
+                    System.out.println("publish--------------");
                     new PublishMessageProcessor().processPublish(channel, (PublishMessage) msg);
                     break;
                 case PUBREC:

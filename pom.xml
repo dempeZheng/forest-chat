@@ -12,7 +12,6 @@
 
         <module>ocean-sdk</module>
         <module>ocean-chat</module>
-        <module>ocean-rpc</module>
         <module>ocean-logic</module>
         <module>ocean-model</module>
     </modules>

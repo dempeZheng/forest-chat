@@ -1,14 +1,12 @@
-package com.dempe.ocean.logic.im.action;
+package com.dempe.logic.server.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dempe.logic.api.UserGroupService;
+import com.dempe.logic.server.bussiness.UserGroupBusiness;
 import com.dempe.ocean.db.model.im.UserGroup;
-import com.dempe.ocean.logic.im.service.UserGroupService;
-import com.dempe.ocean.rpc.RPCService;
-import com.dempe.ocean.rpc.RPCMethod;
-import com.dempe.ocean.rpc.utils.JsonResult;
+import com.dempe.ocean.utils.JsonResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,30 +16,26 @@ import javax.annotation.Resource;
  * To change this template use File | Settings | File Templates.
  */
 @Component
-@RPCService
-public class UserGroupAction {
+public class UserGroupServiceImpl implements UserGroupService {
 
-    @Resource
-    private UserGroupService userGroupService;
+    @Autowired
+    private UserGroupBusiness userGroupBusiness;
 
-    @RPCMethod
     public JSONObject listUidByGroupId(String groupId) {
-        return JsonResult.getJsonResult(userGroupService.listUidByGroupId(groupId));
+        return JsonResult.getJsonResult(userGroupBusiness.listUidByGroupId(groupId));
     }
 
-    @RPCMethod
     public JSONObject saveUserGroup(Long uid, String groupId) {
         UserGroup userGroup = new UserGroup();
         userGroup.setCreateTime(System.currentTimeMillis());
         userGroup.setUid(uid);
         userGroup.setGroupId(groupId);
-        userGroupService.saveUserGroup(userGroup);
+        userGroupBusiness.saveUserGroup(userGroup);
         return JsonResult.getJsonResult(0);
     }
 
-    @RPCMethod
     public JSONObject delUserGroup(String groupId, Long uid) {
-        userGroupService.delUserGroup(groupId, uid);
+        userGroupBusiness.delUserGroup(groupId, uid);
         return JsonResult.getJsonResult(0);
     }
 

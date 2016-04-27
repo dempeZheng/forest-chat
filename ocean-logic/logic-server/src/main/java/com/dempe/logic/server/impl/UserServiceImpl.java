@@ -1,12 +1,11 @@
-package com.dempe.ocean.logic.common.action;
+package com.dempe.logic.server.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dempe.logic.api.UserService;
+import com.dempe.logic.server.bussiness.UserBusiness;
 import com.dempe.ocean.db.model.User;
-import com.dempe.ocean.logic.common.service.UserService;
-import com.dempe.ocean.rpc.RPCService;
-import com.dempe.ocean.rpc.RPCMethod;
-import com.dempe.ocean.rpc.utils.JsonResult;
-import org.springframework.stereotype.Component;
+import com.dempe.ocean.utils.JsonResult;
+
 
 import javax.annotation.Resource;
 
@@ -17,16 +16,13 @@ import javax.annotation.Resource;
  * Time: 10:44
  * To change this template use File | Settings | File Templates.
  */
-@Component
-@RPCService
-public class UserAction {
+public class UserServiceImpl implements UserService {
 
     @Resource
-    private UserService userService;
+    private UserBusiness userBusiness;
 
-    @RPCMethod
     public JSONObject login(String uid, String pwd) {
-        User login = userService.login(uid, pwd);
+        User login = userBusiness.login(uid, pwd);
         // 4 test
         if (login == null) {
             login = new User();
@@ -37,14 +33,12 @@ public class UserAction {
     }
 
 
-    @RPCMethod
     public JSONObject imInit() {
         JSONObject result = new JSONObject();
         result.put("init", "success");
         return JsonResult.getJsonResult(result);
     }
 
-    @RPCMethod
     public JSONObject chInit() {
         JSONObject result = new JSONObject();
         result.put("init", "success");

@@ -1,13 +1,10 @@
-package com.dempe.ocean.logic.im.action;
+package com.dempe.logic.server.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dempe.ocean.logic.im.service.FriendService;
-import com.dempe.ocean.rpc.RPCService;
-import com.dempe.ocean.rpc.RPCMethod;
-import com.dempe.ocean.rpc.utils.JsonResult;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
+import com.dempe.logic.api.FriendService;
+import com.dempe.logic.server.bussiness.FriendBusiness;
+import com.dempe.ocean.utils.JsonResult;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,12 +13,10 @@ import javax.annotation.Resource;
  * Time: 11:38
  * To change this template use File | Settings | File Templates.
  */
-@Component
-@RPCService
-public class FriendAction {
+public class FriendServiceImpl implements FriendService {
 
-    @Resource
-    private FriendService friendService;
+    @Autowired
+    private FriendBusiness friendBusiness;
 
     /**
      * 接受申请
@@ -29,9 +24,8 @@ public class FriendAction {
      * @param uid
      * @param friendUid
      */
-    @RPCMethod
     public JSONObject accept(Long uid, Long friendUid) {
-        friendService.acceptFriend(uid, friendUid);
+        friendBusiness.acceptFriend(uid, friendUid);
         return JsonResult.getJsonResult("");
     }
 
@@ -43,9 +37,8 @@ public class FriendAction {
      * @param friendUid
      * @param applyMsg
      */
-    @RPCMethod
     public JSONObject apply(Long uid, Long friendUid, String applyMsg) {
-        friendService.applyFriend(uid, friendUid, applyMsg);
+        friendBusiness.applyFriend(uid, friendUid, applyMsg);
         return JsonResult.getJsonResult("");
     }
 
@@ -56,7 +49,7 @@ public class FriendAction {
      * @param friendUid
      */
     public JSONObject del(Long uid, Long friendUid) {
-        friendService.delFriend(uid, friendUid);
+        friendBusiness.delFriend(uid, friendUid);
         return JsonResult.getJsonResult("");
     }
 

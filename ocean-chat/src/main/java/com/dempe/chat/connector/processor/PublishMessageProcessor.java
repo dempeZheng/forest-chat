@@ -6,17 +6,11 @@ import com.dempe.chat.common.mqtt.messages.AbstractMessage;
 import com.dempe.chat.common.mqtt.messages.PublishMessage;
 import com.dempe.chat.connector.NettyUtils;
 import com.dempe.chat.connector.store.ClientSession;
+import com.dempe.logic.api.UserGroupService;
 import com.dempe.ocean.common.TopicType;
-import com.dempe.ocean.logic.im.action.UserGroupAction;
-import com.dempe.ocean.rpc.client.Callback;
-import com.dempe.ocean.rpc.client.OceanClient;
-import com.dempe.ocean.rpc.client.RPCClient;
-import com.dempe.ocean.rpc.transport.compress.CompressType;
-import com.dempe.ocean.rpc.transport.protocol.PacketData;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
-
-import java.nio.ByteBuffer;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 扩展publish消息，规定topicName为空的时候为单播请求，即问答模式
@@ -31,13 +25,10 @@ import java.nio.ByteBuffer;
  * To change this template use File | Settings | File Templates.
  */
 public class PublishMessageProcessor extends MessageProcessor {
-    // TODO
-    OceanClient client = new OceanClient("localhost", 8888);
 
-    UserGroupAction userGroupAction = RPCClient.proxyBuilder(UserGroupAction.class)
-            .withServerNode("127.0.0.1", 8888)
-            .build();
 
+    @Autowired
+    private UserGroupService userGroupService;
 
     /**
      * 1.存储消息到mongodb
@@ -91,7 +82,7 @@ public class PublishMessageProcessor extends MessageProcessor {
             return;
         }
         String groupId = split[1];
-        JSONObject jsonObject = userGroupAction.listUidByGroupId(groupId);
+        JSONObject jsonObject = userGroupService.listUidByGroupId(groupId);
         JSONArray data = jsonObject.getJSONArray("data");
         for (int i = 0; i < data.size(); i++) {
             String uid = data.getString(i);
@@ -112,31 +103,7 @@ public class PublishMessageProcessor extends MessageProcessor {
      * @throws Exception
      */
     private void handleMyselfMsg(String topic, final Channel session, final PublishMessage msg) throws Exception {
-        String[] split = topic.split("\\|");
-        if (split.length < 3) {
-            LOGGER.warn("wrong topic for request & response msg");
-            return;
-        }
-        final String serviceName = split[1];
-        String methodName = split[2];
-        int compressType = CompressType.NO.value();
-        if (split.length == 4) {
-            compressType = Integer.parseInt(split[3]);
-        }
-        client.send(msg.getPayload().array(), serviceName, methodName, compressType, new Callback<PacketData>() {
-            @Override
-            public void onReceive(PacketData message) {
-                byte[] data = message.getData();
-                msg.setPayload(ByteBuffer.wrap(data));
-                // 有netty原生线程池写入msg
-                session.eventLoop().submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        session.writeAndFlush(msg);
-                    }
-                });
-            }
-        });
+
     }
 
 }

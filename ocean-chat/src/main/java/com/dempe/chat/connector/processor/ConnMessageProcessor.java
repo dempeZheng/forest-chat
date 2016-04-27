@@ -7,11 +7,13 @@ import com.dempe.chat.common.mqtt.messages.ConnectMessage;
 import com.dempe.chat.common.mqtt.messages.WillMessage;
 import com.dempe.chat.connector.ConnectionDescriptor;
 import com.dempe.chat.connector.NettyUtils;
-import com.dempe.ocean.logic.common.action.UserAction;
-import com.dempe.ocean.rpc.client.RPCClient;
-import com.dempe.ocean.rpc.utils.JsonResult;
+import com.dempe.logic.api.UserService;
+
+import com.dempe.ocean.utils.JsonResult;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
 
@@ -22,12 +24,11 @@ import java.nio.ByteBuffer;
  * Time: 15:57
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class ConnMessageProcessor extends MessageProcessor {
 
-
-    private UserAction userClient = RPCClient.proxyBuilder(UserAction.class)
-            .withServerNode("127.0.0.1", 8888)
-            .build();
+    @Autowired
+    private UserService userService;
 
     public void processConnect(Channel channel, ConnectMessage msg) throws Exception {
         LOGGER.debug("CONNECT for client <{}>", msg.getClientID());
@@ -49,7 +50,7 @@ public class ConnMessageProcessor extends MessageProcessor {
             byte[] pwd = msg.getPassword();
             String username = msg.getUsername();
             // 登录逻辑
-            JSONObject login = userClient.login(username, new String(pwd));
+            JSONObject login = userService.login(username, new String(pwd));
             if (login.getInteger("code") == JsonResult.CodeType.SUCCESS.value()) {
                 JSONObject data = login.getJSONObject("data");
                 LOGGER.info("login success,json data{}", data);

@@ -19,7 +19,6 @@
 
     <dependencies>
 
-
         <dependency>
             <groupId>com.dempe.ocean</groupId>
             <artifactId>ocean-logic</artifactId>

@@ -52,10 +52,9 @@ public class ConnMessageProcessor extends MessageProcessor {
             byte[] pwd = msg.getPassword();
             String username = msg.getUsername();
             // 登录逻辑
-//            JSONObject login = userService.login(username, new String(pwd));
             User login = userService.getUser(username, new String(pwd));
             if (!Strings.isNullOrEmpty(username)) {
-                LOGGER.info("login success,json data{}", login);
+                LOGGER.info("login success,user", login);
             } else {
                 connAck(channel, ConnAckMessage.BAD_USERNAME_OR_PASSWORD);
                 return;
@@ -104,6 +103,7 @@ public class ConnMessageProcessor extends MessageProcessor {
 
         connAck(channel, ConnAckMessage.CONNECTION_ACCEPTED);
         // TODO 连接成功，主动publish下发初始化信息，例如用户好友列表，群组等基础信息
+        // 上述逻辑可以换HTTP协议实现，减少IM服务器逻辑复杂性和压力
 
         if (!msg.isCleanSession()) {
             //force the republish of stored QoS1 and QoS2

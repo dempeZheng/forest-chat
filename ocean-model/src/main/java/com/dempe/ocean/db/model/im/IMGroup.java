@@ -3,6 +3,8 @@ package com.dempe.ocean.db.model.im;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
+import java.io.Serializable;
+
 /**
  * 用户群文档集
  * User: Dempe
@@ -11,7 +13,7 @@ import org.mongodb.morphia.annotations.Id;
  * To change this template use File | Settings | File Templates.
  */
 @Entity("im_group")
-public class IMGroup {
+public class IMGroup implements Serializable {
     @Id
     private String userGroupId;
     private Long createByUid;

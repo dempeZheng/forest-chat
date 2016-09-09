@@ -90,7 +90,7 @@ public class ChatSdk {
 
     public FutureConnection connect() throws Exception {
         this.connection = mqtt.futureConnection();
-        connection.connect();
+        Future<Void> connect = connection.connect();
         return connection;
     }
 

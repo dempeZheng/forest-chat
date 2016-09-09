@@ -19,6 +19,12 @@ public class ConnectorServer {
 
     private ChannelInitializer channelInitializer;
 
+    private MQTTHandler mqttHandler;
+
+    public ConnectorServer(MQTTHandler mqttHandler){
+        this.mqttHandler = mqttHandler;
+    }
+
     public ChannelInitializer getChannelInitializer() {
         return channelInitializer;
     }
@@ -29,14 +35,14 @@ public class ConnectorServer {
 
     public void start() throws IOException {
         if (channelInitializer == null) {
-            channelInitializer = new ServerChannelInitializer();
+            channelInitializer = new ServerChannelInitializer(mqttHandler);
         }
         server = new BootServer(channelInitializer);
         server.start();
     }
 
     public static void main(String[] args) throws IOException {
-        new ConnectorServer().start();
+//        new ConnectorServer(new MQTTHandler()).start();
     }
 
 }

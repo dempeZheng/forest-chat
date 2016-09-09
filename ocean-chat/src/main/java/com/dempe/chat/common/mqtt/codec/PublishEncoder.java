@@ -47,15 +47,16 @@ class PublishEncoder extends DemuxEncoder<PublishMessage> {
             }
             variableHeaderBuff.writeBytes(message.getPayload());
             int variableHeaderSize = variableHeaderBuff.readableBytes();
-
             byte flags = Utils.encodeFlags(message);
-
+            System.out.println(flags);
             buff = ctx.alloc().buffer(2 + variableHeaderSize);
             buff.writeByte(AbstractMessage.PUBLISH << 4 | flags);
             buff.writeBytes(Utils.encodeRemainingLength(variableHeaderSize));
             buff.writeBytes(variableHeaderBuff);
             out.writeBytes(buff);
-        } finally {
+        } catch (Exception e){
+            System.out.println(e);
+        }finally {
             variableHeaderBuff.release();
             if (buff != null) {
                 buff.release();

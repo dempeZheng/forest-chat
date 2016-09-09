@@ -184,7 +184,9 @@ public class Utils {
             flags |= 0x01;
         }
 
+        System.out.println("---------------");
         flags |= ((message.getQos().byteValue() & 0x03) << 1);
+        System.out.println(">>>>>>>>>>>>>>"+flags);
         return flags;
     }
 

@@ -9,6 +9,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.CorruptedFrameException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import static com.dempe.chat.common.mqtt.messages.AbstractMessage.*;
 
@@ -19,10 +21,15 @@ import static com.dempe.chat.common.mqtt.messages.AbstractMessage.*;
  * Time: 10:38
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class MQTTHandler extends ChannelHandlerAdapter {
 
 
     private static final Logger LOG = LoggerFactory.getLogger(MQTTHandler.class);
+
+    @Autowired
+    private ConnMessageProcessor connMessageProcessor;
+
 
 
     @Override
@@ -34,7 +41,8 @@ public class MQTTHandler extends ChannelHandlerAdapter {
             switch (msg.getMessageType()) {
                 case CONNECT:
                     // 处理connect msg
-                    new ConnMessageProcessor().processConnect(channel, (ConnectMessage) msg);
+//                    new ConnMessageProcessor().processConnect(channel, (ConnectMessage) msg);
+                    connMessageProcessor.processConnect(channel, (ConnectMessage) msg);
                     break;
                 case SUBSCRIBE:
                     new SubscribeMessageProcessor().processSubscribe(channel, (SubscribeMessage) msg);

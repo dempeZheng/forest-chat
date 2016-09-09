@@ -8,12 +8,12 @@
 
     <context:annotation-config/>
     <!-- 主动搜索以下目录 -->
-    <context:component-scan base-package="com.dempe.ocean.logic"/>
+    <context:component-scan base-package="com.dempe.logic.server"/>
 
     <!-- 数据库实例 -->
     <bean id="mongo" class="com.mongodb.MongoClient">
-        <constructor-arg name="host" value="120.76.129.232"/>
-        <constructor-arg name="port" value="27000"/>
+        <constructor-arg name="host" value="172.19.43.195"/>
+        <constructor-arg name="port" value="27017"/>
     </bean>
 
 

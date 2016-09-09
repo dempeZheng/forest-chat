@@ -32,6 +32,13 @@
             <groupId>com.weibo</groupId>
             <artifactId>motan-core</artifactId>
             <version>0.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.weibo</groupId>

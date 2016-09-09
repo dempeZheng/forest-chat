@@ -17,6 +17,10 @@ public class SessionStoreImpl implements ISessionStore {
 
     @Override
     public ClientSession sessionForClient(String clientID) {
-        return m_sessionStore.get(clientID);
+        ClientSession clientSession = m_sessionStore.get(clientID);
+        if (clientSession == null) {
+            clientSession = new ClientSession(clientID, false);
+        }
+        return clientSession;
     }
 }

@@ -3,6 +3,8 @@ package com.dempe.ocean.db.model.live;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
+import java.io.Serializable;
+
 /**
  * 直播频道
  * User: Dempe
@@ -11,7 +13,7 @@ import org.mongodb.morphia.annotations.Id;
  * To change this template use File | Settings | File Templates.
  */
 @Entity("live_channel")
-public class LiveChannel {
+public class LiveChannel implements Serializable {
     @Id
     private Long topSid;
     private Long subSid;

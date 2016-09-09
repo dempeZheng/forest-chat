@@ -5,6 +5,7 @@ import com.dempe.logic.api.UserService;
 import com.dempe.logic.server.bussiness.UserBusiness;
 import com.dempe.ocean.db.model.User;
 import com.dempe.ocean.utils.JsonResult;
+import org.springframework.stereotype.Component;
 
 
 import javax.annotation.Resource;
@@ -16,12 +17,14 @@ import javax.annotation.Resource;
  * Time: 10:44
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class UserServiceImpl implements UserService {
 
     @Resource
     private UserBusiness userBusiness;
 
     public JSONObject login(String uid, String pwd) {
+        System.out.println(userBusiness);
         User login = userBusiness.login(uid, pwd);
         // 4 test
         if (login == null) {

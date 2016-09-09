@@ -10,6 +10,7 @@ import com.dempe.chat.connector.NettyUtils;
 import com.dempe.logic.api.UserService;
 
 import com.dempe.ocean.utils.JsonResult;
+import com.google.common.base.Strings;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import java.nio.ByteBuffer;
  */
 @Component
 public class ConnMessageProcessor extends MessageProcessor {
-
+//
     @Autowired
     private UserService userService;
 
@@ -51,13 +52,15 @@ public class ConnMessageProcessor extends MessageProcessor {
             String username = msg.getUsername();
             // 登录逻辑
             JSONObject login = userService.login(username, new String(pwd));
-            if (login.getInteger("code") == JsonResult.CodeType.SUCCESS.value()) {
+            if (!Strings.isNullOrEmpty(username)) {
                 JSONObject data = login.getJSONObject("data");
                 LOGGER.info("login success,json data{}", data);
             } else {
                 connAck(channel, ConnAckMessage.BAD_USERNAME_OR_PASSWORD);
                 return;
+
             }
+
 
         } else {
             connAck(channel, ConnAckMessage.BAD_USERNAME_OR_PASSWORD);
@@ -98,9 +101,7 @@ public class ConnMessageProcessor extends MessageProcessor {
             m_willStore.put(msg.getClientID(), will);
         }
 
-        ConnAckMessage okResp = new ConnAckMessage();
-        okResp.setReturnCode(ConnAckMessage.CONNECTION_ACCEPTED);
-        channel.write(okResp);
+        connAck(channel,ConnAckMessage.CONNECTION_ACCEPTED);
         // TODO 连接成功，主动publish下发初始化信息，例如用户好友列表，群组等基础信息
 
         if (!msg.isCleanSession()) {

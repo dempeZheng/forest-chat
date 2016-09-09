@@ -1,28 +1,20 @@
 ##Ocean
-> 基于mqtt协议，netty通讯组件实现的基IM，发布订阅开发平台。
+> 基于mqtt协议，netty通讯组件实现的IM
 
-####ocean-common
->基础公用组件，高可用服务，名称服务，配置文件等基础功能
+###ocean-chat
+>基于netty&mqtt的实现，维护管理connection，将业务逻辑通过motan rpc丢到ocean-logic处理
 
-###ocean-bus
->中央分发服务：实现mqtt协议，维护客户端连接，基于celue路由消息到业务服务进程。
+###ocean-logic
+>处理IM具体业务逻辑，db暂用mongo
 
-###ocean-node
+###ocean-model
+>基础的model
 
->业务服务：处理各类业务
+###ocean-sdk
+>java sdk demo版
 
-####IM
-
-- 用户登录
-- 添加好友
-- 创建聊天群
-- 加载好友
-- 发送消息
-
-
-####发布订阅
-
-- 单播消息
-- 多播消息
-- 广播消息
+###TODO list
+1.connector抽象出来，仅仅维护connection，转发消息，保持轻薄，
+2.重构ocean-logic,分离具体的实现，提供可插播的机制，增强扩展性
+2.mqtt实现im还有若干问题
 

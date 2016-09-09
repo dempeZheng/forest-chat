@@ -3,6 +3,8 @@ package com.dempe.ocean.db.model.im;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
+import java.io.Serializable;
+
 /**
  * 好友关系文档集
  * User: Dempe
@@ -11,7 +13,7 @@ import org.mongodb.morphia.annotations.Id;
  * To change this template use File | Settings | File Templates.
  */
 @Entity("friend")
-public class Friend {
+public class Friend implements Serializable {
 
     // uid&friendUid联合主键
     @Id

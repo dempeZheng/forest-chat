@@ -3,6 +3,8 @@ package com.dempe.ocean.db.model.im;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
+import java.io.Serializable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Dempe
@@ -11,7 +13,7 @@ import org.mongodb.morphia.annotations.Id;
  * To change this template use File | Settings | File Templates.
  */
 @Entity("user_group")
-public class UserGroup {
+public class UserGroup implements Serializable {
 
     @Id
     private String id;

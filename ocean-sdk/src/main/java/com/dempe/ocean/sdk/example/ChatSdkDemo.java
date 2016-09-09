@@ -19,8 +19,12 @@ public class ChatSdkDemo {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ChatSdk.class);
 
+
+    private final static String DEF_UID = "222";
+    private final static String DEF_PWD = "pwd";
+
     public static void main(String[] args) throws Exception {
-        ChatSdk sdk = new ChatSdk("localhost", 9999, "222", "pwd", new Callback() {
+        ChatSdk sdk = new ChatSdk("localhost", 9999, DEF_UID, DEF_PWD, new Callback() {
             @Override
             public void onResponse(String topic, byte[] payload) {
                 LOGGER.info("onResponse topci:{},payload:{}", topic, payload);
@@ -47,7 +51,9 @@ public class ChatSdkDemo {
 
 
         while (true) {
-            Future<Void> voidFuture = sdk.publishToAlias("222", "hello".getBytes());
+            // 发送给自己的消息，
+            //
+            sdk.publishToAlias(DEF_UID, "hello".getBytes());
             TimeUnit.SECONDS.sleep(10);
         }
     }

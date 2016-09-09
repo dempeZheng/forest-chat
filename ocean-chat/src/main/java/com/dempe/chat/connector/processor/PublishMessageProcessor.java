@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PublishMessageProcessor extends MessageProcessor {
 
-//
+    //
     @Autowired
     private UserGroupService userGroupService;
 
@@ -71,7 +71,7 @@ public class PublishMessageProcessor extends MessageProcessor {
         if (split.length == 2) {
             String toUid = split[1];
             ClientSession clientSession = m_sessionsStore.sessionForClient(toUid);
-            directSend(clientSession, topic,msg.getQos(),  msg.getPayload(), false,
+            directSend(clientSession, topic, msg.getQos(), msg.getPayload(), false,
                     (int) clientSession.getNextMessageId());
         }
     }

@@ -35,6 +35,5 @@ public class IMGroupDao extends BasicDAO<IMGroup, Serializable> {
     }
 
 
-
 }
 

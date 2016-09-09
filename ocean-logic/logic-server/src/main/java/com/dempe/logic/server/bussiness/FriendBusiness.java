@@ -43,11 +43,12 @@ public class FriendBusiness {
 
     /**
      * 删除好友
+     *
      * @param uid
      * @param friendUid
      */
     public void delFriend(Long uid, Long friendUid) {
-        friendDao.delFriend(uid,friendUid);
+        friendDao.delFriend(uid, friendUid);
     }
 
 }

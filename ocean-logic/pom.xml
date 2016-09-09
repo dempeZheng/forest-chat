@@ -51,9 +51,9 @@
             <version>0.0.1</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>com.weibo</groupId>-->
-            <!--<artifactId>motan-registry-consul</artifactId>-->
-            <!--<version>0.0.1</version>-->
+        <!--<groupId>com.weibo</groupId>-->
+        <!--<artifactId>motan-registry-consul</artifactId>-->
+        <!--<version>0.0.1</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>com.weibo</groupId>

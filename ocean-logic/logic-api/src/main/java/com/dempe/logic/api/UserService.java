@@ -18,9 +18,7 @@ public interface UserService {
      * @param pwd 用户登录密码
      * @return
      */
-    JSONObject login(String uid, String pwd);
-
-    User getUser(String uid, String pwd);
+    User login(String uid, String pwd);
 
     JSONObject imInit();
 

@@ -13,7 +13,7 @@ import java.io.Serializable;
  * To change this template use File | Settings | File Templates.
  */
 @Entity(value = "user")
-public class User implements Serializable{
+public class User implements Serializable {
     @Id
     private Long uid;
     private String pwd;

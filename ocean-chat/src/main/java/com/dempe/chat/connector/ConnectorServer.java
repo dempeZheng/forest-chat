@@ -21,7 +21,7 @@ public class ConnectorServer {
 
     private MQTTHandler mqttHandler;
 
-    public ConnectorServer(MQTTHandler mqttHandler){
+    public ConnectorServer(MQTTHandler mqttHandler) {
         this.mqttHandler = mqttHandler;
     }
 

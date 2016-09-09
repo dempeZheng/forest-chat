@@ -26,7 +26,6 @@ import static com.dempe.chat.common.mqtt.messages.AbstractMessage.*;
 @Component
 public class MQTTHandler extends ChannelHandlerAdapter {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(MQTTHandler.class);
 
     @Autowired
@@ -39,7 +38,6 @@ public class MQTTHandler extends ChannelHandlerAdapter {
     private UnSubscriptionMessageProcessor unSubscriptionMessageProcessor;
     @Autowired
     private DisconnectMessageProcessor disconnectMessageProcessor;
-
 
 
     @Override
@@ -55,14 +53,16 @@ public class MQTTHandler extends ChannelHandlerAdapter {
                     connMessageProcessor.processConnect(channel, (ConnectMessage) msg);
                     break;
                 case SUBSCRIBE:
-                   subscribeMessageProcessor.processSubscribe(channel, (SubscribeMessage) msg);
+                    LOGGER.debug("---------handle subscribe message-------------");
+                    subscribeMessageProcessor.processSubscribe(channel, (SubscribeMessage) msg);
                     break;
                 case UNSUBSCRIBE:
+                    LOGGER.debug("---------handle unsubscribe message-------------");
                     unSubscriptionMessageProcessor.processUnsubscribe(channel, (UnsubscribeMessage) msg);
                     break;
                 case PUBLISH:
                     LOGGER.debug("---------handle publish message-------------");
-                   publishMessageProcessor.processPublish(channel, (PublishMessage) msg);
+                    publishMessageProcessor.processPublish(channel, (PublishMessage) msg);
                     break;
                 case PUBREC:
                     break;
@@ -73,6 +73,7 @@ public class MQTTHandler extends ChannelHandlerAdapter {
                 case PUBACK:
                     break;
                 case DISCONNECT:
+                    LOGGER.debug("---------handle disconnect message-------------");
                     disconnectMessageProcessor.processDisconnect(channel);
                     break;
                 case PINGREQ:
@@ -83,7 +84,8 @@ public class MQTTHandler extends ChannelHandlerAdapter {
             LOGGER.error("Bad error in processing the message", ex);
         }
     }
-    private void handlePingMsg(final ChannelHandlerContext ctx){
+
+    private void handlePingMsg(final ChannelHandlerContext ctx) {
         PingRespMessage pingResp = new PingRespMessage();
         ctx.writeAndFlush(pingResp);
     }

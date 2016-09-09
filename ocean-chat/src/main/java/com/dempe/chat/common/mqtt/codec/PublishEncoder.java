@@ -57,9 +57,9 @@ class PublishEncoder extends DemuxEncoder<PublishMessage> {
             buff.writeBytes(Utils.encodeRemainingLength(variableHeaderSize));
             buff.writeBytes(variableHeaderBuff);
             out.writeBytes(buff);
-        } catch (Exception e){
-           LOGGER.error(e.getMessage(),e);
-        }finally {
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        } finally {
             variableHeaderBuff.release();
             if (buff != null) {
                 buff.release();

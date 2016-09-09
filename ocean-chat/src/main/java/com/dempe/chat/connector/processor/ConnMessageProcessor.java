@@ -52,7 +52,7 @@ public class ConnMessageProcessor extends MessageProcessor {
             byte[] pwd = msg.getPassword();
             String username = msg.getUsername();
             // 登录逻辑
-            User login = userService.getUser(username, new String(pwd));
+            User login = userService.login(username, new String(pwd));
             if (!Strings.isNullOrEmpty(username)) {
                 LOGGER.info("login success,user", login);
             } else {
@@ -60,7 +60,6 @@ public class ConnMessageProcessor extends MessageProcessor {
                 return;
 
             }
-
 
         } else {
             connAck(channel, ConnAckMessage.BAD_USERNAME_OR_PASSWORD);

@@ -16,27 +16,27 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:motan="http://api.weibo.com/schema/motan"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:motan="http://api.weibo.com/schema/motan"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://api.weibo.com/schema/motan http://api.weibo.com/schema/motan.xsd">
-	<import resource="classpath*:spring/configloader.xml"/>
-	<!-- 注册中心配置 -->
-	<motan:registry regProtocol="local" name="motanDemo" />
+    <import resource="classpath*:spring/configloader.xml"/>
+    <!-- 注册中心配置 -->
+    <motan:registry regProtocol="local" name="motanDemo"/>
 
-	<!-- motan协议配置 -->
-	<motan:protocol default="true" name="motan" haStrategy="failover"
-		loadbalance="activeWeight" maxClientConnection="10" minClientConnection="2"/>
+    <!-- motan协议配置 -->
+    <motan:protocol default="true" name="motan" haStrategy="failover"
+                    loadbalance="activeWeight" maxClientConnection="10" minClientConnection="2"/>
 
-	<!-- 通用referer基础配置 -->
-	<motan:basicReferer requestTimeout="200" accessLog="false"
-		retries="2" group="motan-demo-rpc" module="motan-demo-rpc"
-		application="myMotanDemo" protocol="motan" registry="motanDemo"
-		id="motantestClientBasicConfig" throwException="false" check="true" />
+    <!-- 通用referer基础配置 -->
+    <motan:basicReferer requestTimeout="200" accessLog="false"
+                        retries="2" group="motan-demo-rpc" module="motan-demo-rpc"
+                        application="myMotanDemo" protocol="motan" registry="motanDemo"
+                        id="motantestClientBasicConfig" throwException="false" check="true"/>
 
-	<!-- 具体referer配置。使用方通过beanid使用服务接口类 -->
-	<motan:referer id="motanDemoReferer"
-		directUrl="localhost:8002"
-		interface="com.weibo.motan.demo.service.MotanDemoService"
-		connectTimeout="300" requestTimeout="300" basicReferer="motantestClientBasicConfig" />
+    <!-- 具体referer配置。使用方通过beanid使用服务接口类 -->
+    <motan:referer id="motanDemoReferer"
+                   directUrl="localhost:8002"
+                   interface="com.weibo.motan.demo.service.MotanDemoService"
+                   connectTimeout="300" requestTimeout="300" basicReferer="motantestClientBasicConfig"/>
 
 </beans>

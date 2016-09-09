@@ -9,7 +9,7 @@ package com.dempe.ocean.sdk;
  */
 public interface Callback {
     // 问答消息的返回
-    public void onResponse(String topic, byte[] payload);
+    void onResponse(String topic, byte[] payload);
 
     /**
      * 好友消息
@@ -17,7 +17,7 @@ public interface Callback {
      * @param topic
      * @param payload
      */
-    public void onFriendMsg(String topic, byte[] payload);
+    void onFriendMsg(String topic, byte[] payload);
 
     /**
      * 消息群消息
@@ -25,7 +25,7 @@ public interface Callback {
      * @param topic
      * @param payload
      */
-    public void onGroupMsg(String topic, byte[] payload);
+    void onGroupMsg(String topic, byte[] payload);
 
     /**
      * 系统消息
@@ -33,5 +33,5 @@ public interface Callback {
      * @param topic
      * @param payload
      */
-    public void onSysMsg(String topic, byte[] payload);
+    void onSysMsg(String topic, byte[] payload);
 }

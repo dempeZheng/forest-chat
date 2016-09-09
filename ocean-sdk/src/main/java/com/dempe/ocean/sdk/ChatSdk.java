@@ -44,7 +44,7 @@ public class ChatSdk {
     }
 
     public void start() {
-       d_thread = new Thread(new Runnable() {
+        d_thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true) {

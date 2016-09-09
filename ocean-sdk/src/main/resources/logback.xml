@@ -8,43 +8,43 @@
 <!-- http://www.qos.ch/shop/products/professionalSupport -->
 <!-- -->
 <configuration>
-	<property name="layout_pattern" value="[%level]%date, [%thread]%file:%line, %msg%n" />
-	<property name="logfile_dic" value="d:/data/weblog/java/admin.cont.yy.com" />
+    <property name="layout_pattern" value="[%level]%date, [%thread]%file:%line, %msg%n"/>
+    <property name="logfile_dic" value="d:/data/weblog/java/admin.cont.yy.com"/>
 
 
-	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
-		<Encoding>UTF-8</Encoding>
-		<encoder>
-			<pattern>${layout_pattern}</pattern>
-		</encoder>
-	</appender>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <Encoding>UTF-8</Encoding>
+        <encoder>
+            <pattern>${layout_pattern}</pattern>
+        </encoder>
+    </appender>
 
-	<appender name="errorlog"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<!-- Tests run on modern PCs show that buffering related property -->
-		<!-- "BufferedIO" has negligible impact and will be ignored. -->
-		<!--See http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
-		<!--and http://logback.qos.ch/manual/appenders.html#TimeBasedRollingPolicy -->
-		<!--for further documentation -->
-		<Append>true</Append>
-		<Encoding>UTF-8</Encoding>
-		<File>${logfile_dic}/admin_error.log</File>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${logfile_dic}/admin_error.log.%d{yyyy-MM-dd}
-			</fileNamePattern>
-		</rollingPolicy>
-		<encoder>
-			<pattern>${layout_pattern}</pattern>
-		</encoder>
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>ERROR</level>
-		</filter>
-	</appender>
-	<!--<logger name="org.apache.commons.httpclient" level="INFO" />-->
-	<!--<logger name="com.yy.ent.clients.daemon" level="DEBUG">-->
-		<!--<appender-ref ref="daemon" />-->
-	<!--</logger>-->
-	<root level="debug">
-		<appender-ref ref="stdout" />
-	</root>
+    <appender name="errorlog"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Tests run on modern PCs show that buffering related property -->
+        <!-- "BufferedIO" has negligible impact and will be ignored. -->
+        <!--See http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
+        <!--and http://logback.qos.ch/manual/appenders.html#TimeBasedRollingPolicy -->
+        <!--for further documentation -->
+        <Append>true</Append>
+        <Encoding>UTF-8</Encoding>
+        <File>${logfile_dic}/admin_error.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logfile_dic}/admin_error.log.%d{yyyy-MM-dd}
+            </fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${layout_pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+    <!--<logger name="org.apache.commons.httpclient" level="INFO" />-->
+    <!--<logger name="com.yy.ent.clients.daemon" level="DEBUG">-->
+    <!--<appender-ref ref="daemon" />-->
+    <!--</logger>-->
+    <root level="debug">
+        <appender-ref ref="stdout"/>
+    </root>
 </configuration>

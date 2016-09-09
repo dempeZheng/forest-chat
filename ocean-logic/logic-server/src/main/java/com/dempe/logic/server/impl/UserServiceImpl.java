@@ -23,19 +23,9 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserBusiness userBusiness;
 
-    public JSONObject login(String uid, String pwd) {
-        User login = userBusiness.login(uid, pwd);
-        // 4 test
-        if (login == null) {
-            login = new User();
-            login.setClientID(uid);
-            login.setPwd(pwd);
-        }
-        return JsonResult.getJsonResult(login);
-    }
 
     @Override
-    public User getUser(String uid, String pwd) {
+    public User login(String uid, String pwd) {
         User user = new User();
         user.setUserName(uid);
         user.setPwd(pwd);

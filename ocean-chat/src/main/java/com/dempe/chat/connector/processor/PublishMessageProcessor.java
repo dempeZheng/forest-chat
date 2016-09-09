@@ -11,6 +11,7 @@ import com.dempe.ocean.common.TopicType;
 import io.netty.channel.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * 扩展publish消息，规定topicName为空的时候为单播请求，即问答模式
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 20:48
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class PublishMessageProcessor extends MessageProcessor {
 
 //

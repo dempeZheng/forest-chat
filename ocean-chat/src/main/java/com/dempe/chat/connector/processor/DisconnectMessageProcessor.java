@@ -2,6 +2,7 @@ package com.dempe.chat.connector.processor;
 
 import com.dempe.chat.connector.NettyUtils;
 import io.netty.channel.Channel;
+import org.springframework.stereotype.Component;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,6 +11,7 @@ import io.netty.channel.Channel;
  * Time: 15:57
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class DisconnectMessageProcessor extends MessageProcessor {
 
     public void processDisconnect(Channel channel) throws InterruptedException {

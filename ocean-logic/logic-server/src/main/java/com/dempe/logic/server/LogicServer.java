@@ -1,7 +1,7 @@
 package com.dempe.logic.server;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dempe.logic.api.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -15,13 +15,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class LogicServer {
 
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(LogicServer.class);
+
     public static void main(String[] args) throws InterruptedException {
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext(new String[]{"classpath*:app*.xml"});
-        UserService userServiceImpl = (UserService) applicationContext.getBean("userServiceImpl");
-        System.out.println(userServiceImpl);
-        JSONObject login = userServiceImpl.login("uid", "pwd");
-        System.out.println(login);
-        System.out.println("server start...");
+
+        LOGGER.info("server start...");
     }
 
 }

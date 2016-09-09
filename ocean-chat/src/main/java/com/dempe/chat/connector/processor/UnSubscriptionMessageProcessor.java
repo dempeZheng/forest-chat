@@ -5,6 +5,7 @@ import com.dempe.chat.common.mqtt.messages.UnsubscribeMessage;
 import com.dempe.chat.connector.NettyUtils;
 import com.dempe.chat.connector.store.ClientSession;
 import io.netty.channel.Channel;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * Time: 20:40
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class UnSubscriptionMessageProcessor extends MessageProcessor {
 
     public void processUnsubscribe(Channel channel, UnsubscribeMessage msg) {

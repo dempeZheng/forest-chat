@@ -31,6 +31,9 @@ public class MQTTHandler extends ChannelHandlerAdapter {
     private ConnMessageProcessor connMessageProcessor;
 
 
+    @Autowired
+    private PublishMessageProcessor publishMessageProcessor;
+
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object message) {

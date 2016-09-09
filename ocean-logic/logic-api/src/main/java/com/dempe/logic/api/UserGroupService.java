@@ -11,10 +11,10 @@ import com.alibaba.fastjson.JSONObject;
  */
 public interface UserGroupService {
 
-    public JSONObject listUidByGroupId(String groupId);
+    JSONObject listUidByGroupId(String groupId);
 
-    public JSONObject saveUserGroup(Long uid, String groupId);
+    JSONObject saveUserGroup(Long uid, String groupId);
 
-    public JSONObject delUserGroup(String groupId, Long uid);
+    JSONObject delUserGroup(String groupId, Long uid);
 
 }

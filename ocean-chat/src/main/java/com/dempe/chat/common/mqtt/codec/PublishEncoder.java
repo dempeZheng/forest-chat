@@ -19,11 +19,15 @@ import com.dempe.chat.common.mqtt.messages.AbstractMessage;
 import com.dempe.chat.common.mqtt.messages.PublishMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author andrea
  */
 class PublishEncoder extends DemuxEncoder<PublishMessage> {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(PublishEncoder.class);
 
     @Override
     protected void encode(ChannelHandlerContext ctx, PublishMessage message, ByteBuf out) {
@@ -48,14 +52,13 @@ class PublishEncoder extends DemuxEncoder<PublishMessage> {
             variableHeaderBuff.writeBytes(message.getPayload());
             int variableHeaderSize = variableHeaderBuff.readableBytes();
             byte flags = Utils.encodeFlags(message);
-            System.out.println(flags);
             buff = ctx.alloc().buffer(2 + variableHeaderSize);
             buff.writeByte(AbstractMessage.PUBLISH << 4 | flags);
             buff.writeBytes(Utils.encodeRemainingLength(variableHeaderSize));
             buff.writeBytes(variableHeaderBuff);
             out.writeBytes(buff);
         } catch (Exception e){
-            System.out.println(e);
+           LOGGER.error(e.getMessage(),e);
         }finally {
             variableHeaderBuff.release();
             if (buff != null) {

@@ -24,7 +24,6 @@ public class UserServiceImpl implements UserService {
     private UserBusiness userBusiness;
 
     public JSONObject login(String uid, String pwd) {
-        System.out.println(userBusiness);
         User login = userBusiness.login(uid, pwd);
         // 4 test
         if (login == null) {

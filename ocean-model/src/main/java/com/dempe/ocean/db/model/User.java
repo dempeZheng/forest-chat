@@ -78,4 +78,17 @@ public class User implements Serializable{
     public void setClientID(String clientID) {
         this.clientID = clientID;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "uid=" + uid +
+                ", pwd='" + pwd + '\'' +
+                ", userName='" + userName + '\'' +
+                ", profile='" + profile + '\'' +
+                ", lastLoginTime='" + lastLoginTime + '\'' +
+                ", mobileClientID='" + mobileClientID + '\'' +
+                ", clientID='" + clientID + '\'' +
+                '}';
+    }
 }

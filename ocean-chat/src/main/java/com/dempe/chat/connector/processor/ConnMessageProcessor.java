@@ -9,6 +9,7 @@ import com.dempe.chat.connector.ConnectionDescriptor;
 import com.dempe.chat.connector.NettyUtils;
 import com.dempe.logic.api.UserService;
 
+import com.dempe.ocean.db.model.User;
 import com.dempe.ocean.utils.JsonResult;
 import com.google.common.base.Strings;
 import io.netty.channel.Channel;
@@ -27,7 +28,7 @@ import java.nio.ByteBuffer;
  */
 @Component
 public class ConnMessageProcessor extends MessageProcessor {
-//
+    //
     @Autowired
     private UserService userService;
 
@@ -51,10 +52,10 @@ public class ConnMessageProcessor extends MessageProcessor {
             byte[] pwd = msg.getPassword();
             String username = msg.getUsername();
             // 登录逻辑
-            JSONObject login = userService.login(username, new String(pwd));
+//            JSONObject login = userService.login(username, new String(pwd));
+            User login = userService.getUser(username, new String(pwd));
             if (!Strings.isNullOrEmpty(username)) {
-                JSONObject data = login.getJSONObject("data");
-                LOGGER.info("login success,json data{}", data);
+                LOGGER.info("login success,json data{}", login);
             } else {
                 connAck(channel, ConnAckMessage.BAD_USERNAME_OR_PASSWORD);
                 return;
@@ -101,7 +102,7 @@ public class ConnMessageProcessor extends MessageProcessor {
             m_willStore.put(msg.getClientID(), will);
         }
 
-        connAck(channel,ConnAckMessage.CONNECTION_ACCEPTED);
+        connAck(channel, ConnAckMessage.CONNECTION_ACCEPTED);
         // TODO 连接成功，主动publish下发初始化信息，例如用户好友列表，群组等基础信息
 
         if (!msg.isCleanSession()) {

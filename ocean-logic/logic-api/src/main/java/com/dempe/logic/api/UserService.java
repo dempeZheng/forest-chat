@@ -1,6 +1,7 @@
 package com.dempe.logic.api;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dempe.ocean.db.model.User;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,14 +13,17 @@ import com.alibaba.fastjson.JSONObject;
 public interface UserService {
     /**
      * 用户登录接口
+     *
      * @param uid 用户uid
      * @param pwd 用户登录密码
      * @return
      */
-    public JSONObject login(String uid, String pwd);
+    JSONObject login(String uid, String pwd);
 
-    public JSONObject imInit();
+    User getUser(String uid, String pwd);
 
-    public JSONObject chInit();
+    JSONObject imInit();
+
+    JSONObject chInit();
 
 }

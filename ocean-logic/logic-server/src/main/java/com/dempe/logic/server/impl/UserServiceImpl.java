@@ -35,6 +35,14 @@ public class UserServiceImpl implements UserService {
         return JsonResult.getJsonResult(login);
     }
 
+    @Override
+    public User getUser(String uid, String pwd) {
+        User user = new User();
+        user.setUserName(uid);
+        user.setPwd(pwd);
+        return user;
+    }
+
 
     public JSONObject imInit() {
         JSONObject result = new JSONObject();

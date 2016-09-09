@@ -1,9 +1,7 @@
 package com.dempe.chat;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dempe.chat.connector.ConnectorServer;
 import com.dempe.chat.connector.MQTTHandler;
-import com.dempe.logic.api.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -26,7 +24,7 @@ public class ChatServer {
     public static void main(String[] args) throws IOException {
         ApplicationContext ctx = new ClassPathXmlApplicationContext(new String[]{"classpath:app*.xml"});
         LOGGER.info("app context init");
-        MQTTHandler mqttHandler =  ctx.getBean(MQTTHandler.class);
+        MQTTHandler mqttHandler = ctx.getBean(MQTTHandler.class);
         LOGGER.info("app context init");
         new ConnectorServer(mqttHandler).start();
     }

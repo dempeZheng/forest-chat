@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 11:38
  * To change this template use File | Settings | File Templates.
  */
-public class ImGroupServiceImpl implements ImGroupService {
+public class IMGroupServiceImpl implements ImGroupService {
 
     @Autowired
     private IMGroupBusiness imGroupBusiness;

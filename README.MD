@@ -4,6 +4,9 @@
 ###ocean-chat
 >基于netty&mqtt的实现，维护管理connection，将业务逻辑通过motan rpc丢到ocean-logic处理
 
+###Frame
+![](/chat.png)
+
 ###ocean-logic
 >处理IM具体业务逻辑，db暂用mongo
 
